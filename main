@@ -9,10 +9,8 @@ from sklearn.model_selection import train_test_split
 
 start = time.time()
 
-# Define the input shape
 input_shape = (4,)
 
-# Define the model architecture
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
     tf.keras.layers.Dense(32, activation='relu'),
@@ -20,10 +18,9 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(1, activation='linear')
 ])
 
-# Compile the model
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['MeanAbsoluteError', 'MeanSquaredLogarithmicError'])
 
-df = pd.read_csv("/Users/andrewderango/Documents/Programming Files/NHL Projections '23/sample_toi_data.csv")
+df = pd.read_csv("sample_toi_data.csv")
 df = df.dropna()
 df = df.reset_index(drop=True)
 print(df.to_string())
@@ -50,10 +47,9 @@ model.fit(X_train_scaled, y_train, epochs=50)
 test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=1)
 print(f'\nMean Absolute Error of test: {test_acc:.4f}')
 
-# Predict the number of goals for a player's fourth season
 x_new = X_scaler.transform([[21, 12.54, 16.02, 16.55]])
 y_pred = model.predict(x_new)[0][0]
 
-print(f'Predicted number of goals: {y_pred:.2f}')
+print(f'Predicted TOI: {y_pred:.2f}')
 
 print(f'{time.time()-start:.3f} seconds')
