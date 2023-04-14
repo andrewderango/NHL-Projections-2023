@@ -49,7 +49,7 @@ model.fit(X_train_scaled, y_train, epochs=30)
 test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=1)
 print(f'\nMean Absolute Error of test: {test_acc:.4f}')
 
-# Predict the number of goals for a player's fourth season
+# Predicting future data given the player's information
 x_new = X_scaler.transform([[39, 21, 21, 20, 20]])
 y_pred = model.predict(x_new)[0][0]
 
