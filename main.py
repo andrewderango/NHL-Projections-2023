@@ -31,8 +31,8 @@ X = []
 y = []
 
 for index, row in df.iterrows():
-    X.append([row['Age'], row['Y1 EV ATOI'], row['Y2 EV ATOI'], row['Y3 EV ATOI'], row['Y4 EV ATOI']])
-    y.append(row['Y5 EV ATOI'])
+    X.append([row['Age'], row['Y1 EV ATOI'], row['Y2 EV ATOI'], row['Y3 EV ATOI'], row['Y4 EV ATOI']]) # features
+    y.append(row['Y5 EV ATOI']) # target
 
 X = np.array(X)
 y = np.array(y)
@@ -40,8 +40,6 @@ y = np.array(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
 
 X_scaler = StandardScaler().fit(X_train)
-# print(X_scaler.mean_) # mean of each column
-# print(X_scaler.scale_) # variance of each column. maybe stdev?
 X_train_scaled = X_scaler.transform(X_train)
 X_test_scaled = X_scaler.transform(X_test)
 
