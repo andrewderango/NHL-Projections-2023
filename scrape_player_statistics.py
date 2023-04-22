@@ -60,6 +60,7 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
     except KeyError:
         pass
     situation_reassignment = {'ev': 'EV', '5v5': '5v5', 'pp': 'PP', 'pk': 'PK'}
+    name_reassignment = {'Jani Hakanpää': 'Jani Hakanpaa', 'Tommy Novak': 'Thomas Novak'}
 
     for year in range(start_year, end_year):
         url = f'https://www.naturalstattrick.com/playerteams.php?fromseason={year}{year+1}&thruseason={year}{year+1}&stype=2&sit={situation}&score=all&stdoi=std&rate=n&team=ALL&pos=S&loc=B&toi=0&gpfilt=none&fd=&td=&tgp=410&lines=single&draftteam=ALL'
@@ -80,15 +81,28 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
 
                 temp_df = pd.DataFrame(data, columns=headers)
 
-                # The replacement is necessary because Jani Hakanpää is spelled different in the bios and statistics
                 for index, row in temp_df.iterrows():
-                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} GP'] = row['GP']
-                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} ATOI'] = round(float(row['TOI'])/int(row['GP']),2)
-                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} G/60'] = round(float(row['Goals'])/float(row['TOI']),4)
-                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} A/60'] = round(float(row['Total Assists'])/float(row['TOI']),4)
-                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} ixG'] = round(float(row['ixG'])/float(row['TOI']),4)
 
+                    # Change players whose names are different in the bios and statistics
+                    if row['Player'] in name_reassignment.keys():
+                        player_name = name_reassignment[row['Player']]
+                    else:
+                        player_name = row['Player']
 
+                    stat_df.loc[player_name, f'{year+1} GP'] = row['GP']
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ATOI'] = round(float(row['TOI'])/int(row['GP']),2)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} G/60'] = round(float(row['Goals'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A1/60'] = round(float(row['First Assists'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A2/60'] = round(float(row['Second Assists'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ixG/60'] = round(float(row['ixG'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Shots/60'] = round(float(row['Shots'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} iCF/60'] = round(float(row['iCF'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rush Attempts/60'] = round(float(row['Rush Attempts'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rebounds Created/60'] = round(float(row['Rebounds Created'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} PIM/60'] = round(float(row['PIM'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} HIT/60'] = round(float(row['Hits'])/float(row['TOI']),4)
+                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} BLK/60'] = round(float(row['Shots Blocked'])/float(row['TOI']),4)
+                    stat_df = stat_df.copy() # De-fragment the dataframe to improve performance
 
                 print(f'{year}-{year+1}: Scraped. Dimensions = {stat_df.shape}')
             except requests.exceptions.ConnectionError:
@@ -112,7 +126,7 @@ def create_instance_df(stat_df, download_file=False):
     instance_df = pd.DataFrame(index=['Instance ID'], columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Draft Position', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y1 EV ATOI', 'Y2 EV ATOI', 'Y3 EV ATOI', 'Y4 EV ATOI', 'Y5 EV ATOI'])
     for index, row in stat_df.iterrows():
         for year in range(start_year, end_year):
-            if np.isnan(error_catch_input_data(row, year, 5, None, 'GP')):
+            if pd.isnull(error_catch_input_data(row, year, 5, None, 'GP')):
                 pass
             else:
 
@@ -167,13 +181,13 @@ player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/player
 # player_bio_df = scrape_bios(False)
 player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
-stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
+# stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
 
-# stat_df = prune_bios(player_bio_df)
+stat_df = prune_bios(player_bio_df)
 # if you want to add more statistics for all situations to update stat_df, run:
-# stat_df = scrape_statistics(stat_df, 'ev', True)
-# stat_df = scrape_statistics(stat_df, 'pp', True)
-# stat_df = scrape_statistics(stat_df, 'pk', True)
+stat_df = scrape_statistics(stat_df, 'ev', True)
+stat_df = scrape_statistics(stat_df, 'pp', True)
+stat_df = scrape_statistics(stat_df, 'pk', True)
 # watch periodic request quota
 
 print(stat_df)
