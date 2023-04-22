@@ -55,7 +55,10 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
     # situation = (ev, 5v5, pp, pk ...)
     start_year = 2007
     end_year = 2023
-    stat_df = stat_df.set_index('Player')
+    try:
+        stat_df = stat_df.set_index('Player')
+    except KeyError:
+        pass
     situation_reassignment = {'ev': 'EV', '5v5': '5v5', 'pp': 'PP', 'pk': 'PK'}
 
     for year in range(start_year, end_year):
@@ -83,6 +86,9 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
                     stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} ATOI'] = round(float(row['TOI'])/int(row['GP']),2)
                     stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} G/60'] = round(float(row['Goals'])/float(row['TOI']),4)
                     stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} A/60'] = round(float(row['Total Assists'])/float(row['TOI']),4)
+                    stat_df.loc[row['Player'].replace('ä', 'a'), f'{year+1} {situation_reassignment[situation]} ixG'] = round(float(row['ixG'])/float(row['TOI']),4)
+
+
 
                 print(f'{year}-{year+1}: Scraped. Dimensions = {stat_df.shape}')
             except requests.exceptions.ConnectionError:
@@ -103,45 +109,38 @@ def create_instance_df(stat_df, download_file=False):
     end_year = 2023
 
     # Age calculated as of the October 1st of the season
-    instance_df = pd.DataFrame(index=['Instance ID'], columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Draft Position', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y1 ev ATOI', 'Y2 ev ATOI', 'Y3 ev ATOI', 'Y4 ev ATOI', 'Y5 ev ATOI'])
+    instance_df = pd.DataFrame(index=['Instance ID'], columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Draft Position', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y1 EV ATOI', 'Y2 EV ATOI', 'Y3 EV ATOI', 'Y4 EV ATOI', 'Y5 EV ATOI'])
     for index, row in stat_df.iterrows():
         for year in range(start_year, end_year):
-            print(f'{len(instance_df)} / 45984')
+            if np.isnan(error_catch_input_data(row, year, 5, None, 'GP')):
+                pass
+            else:
 
-            # Age calculation
-            dob = date(int(row['Date of Birth'].split('-')[0]), int(row['Date of Birth'].split('-')[1]), int(row['Date of Birth'].split('-')[2])) #year, month, date
-            target_date = date(year, 10, 1)
-            delta_days = target_date - dob
-            age = round(delta_days.days/365.24,3)
+                print(f'{len(instance_df)} / 14335')
 
-            try: y1_gp = row[f'{year-3} GP']
-            except KeyError: y1_gp = np.NaN
-            try: y2_gp = row[f'{year-2} GP']
-            except KeyError: y2_gp = np.NaN
-            try: y3_gp = row[f'{year-1} GP']
-            except KeyError: y3_gp = np.NaN
-            try: y4_gp = row[f'{year+0} GP']
-            except KeyError: y4_gp = np.NaN
-            try: y5_gp = row[f'{year+1} GP']
-            except KeyError: y5_gp = np.NaN
+                # Age calculation
+                dob = date(int(row['Date of Birth'].split('-')[0]), int(row['Date of Birth'].split('-')[1]), int(row['Date of Birth'].split('-')[2])) #year, month, date
+                target_date = date(year, 10, 1)
+                delta_days = target_date - dob
+                age = round(delta_days.days/365.24,3)
 
-            instance_df.loc[f"{row['Player']} {year+1}"] = [row['Player'], 
-                                                            year+1, row['Position'], 
-                                                            age, 
-                                                            row['Height (in)'], 
-                                                            row['Weight (lbs)'], 
-                                                            row['Overall Draft Position'], 
-                                                            error_catch_input_data(row, year, 1, None, 'GP'),
-                                                            error_catch_input_data(row, year, 2, None, 'GP'),
-                                                            error_catch_input_data(row, year, 3, None, 'GP'),
-                                                            error_catch_input_data(row, year, 4, None, 'GP'),
-                                                            error_catch_input_data(row, year, 5, None, 'GP'),
-                                                            error_catch_input_data(row, year, 1, 'ev', 'ATOI'),
-                                                            error_catch_input_data(row, year, 2, 'ev', 'ATOI'),
-                                                            error_catch_input_data(row, year, 3, 'ev', 'ATOI'),
-                                                            error_catch_input_data(row, year, 4, 'ev', 'ATOI'),
-                                                            error_catch_input_data(row, year, 5, 'ev', 'ATOI')
-            ]
+                instance_df.loc[f"{row['Player']} {year+1}"] = [row['Player'], 
+                                                                year+1, row['Position'], 
+                                                                age, 
+                                                                row['Height (in)'], 
+                                                                row['Weight (lbs)'], 
+                                                                row['Overall Draft Position'], 
+                                                                error_catch_input_data(row, year, 1, None, 'GP'),
+                                                                error_catch_input_data(row, year, 2, None, 'GP'),
+                                                                error_catch_input_data(row, year, 3, None, 'GP'),
+                                                                error_catch_input_data(row, year, 4, None, 'GP'),
+                                                                error_catch_input_data(row, year, 5, None, 'GP'),
+                                                                error_catch_input_data(row, year, 1, 'ev', 'ATOI'),
+                                                                error_catch_input_data(row, year, 2, 'ev', 'ATOI'),
+                                                                error_catch_input_data(row, year, 3, 'ev', 'ATOI'),
+                                                                error_catch_input_data(row, year, 4, 'ev', 'ATOI'),
+                                                                error_catch_input_data(row, year, 5, 'ev', 'ATOI')
+                ]
 
     if download_file == True:
         filename = f'instance_training_data'
@@ -153,11 +152,12 @@ def create_instance_df(stat_df, download_file=False):
     return instance_df
 
 def error_catch_input_data(row, year, yX, situation, stat):
+    situation_reassignment = {'ev': 'EV', '5v5': '5v5', 'pp': 'PP', 'pk': 'PK'}
     try:
         if situation == None:
             result = row[f'{year+yX-4} {stat}']
         else:
-            result = row[f'{year+yX-4} {situation} {stat}']
+            result = row[f'{year+yX-4} {situation_reassignment[situation]} {stat}']
     except KeyError:
         result = np.nan
     return result
@@ -168,8 +168,8 @@ player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/player
 player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
 stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
+
 # stat_df = prune_bios(player_bio_df)
-# stat_df = scrape_statistics(stat_df)
 # if you want to add more statistics for all situations to update stat_df, run:
 # stat_df = scrape_statistics(stat_df, 'ev', True)
 # stat_df = scrape_statistics(stat_df, 'pp', True)
@@ -177,4 +177,4 @@ stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_p
 # watch periodic request quota
 
 print(stat_df)
-print(create_instance_df(stat_df, True))
+print(create_instance_df(stat_df, False))
