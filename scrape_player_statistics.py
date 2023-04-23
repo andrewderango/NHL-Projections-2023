@@ -191,4 +191,4 @@ stat_df = scrape_statistics(stat_df, 'pk', True)
 # watch periodic request quota
 
 print(stat_df)
-print(create_instance_df(stat_df, False))
+# print(create_instance_df(stat_df, False))
