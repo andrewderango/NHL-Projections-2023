@@ -51,8 +51,9 @@ def prune_bios(player_bio_df):
     stat_df = player_bio_df.drop(['Team', 'Birth City', 'Birth State/Province', 'Birth Country', 'Nationality', 'Draft Team', 'Draft Round', 'Round Pick'], axis=1)
     return stat_df
 
-def scrape_statistics(stat_df, situation='ev', download_file=False):
+def scrape_statistics(stat_df, situation='ev', stat_type='std', download_file=False):
     # situation = (ev, 5v5, pp, pk ...)
+    # stat_type = (std, oi)
     start_year = 2007
     end_year = 2023
     try:
@@ -61,9 +62,12 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
         pass
     situation_reassignment = {'ev': 'EV', '5v5': '5v5', 'pp': 'PP', 'pk': 'PK'}
     name_reassignment = {'Jani Hakanpää': 'Jani Hakanpaa', 'Tommy Novak': 'Thomas Novak'}
+    stat_type_reassignment = {'std': 'Standard', 'oi': 'On-Ice'}
+
+    print(f'\nNow Scraping: {situation_reassignment[situation]} {stat_type_reassignment[stat_type].lower()} statistics from {start_year}-{end_year}')
 
     for year in range(start_year, end_year):
-        url = f'https://www.naturalstattrick.com/playerteams.php?fromseason={year}{year+1}&thruseason={year}{year+1}&stype=2&sit={situation}&score=all&stdoi=std&rate=n&team=ALL&pos=S&loc=B&toi=0&gpfilt=none&fd=&td=&tgp=410&lines=single&draftteam=ALL'
+        url = f'https://www.naturalstattrick.com/playerteams.php?fromseason={year}{year+1}&thruseason={year}{year+1}&stype=2&sit={situation}&score=all&stdoi={stat_type}&rate=n&team=ALL&pos=S&loc=B&toi=0&gpfilt=none&fd=&td=&tgp=410&lines=single&draftteam=ALL'
 
         response = ''
         while response == '':
@@ -89,22 +93,30 @@ def scrape_statistics(stat_df, situation='ev', download_file=False):
                     else:
                         player_name = row['Player']
 
-                    stat_df.loc[player_name, f'{year+1} GP'] = row['GP']
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ATOI'] = round(float(row['TOI'])/int(row['GP']),2)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} G/60'] = round(float(row['Goals'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A1/60'] = round(float(row['First Assists'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A2/60'] = round(float(row['Second Assists'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ixG/60'] = round(float(row['ixG'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Shots/60'] = round(float(row['Shots'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} iCF/60'] = round(float(row['iCF'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rush Attempts/60'] = round(float(row['Rush Attempts'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rebounds Created/60'] = round(float(row['Rebounds Created'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} PIM/60'] = round(float(row['PIM'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} HIT/60'] = round(float(row['Hits'])/float(row['TOI']),4)
-                    stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} BLK/60'] = round(float(row['Shots Blocked'])/float(row['TOI']),4)
+                    if stat_type == 'std':
+                        stat_df.loc[player_name, f'{year+1} GP'] = row['GP']
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ATOI'] = round(float(row['TOI'])/int(row['GP']),4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} G/60'] = round(float(row['Goals'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A1/60'] = round(float(row['First Assists'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} A2/60'] = round(float(row['Second Assists'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} ixG/60'] = round(float(row['ixG'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Shots/60'] = round(float(row['Shots'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} iCF/60'] = round(float(row['iCF'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rush Attempts/60'] = round(float(row['Rush Attempts'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} Rebounds Created/60'] = round(float(row['Rebounds Created'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} PIM/60'] = round(float(row['PIM'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} HIT/60'] = round(float(row['Hits'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} BLK/60'] = round(float(row['Shots Blocked'])/float(row['TOI'])*60,4)
+
+                    elif stat_type == 'oi':
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} oiCF/60'] = round(float(row['CF'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} oiSF/60'] = round(float(row['SF'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} oiGF/60'] = round(float(row['GF'])/float(row['TOI'])*60,4)
+                        stat_df.loc[player_name, f'{year+1} {situation_reassignment[situation]} oiGF/60'] = round(float(row['xGF'])/float(row['TOI'])*60,4)
+
                     stat_df = stat_df.copy() # De-fragment the dataframe to improve performance
 
-                print(f'{year}-{year+1}: Scraped. Dimensions = {stat_df.shape}')
+                print(f'{year}-{year+1}: Scraped. Dimensions = {stat_df.shape[0]}x{stat_df.shape[1]}')
             except requests.exceptions.ConnectionError:
                 print('Connection failed. Periodic request quota exceeded. Trying again in 5 seconds.')
                 time.sleep(5)
@@ -185,10 +197,12 @@ player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
 stat_df = prune_bios(player_bio_df)
 # if you want to add more statistics for all situations to update stat_df, run:
-stat_df = scrape_statistics(stat_df, 'ev', True)
-stat_df = scrape_statistics(stat_df, 'pp', True)
-stat_df = scrape_statistics(stat_df, 'pk', True)
-# watch periodic request quota
+stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
+stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
+stat_df = scrape_statistics(stat_df, 'pk', 'std', True)
+stat_df = scrape_statistics(stat_df, 'ev', 'oi', True)
+stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
+stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
 
 print(stat_df)
 # print(create_instance_df(stat_df, False))
