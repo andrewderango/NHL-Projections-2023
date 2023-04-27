@@ -188,21 +188,19 @@ def error_catch_input_data(row, year, yX, situation, stat):
         result = np.nan
     return result
 
+def scrape_player_statistics():
+    # player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/player_bios.csv")
+    player_bio_df = scrape_bios(False)
+    player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
-player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/player_bios.csv")
-# player_bio_df = scrape_bios(False)
-player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
+    # stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
+    stat_df = prune_bios(player_bio_df)
+    stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
+    stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
+    stat_df = scrape_statistics(stat_df, 'pk', 'std', True)
+    stat_df = scrape_statistics(stat_df, 'ev', 'oi', True)
+    stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
+    stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
+    print(stat_df)
 
-# stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
-
-stat_df = prune_bios(player_bio_df)
-# if you want to add more statistics for all situations to update stat_df, run:
-stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
-stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
-stat_df = scrape_statistics(stat_df, 'pk', 'std', True)
-stat_df = scrape_statistics(stat_df, 'ev', 'oi', True)
-stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
-stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
-
-print(stat_df)
 # print(create_instance_df(stat_df, False))
