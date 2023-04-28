@@ -1,8 +1,8 @@
-Historical data is all scraped and stored in historical_player_statistics.csv. No more data needs to be scraped.
+Historical data is all scraped from naturalstattrick.com and stored in historical_player_statistics.csv. No more data needs to be scraped.
 
 Create instance dataframes for each stat to perform the NN on. Make scripts to test the NN's with different layers and nodes within the layers.
 
-Rename scrape_player_statistics.py to preprocessing_functions.py or training_functions.py. Add the instance dataframe creation function(s) to this file. 
+Add the instance dataframe creation function(s) to this file. 
 One of this function's arguments should accept a list of statistics to be the input layer. 
 Start with creating the instance df for GP projections, then test out the NN's to project the GP.
 
