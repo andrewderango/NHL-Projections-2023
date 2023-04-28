@@ -35,10 +35,10 @@ def scrape_bios(download_file=False):
 
                 if download_file == True:
                     filename = f'player_bios'
-                    if not os.path.exists(f'{os.path.dirname(__file__)}/Output CSV Data'):
-                        os.makedirs(f'{os.path.dirname(__file__)}/Output CSV Data')
-                    running_df.to_csv(f'{os.path.dirname(__file__)}/Output CSV Data/{filename}.csv')
-                    print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/Output CSV Data')
+                    if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+                        os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+                    running_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+                    print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
                 break
             except requests.exceptions.ConnectionError:
@@ -123,10 +123,10 @@ def scrape_statistics(stat_df, situation='ev', stat_type='std', download_file=Fa
 
     if download_file == True:
         filename = f'historical_player_statistics'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/Output CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/Output CSV Data')
-        stat_df.to_csv(f'{os.path.dirname(__file__)}/Output CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/Output CSV Data')
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        stat_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return stat_df
 
@@ -170,10 +170,10 @@ def create_instance_df(stat_df, download_file=False):
 
     if download_file == True:
         filename = f'instance_training_data'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/Output CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/Output CSV Data')
-        instance_df.to_csv(f'{os.path.dirname(__file__)}/Output CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/Output CSV Data')
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        instance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return instance_df
 
@@ -188,19 +188,25 @@ def error_catch_input_data(row, year, yX, situation, stat):
         result = np.nan
     return result
 
-def scrape_player_statistics():
-    # player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/player_bios.csv")
-    player_bio_df = scrape_bios(False)
+def scrape_player_statistics(existing_csv=False):
+    if existing_csv == True:
+        player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/player_bios.csv")
+    elif existing_csv == False:
+        player_bio_df = scrape_bios(False)
     player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
-    # stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/Output CSV Data/historical_player_statistics.csv")
-    stat_df = prune_bios(player_bio_df)
-    stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
-    stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
-    stat_df = scrape_statistics(stat_df, 'pk', 'std', True)
-    stat_df = scrape_statistics(stat_df, 'ev', 'oi', True)
-    stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
-    stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
+    if existing_csv == True:
+        stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/historical_player_statistics.csv")
+    elif existing_csv == False:
+        stat_df = prune_bios(player_bio_df)
+        stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
+        stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
+        stat_df = scrape_statistics(stat_df, 'pk', 'std', True)
+        stat_df = scrape_statistics(stat_df, 'ev', 'oi', True)
+        stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
+        stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
     print(stat_df)
+
+    return stat_df
 
 # print(create_instance_df(stat_df, False))
