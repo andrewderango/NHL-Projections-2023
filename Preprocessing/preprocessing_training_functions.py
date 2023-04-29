@@ -156,21 +156,21 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
     start_year = 2007
     end_year = 2023
 
-    instance_df = pd.DataFrame(columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Draft Position', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y1 ATOI', 'Y2 ATOI', 'Y3 ATOI', 'Y4 ATOI', 'Y5 ATOI', 'Y1 G/82', 'Y2 G/82', 'Y3 G/82', 'Y4 G/82', 'Y5 G/82', 'Y1 P/82', 'Y2 P/82', 'Y3 P/82', 'Y4 P/82', 'Y5 P/82'])
+    instance_df = pd.DataFrame(columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP'])
 
     for index, row in stat_df.iterrows():
         for year in range(start_year+4, end_year):
             # filter out:
                 # defence
                 # players with 0 GP in Y5
-                # players with less than 50 GP in either Y4, Y3, or Y2
+                # players with less than 40 GP in either Y4, Y3, or Y2
                 # instances where Y5 was 2011 or earlier
 
             if np.isnan(fetch_data(row, year, 5, None, 'GP')) or np.isnan(fetch_data(row, year, 4, None, 'GP')) or np.isnan(fetch_data(row, year, 3, None, 'GP')) or np.isnan(fetch_data(row, year, 2, None, 'GP')):
                 pass
             elif row['Position'] == 'D':
                 pass
-            elif fetch_data(row, year, 5, None, 'GP') <= 60 or fetch_data(row, year, 4, None, 'GP') <= 60 or fetch_data(row, year, 3, None, 'GP') <= 60 or fetch_data(row, year, 2, None, 'GP') <= 60 or fetch_data(row, year, 1, None, 'GP') <= 60:
+            elif fetch_data(row, year, 5, None, 'GP') <= 40 or fetch_data(row, year, 4, None, 'GP') <= 40 or fetch_data(row, year, 3, None, 'GP') <= 40 or fetch_data(row, year, 2, None, 'GP') <= 40 or fetch_data(row, year, 1, None, 'GP') <= 40:
                 pass
             else:
                 # Age calculation
@@ -181,7 +181,7 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
                 age = round(delta_days.days/365.24,3)
                 instance_df.loc[f"{row['Player']} {year+1}"] = [
                     row['Player'], 
-                    year+1, row['Position'], 
+                    year+1, row['Position'],
                     age, 
                     row['Height (in)'], 
                     row['Weight (lbs)'],
