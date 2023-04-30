@@ -44,13 +44,13 @@ X_scaler = StandardScaler().fit(X_train)
 X_train_scaled = X_scaler.transform(X_train)
 X_test_scaled = X_scaler.transform(X_test)
 
-model.fit(X_train_scaled, y_train, epochs=5)
+model.fit(X_train_scaled, y_train, epochs=1)
 test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=1)
 print(f'\nMean Absolute Error of test: {test_acc:.4f}')
 
 # Make Projection
-x_new = X_scaler.transform([[26, 72, 188, 82, 82, 82, 82]])
-y_pred = model.predict(x_new)[0][0] + (82+82+82+82)/4
+x_new = X_scaler.transform([[26, 72, 188, 32, 66, 45, 50]])
+y_pred = model.predict(x_new)[0][0] + (32+66+45+50)/4
 
 print(f'Projected games: {y_pred:.2f}')
 
