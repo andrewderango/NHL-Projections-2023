@@ -156,7 +156,7 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
     start_year = 2007
     end_year = 2023
 
-    instance_df = pd.DataFrame(columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP'])
+    instance_df = pd.DataFrame(columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 dGP'])
 
     for index, row in stat_df.iterrows():
         for year in range(start_year+4, end_year):
@@ -170,7 +170,7 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
                 pass
             elif row['Position'] == 'D':
                 pass
-            elif fetch_data(row, year, 5, None, 'GP') <= 40 or fetch_data(row, year, 4, None, 'GP') <= 40 or fetch_data(row, year, 3, None, 'GP') <= 40 or fetch_data(row, year, 2, None, 'GP') <= 40 or fetch_data(row, year, 1, None, 'GP') <= 40:
+            elif fetch_data(row, year, 5, None, 'GP') <= 60 or fetch_data(row, year, 4, None, 'GP') <= 60 or fetch_data(row, year, 3, None, 'GP') <= 60 or fetch_data(row, year, 2, None, 'GP') <= 60 or fetch_data(row, year, 1, None, 'GP') <= 60:
                 pass
             else:
                 # Age calculation
@@ -189,14 +189,15 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
                     fetch_data(row, year, 2, None, 'GP'),
                     fetch_data(row, year, 3, None, 'GP'),
                     fetch_data(row, year, 4, None, 'GP'),
-                    fetch_data(row, year, 5, None, 'GP')
+                    fetch_data(row, year, 5, None, 'GP') - (fetch_data(row, year, 1, None, 'GP') + fetch_data(row, year, 2, None, 'GP') + fetch_data(row, year, 3, None, 'GP') + fetch_data(row, year, 4, None, 'GP'))/4
+
                 ]
 
     instance_df['Y1 GP'] = instance_df['Y1 GP'].fillna(0)
     instance_df['Y2 GP'] = instance_df['Y2 GP'].fillna(0)
     instance_df['Y3 GP'] = instance_df['Y3 GP'].fillna(0)
     instance_df['Y4 GP'] = instance_df['Y4 GP'].fillna(0)
-    instance_df['Y5 GP'] = instance_df['Y5 GP'].fillna(0)
+    instance_df['Y5 dGP'] = instance_df['Y5 dGP'].fillna(0)
 
     if download_file == True:
         filename = f'{dependent_variable}_instance_training_data'
