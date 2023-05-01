@@ -176,7 +176,7 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
                 pass
             elif row['Position'] == 'D':
                 pass
-            elif fetch_data(row, year, 5, None, 'GP') <= 60 or fetch_data(row, year, 4, None, 'GP') <= 60 or fetch_data(row, year, 3, None, 'GP') <= 60 or fetch_data(row, year, 2, None, 'GP') <= 60 or fetch_data(row, year, 1, None, 'GP') <= 60:
+            elif fetch_data(row, year, 5, None, 'GP') <= 50 or fetch_data(row, year, 4, None, 'GP') <= 50 or fetch_data(row, year, 3, None, 'GP') <= 50 or fetch_data(row, year, 2, None, 'GP') <= 50 or fetch_data(row, year, 1, None, 'GP') <= 50:
                 pass
             else:
                 # Age calculation
