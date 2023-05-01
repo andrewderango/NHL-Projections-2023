@@ -1,19 +1,22 @@
+import time
+import os
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
-import matplotlib as plt
-import time
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.inspection import permutation_importance
 from sklearn.model_selection import train_test_split
-import os
+import preprocessing_training_functions
+
+def make_projection(model, X_scaler):
+    return
 
 start = time.time()
 
-input_shape = (7,)
-
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(126, activation='relu', input_shape=input_shape),
+    tf.keras.layers.Dense(126, activation='relu', input_shape=(7,)),
     tf.keras.layers.Dense(42, activation='relu'),
     tf.keras.layers.Dense(14, activation='relu'),
     tf.keras.layers.Dense(6, activation='relu'),
@@ -26,7 +29,6 @@ model.compile(optimizer='adam', loss='mean_squared_error', metrics=['MeanAbsolut
 df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_instance_training_data.csv')
 df = df.fillna(0)
 df = df.reset_index(drop=True)
-print(df)
 
 X = []
 y = []
@@ -47,6 +49,8 @@ X_test_scaled = X_scaler.transform(X_test)
 model.fit(X_train_scaled, y_train, epochs=1)
 test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=1)
 print(f'\nMean Absolute Error of test: {test_acc:.4f}')
+
+# preprocessing_training_functions.permutation_feature_importance(model, X_test_scaled, y_test)
 
 # Make Projection
 x_new = X_scaler.transform([[26, 72, 188, 32, 66, 45, 50]])
