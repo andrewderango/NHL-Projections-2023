@@ -5,6 +5,12 @@ import os
 import time
 from datetime import date
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.inspection import permutation_importance
+from matplotlib import cm
+from matplotlib.cm import ScalarMappable, plasma_r
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 def scrape_bios(download_file=False):
     start_year = 2007
@@ -213,7 +219,7 @@ def fetch_data(row, year, yX, situation, stat):
     try:
         if situation == None:
             result = row[f'{year+yX-4} {stat}']
-            if stat == 'GP':
+            if stat.strip() == 'GP':
                 if year+yX-4 == 2021:
                     result = result/56*82
                 elif stat == 'GP' and year+yX-4 == 2020:
@@ -228,7 +234,73 @@ def fetch_data(row, year, yX, situation, stat):
         result = np.nan
     return result
 
-stat_df = scrape_player_statistics(True)
-print(stat_df)
-forward_gp_instance_df = create_instance_df('forward_GP', [], stat_df, True)
-print(forward_gp_instance_df)
+def permutation_feature_importance(model, X_test_scaled, y_test, scoring='neg_mean_absolute_error'):
+    # Compute permutation importances
+    result = permutation_importance(model, X_test_scaled, y_test, scoring=scoring)
+    sorted_idx = result.importances_mean.argsort()
+
+    # Define color map and normalization
+    cmap = cm.get_cmap('seismic_r')
+    normalize = plt.Normalize(result.importances_mean[sorted_idx].min(), result.importances_mean[sorted_idx].max())
+
+    # Create a scalar mappable
+    scalar_mappable = ScalarMappable(norm=normalize, cmap=cmap)
+
+    # Plot permutation importances
+    fig, ax = plt.subplots(figsize=(9, 6))
+    bar_colors = scalar_mappable.to_rgba(result.importances_mean[sorted_idx])
+    ax.barh(range(X_test_scaled.shape[1]), result.importances_mean[sorted_idx], color=bar_colors)
+    ax.set_yticks(range(X_test_scaled.shape[1]))
+    ax.set_yticklabels(np.array(['Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP'])[sorted_idx])
+    ax.set_title("Permutation Feature Importance Analysis", weight='bold', fontsize=15, pad=20)
+    ax.text(0.5, 1.02, 'Permutation importance does not reflect to the intrinsic predictive value of a feature by itself but how important this feature is for a particular model.', ha='center', va='center', transform=ax.transAxes, fontsize=7, fontstyle='italic')
+    ax.set_xlabel("Importance Score", weight='bold')
+    ax.set_ylabel("Features", weight='bold')
+    ax.tick_params(length=0)
+    plt.box(True) # False to hide box
+    # plt.tight_layout()
+    plt.show()
+
+# Edit this
+def mean_decrease_in_impurity_analysis():
+    df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_ADV_instance_training_data.csv')
+    df = df.dropna()
+    print(df)
+
+    X = df[['Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y1 G/82', 'Y2 G/82', 'Y3 G/82', 'Y4 G/82', 'Y1 P/82', 'Y2 P/82', 'Y3 P/82', 'Y4 P/82']] # features
+    y = df['Y5 GP'] # target
+
+    # Split the data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+    # Train a random forest regressor
+    rf = RandomForestRegressor(random_state=42)
+    rf.fit(X_train, y_train)
+
+    # Get feature importances using MDI algorithm
+    importances = rf.feature_importances_
+
+    # Create a pandas Series object with feature importances
+    feat_importances = pd.Series(importances, index=X.columns)
+
+    # Sort the feature importances in descending order
+    feat_importances = feat_importances.sort_values(ascending=True)
+
+    # Create a bar chart of the feature importances
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors = plasma_r(feat_importances.values / max(feat_importances.values))
+    ax.barh(y=feat_importances.index, width=feat_importances.values, color=colors)
+    ax.set_title("Random Forest Feature Importances (MDI)", weight='bold', fontsize=15, pad=20)
+    ax.text(0.5, 1.02, 'Mean Decrease in Impurity', ha='center', va='center', transform=ax.transAxes, fontsize=9, fontstyle='italic')
+    ax.set_xlabel("Relative Importance", weight='bold')
+    ax.set_ylabel("Feature", weight='bold')
+    ax.tick_params(length=0)
+    plt.box(False)
+    ax.figure.tight_layout()
+    plt.show()
+
+def main():
+    stat_df = scrape_player_statistics(True)
+    print(stat_df)
+    forward_gp_instance_df = create_instance_df('forward_GP', [], stat_df, True)
+    print(forward_gp_instance_df)
