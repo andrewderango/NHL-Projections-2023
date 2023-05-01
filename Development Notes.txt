@@ -1,6 +1,6 @@
 Historical data is all scraped from naturalstattrick.com and stored in historical_player_statistics.csv. No more data needs to be scraped.
 
-Create instance dataframes for each stat to perform the NN on. Make scripts to test the NN's with different layers and nodes within the layers.
+Create instance dataframes for each stat to perform the NN on. Make scripts to test the NN's with different layers and nodes within the layers (model_testing.py).
 
 Add the instance dataframe creation function(s) to this file. 
 One of this function's arguments should accept a list of statistics to be the input layer. 
