@@ -22,18 +22,18 @@ model1 = tf.keras.Sequential([
 ])
 
 model2 = tf.keras.Sequential([
-    tf.keras.layers.Dense(126, activation='relu', input_shape=input_shape),
-    tf.keras.layers.Dense(42, activation='relu'),
-    tf.keras.layers.Dense(14, activation='relu'),
-    tf.keras.layers.Dense(6, activation='relu'),
-    tf.keras.layers.Dense(1, activation='linear')
-])
-
-model3 = tf.keras.Sequential([
     tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
     tf.keras.layers.Dense(32, activation='relu'),
     tf.keras.layers.Dense(16, activation='relu'),
     tf.keras.layers.Dense(8, activation='relu'),
+    tf.keras.layers.Dense(1, activation='linear')
+])
+
+model3 = tf.keras.Sequential([
+    tf.keras.layers.Dense(48, activation='relu', input_shape=input_shape),
+    tf.keras.layers.Dense(24, activation='relu'),
+    tf.keras.layers.Dense(12, activation='relu'),
+    tf.keras.layers.Dense(6, activation='relu'),
     tf.keras.layers.Dense(1, activation='linear')
 ])
 
@@ -96,7 +96,7 @@ model_list = [model1, model2, model3, model4, model5, model6, model7, model8, mo
 epoch_list = [1, 5, 10, 30, 50, 100]
 scaler_list = [StandardScaler(), MinMaxScaler()]
 
-model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MAE Test', 'MAE Train'])
+model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MAE Test', 'MAE Train', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
 
 print(f'Models to Test: {len(model_list) * len(epoch_list) * len(scaler_list)}')
 for model_index, model in enumerate(model_list):
@@ -126,10 +126,33 @@ for model_index, model in enumerate(model_list):
             test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=0)
             train_loss, train_acc, *rest = model.evaluate(X_train_scaled, y_train, verbose=0)
 
+            # Make projection
+            proj_x = [[26, 72, 188, 32, 66, 45, 50], 
+                      [39, 73, 192, 80, 68, 43, 52], 
+                      [28, 71, 182, 6, 3, 12, 21], 
+                      [30, 72, 213, 82, 82, 82, 82], 
+                      [27, 73, 192, 71, 75, 81, 76]]
+            proj_scaled_x = X_scaler.transform(proj_x)
+            proj_y = model.predict(proj_scaled_x, verbose=0)
+
             print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
-            model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), int(model_index+1), int(epochs), scaler, round(test_loss,2), round(train_loss,2)]
+            model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
+                int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
+                int(model_index+1), 
+                int(epochs), 
+                scaler, 
+                round(test_loss, 2), 
+                round(train_loss, 2),
+                round(float(proj_y[0] + sum(proj_x[0][-4:])/4), 2),
+                round(float(proj_y[1] + sum(proj_x[1][-4:])/4), 2),
+                round(float(proj_y[2] + sum(proj_x[2][-4:])/4), 2),
+                round(float(proj_y[3] + sum(proj_x[3][-4:])/4), 2),
+                round(float(proj_y[4] + sum(proj_x[4][-4:])/4), 2)
+                ]
 
 model_performance_df = model_performance_df.sort_values('MAE Test')
+model_performance_df = model_performance_df.reset_index()
+model_performance_df.index += 1
 print('\n', model_performance_df.to_string())
 
 recommended_model = model_performance_df.iloc[0]
@@ -140,3 +163,5 @@ print(f'Parent Model {recommended_model["Parent Model ID"]} architecture:')
 model_list[recommended_model["Parent Model ID"] - 1].summary()
 
 print(f'Results generated in {time.time()-start:.3f} seconds')
+
+# Forwards with 4 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
