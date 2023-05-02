@@ -209,19 +209,32 @@ def recommend_model(model_performance_df, model_list):
     print(f'Parent Model {recommended_model["Parent Model ID"]} architecture:')
     model_list[recommended_model["Parent Model ID"] - 1].summary()
 
+def get_sample_projection(proj_stat, position, prev_years):
+    if proj_stat == 'GP':
+        if prev_years == 4:
+            return [
+                [26, 72, 188, 32, 66, 45, 50], 
+                [39, 73, 192, 80, 68, 43, 52], 
+                [28, 70, 178, 6, 3, 12, 21], 
+                [30, 72, 213, 82, 82, 82, 82], 
+                [27, 73, 192, 71, 75, 81, 76]]
+        elif prev_years == 3:
+            return [
+                [26, 72, 188, 32, 66, 45], 
+                [39, 73, 192, 80, 68, 43], 
+                [28, 70, 178, 9, 12, 18], 
+                [30, 72, 213, 82, 82, 82], 
+                [27, 73, 192, 71, 75, 81]]
 
 def main():
     start = time.time()
 
-    proj_x = [
-        [26, 72, 188, 32, 66, 45, 50], 
-        [39, 73, 192, 80, 68, 43, 52], 
-        [28, 70, 178, 6, 3, 12, 21], 
-        [30, 72, 213, 82, 82, 82, 82], 
-        [27, 73, 192, 71, 75, 81, 76]
-        ]
+    # Change these variables to change projection sets
+    proj_stat = 'GP'
+    position = 'forward' # [forward, defence]
+    prev_years = 3 # [1, 2, 3, 4]
 
-    model_performance_df, model_list = test_models('GP', 'forward', 4, proj_x)
+    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years))
     print('\n', model_performance_df.to_string())
     recommend_model(model_performance_df, model_list)
 
@@ -229,4 +242,4 @@ def main():
 
 main()
 
-# Forwards with 4 seasons of > 50 GP: Parent model 10 (16-4-1), 10 epochs, standard scaler
+# Forwards with 4 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, standard scaler
