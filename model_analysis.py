@@ -1,7 +1,6 @@
 import time
 import os
 import tensorflow as tf
-from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -226,7 +225,21 @@ def get_sample_projection(proj_stat, position, prev_years):
                 [39, 73, 192, 80, 68, 43], 
                 [28, 70, 178, 9, 12, 18], 
                 [30, 72, 213, 82, 82, 82], 
-                [27, 73, 192, 71, 75, 81]]
+                [27, 73, 192, 71, 75, 81]]        
+        elif prev_years == 2:
+            return [
+                [27, 72, 188, 66, 45], 
+                [20, 73, 192, 71, 82], 
+                [28, 70, 178, 42, 38], 
+                [30, 72, 213, 82, 82], 
+                [29, 73, 192, 75, 81]]
+        elif prev_years == 1:
+            return [
+                [27, 72, 188, 66], 
+                [19, 73, 192, 60], 
+                [19, 70, 178, 80], 
+                [29, 72, 213, 82], 
+                [29, 73, 192, 75]]
 
 def main():
     start = time.time()
@@ -234,7 +247,7 @@ def main():
     # Change these variables to change projection sets
     proj_stat = 'GP'
     position = 'forward' # [forward, defence]
-    prev_years = 3 # [1, 2, 3, 4]
+    prev_years = 1 # [1, 2, 3, 4]
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years))
     print('\n', model_performance_df.to_string())
@@ -245,3 +258,13 @@ def main():
 main()
 
 # Forwards with 4 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, standard scaler
+# Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
+# Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
+# Forwards with 1 seasons of > 50 GP: Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
+
+
+# To add:
+    # Menu?
+    # feature importance from function in preprocessing_training_functions.py
+    # Graph for a model : epochs vs cost
+    # make a custom projection
