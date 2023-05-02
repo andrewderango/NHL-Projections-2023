@@ -11,6 +11,7 @@ from matplotlib import cm
 from matplotlib.cm import ScalarMappable, plasma_r
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+import statistics
 
 def scrape_bios(download_file=False):
     start_year = 2007
@@ -138,14 +139,11 @@ def scrape_statistics(stat_df, situation='ev', stat_type='std', download_file=Fa
 
 def scrape_player_statistics(existing_csv=False):
     if existing_csv == True:
-        player_bio_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/player_bios.csv")
+        stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/historical_player_statistics.csv")
     elif existing_csv == False:
         player_bio_df = scrape_bios(False)
         player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
-    if existing_csv == True:
-        stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/historical_player_statistics.csv")
-    elif existing_csv == False:
         stat_df = prune_bios(player_bio_df)
         stat_df = scrape_statistics(stat_df, 'ev', 'std', True)
         stat_df = scrape_statistics(stat_df, 'pp', 'std', True)
@@ -156,54 +154,45 @@ def scrape_player_statistics(existing_csv=False):
 
     return stat_df
 
-def create_instance_df(dependent_variable, model_features, stat_df, download_file=False):
+def create_instance_df(dependent_variable, columns, stat_df, download_file=False):
     # str, list, df, bool
 
     start_year = 2007
     end_year = 2023
 
-    instance_df = pd.DataFrame(columns=['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 dGP'])
+    instance_df = pd.DataFrame(columns=columns)
 
     for index, row in stat_df.iterrows():
-        for year in range(start_year+4, end_year):
-            # filter out:
-                # defence
-                # players with 0 GP in Y5
-                # players with less than 40 GP in either Y4, Y3, or Y2
-                # instances where Y5 was 2011 or earlier
+        for year in range(start_year+1, end_year):
+            if dependent_variable == 'forward_GP':
+                # filter out:
+                    # defence
+                    # players with < 50 GP in Y5
+                    # players with no GP in Y4
 
-            if np.isnan(fetch_data(row, year, 5, None, 'GP')) or np.isnan(fetch_data(row, year, 4, None, 'GP')) or np.isnan(fetch_data(row, year, 3, None, 'GP')) or np.isnan(fetch_data(row, year, 2, None, 'GP')):
-                pass
-            elif row['Position'] == 'D':
-                pass
-            elif fetch_data(row, year, 5, None, 'GP') <= 50 or fetch_data(row, year, 4, None, 'GP') <= 50 or fetch_data(row, year, 3, None, 'GP') <= 50 or fetch_data(row, year, 2, None, 'GP') <= 50 or fetch_data(row, year, 1, None, 'GP') <= 50:
-                pass
-            else:
-                # Age calculation
-                # Age calculated as of the October 1st of the season
-                dob = date(int(row['Date of Birth'].split('-')[0]), int(row['Date of Birth'].split('-')[1]), int(row['Date of Birth'].split('-')[2])) #year, month, date
-                target_date = date(year, 10, 1)
-                delta_days = target_date - dob
-                age = round(delta_days.days/365.24,3)
-                instance_df.loc[f"{row['Player']} {year+1}"] = [
-                    row['Player'], 
-                    year+1, row['Position'],
-                    age, 
-                    row['Height (in)'], 
-                    row['Weight (lbs)'],
-                    fetch_data(row, year, 1, None, 'GP'),
-                    fetch_data(row, year, 2, None, 'GP'),
-                    fetch_data(row, year, 3, None, 'GP'),
-                    fetch_data(row, year, 4, None, 'GP'),
-                    fetch_data(row, year, 5, None, 'GP') - (fetch_data(row, year, 1, None, 'GP') + fetch_data(row, year, 2, None, 'GP') + fetch_data(row, year, 3, None, 'GP') + fetch_data(row, year, 4, None, 'GP'))/4
-
-                ]
-
-    instance_df['Y1 GP'] = instance_df['Y1 GP'].fillna(0)
-    instance_df['Y2 GP'] = instance_df['Y2 GP'].fillna(0)
-    instance_df['Y3 GP'] = instance_df['Y3 GP'].fillna(0)
-    instance_df['Y4 GP'] = instance_df['Y4 GP'].fillna(0)
-    instance_df['Y5 dGP'] = instance_df['Y5 dGP'].fillna(0)
+                if row['Position'] == 'D':
+                    pass
+                elif np.isnan(fetch_data(row, year, 5, None, 'GP')) or np.isnan(fetch_data(row, year, 4, None, 'GP')):
+                    pass
+                elif fetch_data(row, year, 5, None, 'GP') < 50:
+                    pass
+                else:
+                    prev_gps = [fetch_data(row, year, 1, None, 'GP'), fetch_data(row, year, 2, None, 'GP'), fetch_data(row, year, 3, None, 'GP'), fetch_data(row, year, 4, None, 'GP')]
+                    prev_avg = statistics.mean([x for x in prev_gps if not np.isnan(x)])
+                    
+                    instance_df.loc[f"{row['Player']} {year+1}"] = [
+                        row['Player'], 
+                        year+1, row['Position'],
+                        calc_age(row['Date of Birth'], year), 
+                        row['Height (in)'], 
+                        row['Weight (lbs)'],
+                        fetch_data(row, year, 1, None, 'GP'),
+                        fetch_data(row, year, 2, None, 'GP'),
+                        fetch_data(row, year, 3, None, 'GP'),
+                        fetch_data(row, year, 4, None, 'GP'),
+                        fetch_data(row, year, 5, None, 'GP'),
+                        fetch_data(row, year, 5, None, 'GP') - prev_avg
+                    ]
 
     if download_file == True:
         filename = f'{dependent_variable}_instance_training_data'
@@ -213,6 +202,14 @@ def create_instance_df(dependent_variable, model_features, stat_df, download_fil
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return instance_df
+
+def calc_age(dob, year):
+    dob = date(int(dob.split('-')[0]), int(dob.split('-')[1]), int(dob.split('-')[2])) #year, month, date
+    target_date = date(year, 10, 1) # Age calculated as of October 1st of the season.
+    delta_days = target_date - dob
+    age = round(delta_days.days/365.24,3)
+
+    return age
 
 def fetch_data(row, year, yX, situation, stat):
     situation_reassignment = {'ev': 'EV', '5v5': '5v5', 'pp': 'PP', 'pk': 'PK'}
@@ -261,9 +258,10 @@ def permutation_feature_importance(model, X_test_scaled, y_test, scoring='neg_me
     # plt.tight_layout()
     plt.show()
 
+"""
 # Edit this
 def mean_decrease_in_impurity_analysis():
-    df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_ADV_instance_training_data.csv')
+    df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_ADV_instance_training_data.csv') # edit
     df = df.dropna()
     print(df)
 
@@ -298,9 +296,13 @@ def mean_decrease_in_impurity_analysis():
     plt.box(False)
     ax.figure.tight_layout()
     plt.show()
+"""
 
 def main():
     stat_df = scrape_player_statistics(True)
     print(stat_df)
-    forward_gp_instance_df = create_instance_df('forward_GP', [], stat_df, True)
+    forward_gp_instance_df = create_instance_df('forward_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 dGP'], stat_df, True)
     print(forward_gp_instance_df)
+
+stat_df = scrape_player_statistics(True)
+create_instance_df('forward_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], stat_df, True)
