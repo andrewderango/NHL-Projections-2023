@@ -173,19 +173,21 @@ def test_models(proj_stat, position, prev_years, proj_x, download_instance_file=
                 proj_y = model.predict(proj_scaled_x, verbose=0)
 
                 print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
-                model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
-                    int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
-                    int(model_index+1), 
-                    int(epochs), 
-                    scaler, 
-                    round(test_loss, 2), 
-                    round(train_loss, 2),
-                    round(float(proj_y[0] + sum(proj_x[0][-4:])/4), 2),
-                    round(float(proj_y[1] + sum(proj_x[1][-4:])/4), 2),
-                    round(float(proj_y[2] + sum(proj_x[2][-4:])/4), 2),
-                    round(float(proj_y[3] + sum(proj_x[3][-4:])/4), 2),
-                    round(float(proj_y[4] + sum(proj_x[4][-4:])/4), 2)
-                    ]
+
+                if proj_stat == 'GP':
+                    model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
+                        int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
+                        int(model_index+1), 
+                        int(epochs), 
+                        scaler, 
+                        round(test_loss, 2), 
+                        round(train_loss, 2),
+                        round(float(proj_y[0] + sum(proj_x[0][-prev_years:])/prev_years), 2),
+                        round(float(proj_y[1] + sum(proj_x[1][-prev_years:])/prev_years), 2),
+                        round(float(proj_y[2] + sum(proj_x[2][-prev_years:])/prev_years), 2),
+                        round(float(proj_y[3] + sum(proj_x[3][-prev_years:])/prev_years), 2),
+                        round(float(proj_y[4] + sum(proj_x[4][-prev_years:])/prev_years), 2)
+                        ]
 
     model_performance_df = model_performance_df.sort_values('MAE Test')
     model_performance_df = model_performance_df.reset_index()
