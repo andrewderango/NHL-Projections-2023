@@ -11,6 +11,7 @@ from matplotlib import cm
 from matplotlib.cm import ScalarMappable, plasma_r
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 import statistics
 
 def scrape_bios(download_file=False):
@@ -203,6 +204,62 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
 
     return instance_df
 
+def create_year_restricted_instance_df(proj_stat, position, prev_years, download_file=True):
+    if proj_stat == 'GP':
+        instance_df = create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], scrape_player_statistics(True), True)
+        if prev_years == 4:
+            instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 60) & (instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
+            input_shape = (7,)
+        elif prev_years == 3:
+            instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
+            input_shape = (6,)
+        elif prev_years == 2:
+            instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
+            input_shape = (5,)
+        elif prev_years == 1:
+            instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 40)]
+            input_shape = (4,)
+        else:
+            print('Invalid prev_years parameter.')
+
+    if download_file == True:
+        filename = f'{position}_{proj_stat}_{prev_years}year_instance_training_data'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        instance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return instance_df, input_shape
+
+def extract_instance_data(instance_df, proj_stat, prev_years):
+    X = []
+    y = []
+
+    if proj_stat == 'GP':
+        if prev_years == 4:
+            for index, row in instance_df.iterrows():
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
+                y.append(row['Y5 dGP']) # target
+        elif prev_years == 3:
+            for index, row in instance_df.iterrows():
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
+                y.append(row['Y5 dGP']) # target
+        elif prev_years == 2:
+            for index, row in instance_df.iterrows():
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP']]) # features
+                y.append(row['Y5 dGP']) # target
+        elif prev_years == 1:
+            for index, row in instance_df.iterrows():
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y4 GP']]) # features
+                y.append(row['Y5 dGP']) # target
+        else:
+            print('Invalid prev_years parameter.')
+            
+    X = np.array(X)
+    y = np.array(y)
+
+    return X, y
+
 def calc_age(dob, year):
     dob = date(int(dob.split('-')[0]), int(dob.split('-')[1]), int(dob.split('-')[2])) #year, month, date
     target_date = date(year, 10, 1) # Age calculated as of October 1st of the season.
@@ -231,9 +288,9 @@ def fetch_data(row, year, yX, situation, stat):
         result = np.nan
     return result
 
-def permutation_feature_importance(model, X_test_scaled, y_test, scoring='neg_mean_absolute_error'):
+def permutation_feature_importance(model, X_scaled, y, scoring='neg_mean_absolute_error'):
     # Compute permutation importances
-    result = permutation_importance(model, X_test_scaled, y_test, scoring=scoring)
+    result = permutation_importance(model, X_scaled, y, scoring=scoring)
     sorted_idx = result.importances_mean.argsort()
 
     # Define color map and normalization
@@ -246,8 +303,8 @@ def permutation_feature_importance(model, X_test_scaled, y_test, scoring='neg_me
     # Plot permutation importances
     fig, ax = plt.subplots(figsize=(9, 6))
     bar_colors = scalar_mappable.to_rgba(result.importances_mean[sorted_idx])
-    ax.barh(range(X_test_scaled.shape[1]), result.importances_mean[sorted_idx], color=bar_colors)
-    ax.set_yticks(range(X_test_scaled.shape[1]))
+    ax.barh(range(X_scaled.shape[1]), result.importances_mean[sorted_idx], color=bar_colors)
+    ax.set_yticks(range(X_scaled.shape[1]))
     ax.set_yticklabels(np.array(['Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP'])[sorted_idx])
     ax.set_title("Permutation Feature Importance Analysis", weight='bold', fontsize=15, pad=20)
     ax.text(0.5, 1.02, 'Permutation importance does not reflect to the intrinsic predictive value of a feature by itself but how important this feature is for a particular model.', ha='center', va='center', transform=ax.transAxes, fontsize=7, fontstyle='italic')
@@ -258,45 +315,40 @@ def permutation_feature_importance(model, X_test_scaled, y_test, scoring='neg_me
     # plt.tight_layout()
     plt.show()
 
-"""
-# Edit this
-def mean_decrease_in_impurity_analysis():
-    df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_ADV_instance_training_data.csv') # edit
-    df = df.dropna()
-    print(df)
+def make_gp_projections():
+    # Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
+    # Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
+    # Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
+    # Forwards with 1 seasons of > 50 GP: Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
 
-    X = df[['Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y1 G/82', 'Y2 G/82', 'Y3 G/82', 'Y4 G/82', 'Y1 P/82', 'Y2 P/82', 'Y3 P/82', 'Y4 P/82']] # features
-    y = df['Y5 GP'] # target
+    yr4_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(7,)),
+        tf.keras.layers.Dense(42, activation='relu'),
+        tf.keras.layers.Dense(14, activation='relu'),
+        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
 
-    # Split the data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+    yr3_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(8, activation='relu', input_shape=(6,)),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
 
-    # Train a random forest regressor
-    rf = RandomForestRegressor(random_state=42)
-    rf.fit(X_train, y_train)
+    yr2_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(5,)),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
 
-    # Get feature importances using MDI algorithm
-    importances = rf.feature_importances_
+    yr1_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(4,)),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
 
-    # Create a pandas Series object with feature importances
-    feat_importances = pd.Series(importances, index=X.columns)
-
-    # Sort the feature importances in descending order
-    feat_importances = feat_importances.sort_values(ascending=True)
-
-    # Create a bar chart of the feature importances
-    fig, ax = plt.subplots(figsize=(9, 6))
-    colors = plasma_r(feat_importances.values / max(feat_importances.values))
-    ax.barh(y=feat_importances.index, width=feat_importances.values, color=colors)
-    ax.set_title("Random Forest Feature Importances (MDI)", weight='bold', fontsize=15, pad=20)
-    ax.text(0.5, 1.02, 'Mean Decrease in Impurity', ha='center', va='center', transform=ax.transAxes, fontsize=9, fontstyle='italic')
-    ax.set_xlabel("Relative Importance", weight='bold')
-    ax.set_ylabel("Feature", weight='bold')
-    ax.tick_params(length=0)
-    plt.box(False)
-    ax.figure.tight_layout()
-    plt.show()
-"""
+    instance_df = create_instance_df('forward_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], scrape_player_statistics(True), True)
 
 def main():
     stat_df = scrape_player_statistics(True)
@@ -304,5 +356,4 @@ def main():
     forward_gp_instance_df = create_instance_df('forward_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 dGP'], stat_df, True)
     print(forward_gp_instance_df)
 
-stat_df = scrape_player_statistics(True)
-create_instance_df('forward_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], stat_df, True)
+make_gp_projections()
