@@ -90,40 +90,14 @@ def create_models(input_shape):
 
     return [model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11, model12]
 
-def test_models(proj_stat, position, prev_years, proj_x, download_instance_file=True, download_model_analysis_file=True):
+def test_models(proj_stat, position, prev_years, proj_x, download_model_analysis_file=True):
     epoch_list = [1, 5, 10, 30, 50, 100]
     scaler_list = [StandardScaler(), MinMaxScaler()]
 
     model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MAE Test', 'MAE Train', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
-    stat_df = preprocessing_training_functions.scrape_player_statistics(True)
 
-    if proj_stat == 'GP':
-        instance_df = preprocessing_training_functions.create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], stat_df, True)
-        # instance_df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_instance_training_data.csv')
-        if prev_years == 4:
-            instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 60) & (instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (7,)
-        elif prev_years == 3:
-            instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (6,)
-        elif prev_years == 2:
-            instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (5,)
-        elif prev_years == 1:
-            instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 40)]
-            input_shape = (4,)
-        else:
-            print('Invalid prev_years parameter.')
-    
-    print(instance_df)
+    instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, True)
     model_list = create_models(input_shape)
-
-    if download_instance_file == True:
-        filename = f'{position}_{proj_stat}_{prev_years}year_instance_training_data'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        instance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     print(f'Models to Test: {len(model_list) * len(epoch_list) * len(scaler_list)}')
     for model_index, model in enumerate(model_list):
@@ -131,31 +105,7 @@ def test_models(proj_stat, position, prev_years, proj_x, download_instance_file=
             for scaler_index, scaler in enumerate(scaler_list):
                 model.compile(optimizer='adam', loss='MeanAbsoluteError', metrics=['mean_squared_error', 'MeanSquaredLogarithmicError'])
 
-                X = []
-                y = []
-
-                if proj_stat == 'GP':
-                    if prev_years == 4:
-                        for index, row in instance_df.iterrows():
-                            X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
-                            y.append(row['Y5 dGP']) # target
-                    elif prev_years == 3:
-                        for index, row in instance_df.iterrows():
-                            X.append([row['Age'], row['Height'], row['Weight'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
-                            y.append(row['Y5 dGP']) # target
-                    elif prev_years == 2:
-                        for index, row in instance_df.iterrows():
-                            X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP']]) # features
-                            y.append(row['Y5 dGP']) # target
-                    elif prev_years == 1:
-                        for index, row in instance_df.iterrows():
-                            X.append([row['Age'], row['Height'], row['Weight'], row['Y4 GP']]) # features
-                            y.append(row['Y5 dGP']) # target
-                    else:
-                        print('Invalid prev_years parameter.')
-                        
-                X = np.array(X)
-                y = np.array(y)
+                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years)
 
                 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
 
@@ -189,7 +139,7 @@ def test_models(proj_stat, position, prev_years, proj_x, download_instance_file=
                         ]
 
     model_performance_df = model_performance_df.sort_values('MAE Test')
-    model_performance_df = model_performance_df.reset_index()
+    model_performance_df = model_performance_df.reset_index(drop=True)
     model_performance_df.index += 1
 
     if download_model_analysis_file == True:
@@ -247,7 +197,7 @@ def main():
     # Change these variables to change projection sets
     proj_stat = 'GP'
     position = 'forward' # [forward, defence]
-    prev_years = 1 # [1, 2, 3, 4]
+    prev_years = 4 # [1, 2, 3, 4]
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years))
     print('\n', model_performance_df.to_string())
@@ -257,14 +207,7 @@ def main():
 
 main()
 
-# Forwards with 4 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, standard scaler
+# Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
 # Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
 # Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
 # Forwards with 1 seasons of > 50 GP: Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
-
-
-# To add:
-    # Menu?
-    # feature importance from function in preprocessing_training_functions.py
-    # Graph for a model : epochs vs cost
-    # make a custom projection
