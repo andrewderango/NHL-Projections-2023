@@ -90,13 +90,13 @@ def create_models(input_shape):
 
     return [model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11, model12]
 
-def test_models(proj_stat, position, prev_years, proj_x, download_model_analysis_file=True):
+def test_models(proj_stat, position, prev_years, proj_x, situation, download_model_analysis_file=True):
     epoch_list = [1, 5, 10, 30, 50, 100]
     scaler_list = [StandardScaler(), MinMaxScaler()]
 
     model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MAE Test', 'MAE Train', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
 
-    instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, True)
+    instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, situation)
     model_list = create_models(input_shape)
 
     print(f'Models to Test: {len(model_list) * len(epoch_list) * len(scaler_list)}')
@@ -123,7 +123,7 @@ def test_models(proj_stat, position, prev_years, proj_x, download_model_analysis
 
                 print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
 
-                if proj_stat == 'GP':
+                if proj_stat == 'GP' or proj_stat == 'ATOI':
                     model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
                         int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
                         int(model_index+1), 
@@ -143,14 +143,16 @@ def test_models(proj_stat, position, prev_years, proj_x, download_model_analysis
     model_performance_df.index += 1
 
     if download_model_analysis_file == True:
-        filename = f'{position}_{proj_stat}_{prev_years}year_model_analysis'
+        if situation == None:
+            filename = f'{position}_{proj_stat}_{prev_years}year_model_analysis'
+        else:
+            filename = f'{position}_{situation}_{proj_stat}_{prev_years}year_model_analysis'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        instance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        model_performance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return model_performance_df, model_list
-
 
 def recommend_model(model_performance_df, model_list):
     recommended_model = model_performance_df.iloc[0]
@@ -160,7 +162,9 @@ def recommend_model(model_performance_df, model_list):
     print(f'Parent Model {recommended_model["Parent Model ID"]} architecture:')
     model_list[recommended_model["Parent Model ID"] - 1].summary()
 
+# Define test cases
 def get_sample_projection(proj_stat, position, prev_years):
+
     if proj_stat == 'GP':
         if prev_years == 4:
             return [
@@ -190,16 +194,47 @@ def get_sample_projection(proj_stat, position, prev_years):
                 [19, 70, 178, 80], 
                 [29, 72, 213, 82], 
                 [29, 73, 192, 75]]
+    
+    elif proj_stat == 'ATOI':
+        if prev_years == 4:
+            return [
+                [26, 72, 188, 20, 20, 20, 20], 
+                [22, 73, 192, 18, 19, 20, 21], 
+                [40, 70, 178, 19, 18, 17, 16], 
+                [30, 72, 213, 16, 19, 15, 17], 
+                [27, 73, 192, 14, 16, 10, 18]]
+        elif prev_years == 3:
+            return [
+                [26, 72, 188, 20, 20, 20], 
+                [21, 73, 192, 19, 20, 21], 
+                [40, 70, 178, 20, 19, 18], 
+                [30, 72, 213, 19, 15, 17], 
+                [27, 73, 192, 16, 12, 18]]    
+        elif prev_years == 2:
+            return [
+                [26, 72, 188, 20, 20], 
+                [20, 73, 192, 18, 21], 
+                [40, 70, 178, 20, 17], 
+                [30, 72, 213, 19, 15], 
+                [27, 73, 192, 14, 18]]  
+        elif prev_years == 1:
+            return [
+                [27, 72, 188, 20], 
+                [19, 73, 192, 19], 
+                [19, 70, 178, 18], 
+                [29, 72, 213, 17], 
+                [29, 73, 192, 16]]
 
 def main():
     start = time.time()
 
     # Change these variables to change projection sets
-    proj_stat = 'GP'
+    proj_stat = 'ATOI'
     position = 'defence' # [forward, defence]
     prev_years = 1 # [1, 2, 3, 4]
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
-    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years))
+    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years), situation)
     print('\n', model_performance_df.to_string())
     recommend_model(model_performance_df, model_list)
 
@@ -207,6 +242,7 @@ def main():
 
 main()
 
+# --- GAMES PLAYED MODEL ---
 # Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
 # Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
 # Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
@@ -215,4 +251,15 @@ main()
 # Defence with 4 seasons of > 50 GP: Parent model 5 (64-28-12-1), 30 epochs, standard scaler
 # Defence with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 30 epochs, minmax scaler
 # Defence with 2 seasons of > 50 GP: Parent model 10 (16-4-1), 10 epochs, standard scaler
-# Forwards with 1 season            : Parent model 7 (128-64-1), 50 epochs, minmax scaler
+# Defence with 1 season            : Parent model 7 (128-64-1), 50 epochs, minmax scaler
+
+# --- EV ATOI MODEL ---
+# Forwards with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 10 epochs, standard scaler
+# Forwards with 3 seasons of > 40 GP: Parent model 11 (24-1), 10 epochs, standard scaler
+# Forwards with 2 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 10 epochs, standard scaler
+# Forwards with 1 season            : Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
+
+# Defence with 4 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
+# Defence with 3 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
+# Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
+# Defence with 1 season            : Parent model 11 (24-1), 50 epochs, standard scaler
