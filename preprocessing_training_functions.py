@@ -467,18 +467,32 @@ def make_forward_gp_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
-        projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+        if proj_y_4[index][0] + statistics.mean(statline[-4:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
 
     for index, statline in enumerate(yr3_stat_list):
-        projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+        if proj_y_3[index][0] + statistics.mean(statline[-3:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
 
     for index, statline in enumerate(yr2_stat_list):
-        projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+        if proj_y_2[index][0] + statistics.mean(statline[-2:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
 
     for index, statline in enumerate(yr1_stat_list):
-        projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        if proj_y_1[index][0] + statistics.mean(statline[-1:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
 
+    # Download file
     if download_file == True:
         filename = f'partial_projections'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
@@ -610,18 +624,32 @@ def make_defence_gp_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
-        projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+        if proj_y_4[index][0] + statistics.mean(statline[-4:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
 
     for index, statline in enumerate(yr3_stat_list):
-        projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+        if proj_y_3[index][0] + statistics.mean(statline[-3:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
 
     for index, statline in enumerate(yr2_stat_list):
-        projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+        if proj_y_2[index][0] + statistics.mean(statline[-2:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
 
     for index, statline in enumerate(yr1_stat_list):
-        projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        if proj_y_1[index][0] + statistics.mean(statline[-1:]) > 82:
+            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = 82
+        else:
+            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
 
+    # Download file
     if download_file == True:
         filename = f'partial_projections'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
