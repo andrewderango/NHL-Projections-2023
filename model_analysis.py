@@ -196,8 +196,8 @@ def main():
 
     # Change these variables to change projection sets
     proj_stat = 'GP'
-    position = 'forward' # [forward, defence]
-    prev_years = 4 # [1, 2, 3, 4]
+    position = 'defence' # [forward, defence]
+    prev_years = 1 # [1, 2, 3, 4]
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years))
     print('\n', model_performance_df.to_string())
@@ -210,4 +210,9 @@ main()
 # Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
 # Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
 # Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
-# Forwards with 1 seasons of > 50 GP: Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
+# Forwards with 1 season            : Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
+
+# Defence with 4 seasons of > 50 GP: Parent model 5 (64-28-12-1), 30 epochs, standard scaler
+# Defence with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 30 epochs, minmax scaler
+# Defence with 2 seasons of > 50 GP: Parent model 10 (16-4-1), 10 epochs, standard scaler
+# Forwards with 1 season            : Parent model 7 (128-64-1), 50 epochs, minmax scaler
