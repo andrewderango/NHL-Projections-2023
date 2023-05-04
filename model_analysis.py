@@ -254,6 +254,36 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                 [26, 70, 178, 2], 
                 [30, 72, 213, 0.5], 
                 [20, 73, 192, 2]]
+            
+        elif situation == 'PK':
+            if prev_years == 4:
+                return [
+                [26, 72, 188, 0, 0, 0, 0], 
+                [26, 73, 192, 1, 1, 1, 1], 
+                [26, 70, 178, 2, 2, 2, 2], 
+                [30, 72, 213, 0, 0, 1, 2], 
+                [23, 73, 192, 0, 0, 1.75, 2]]
+            elif prev_years == 3:
+                return [
+                [26, 72, 188, 0, 0, 0], 
+                [26, 73, 192, 1, 1, 1], 
+                [26, 70, 178, 2, 2, 2], 
+                [30, 72, 213, 0, 1, 2], 
+                [22, 73, 192, 0, 1.75, 2]]
+            elif prev_years == 2:
+                return [
+                [26, 72, 188, 0, 0], 
+                [26, 73, 192, 1, 1], 
+                [26, 70, 178, 2, 2], 
+                [30, 72, 213, 0.75, 2], 
+                [21, 73, 192, 1.75, 2]]
+            elif prev_years == 1:
+                return [
+                [26, 72, 188, 0], 
+                [26, 73, 192, 1], 
+                [26, 70, 178, 2], 
+                [30, 72, 213, 0.5], 
+                [20, 73, 192, 2]]
 
 def main():
     start = time.time()
@@ -262,7 +292,7 @@ def main():
     proj_stat = 'ATOI'
     position = 'defence' # [forward, defence]
     prev_years = 1 # [1, 2, 3, 4]
-    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
+    situation = 'PK' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
@@ -304,3 +334,14 @@ main()
 # Defence with 3 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 100 epochs, minmax scaler
 # Defence with 2 seasons of > 40 GP: Parent model 1 (126-42-14-6-1), 30 epochs, standard scaler
 # Defence with 1 season            : Parent model 10 (16-4-1), 50 epochs, standard scaler
+
+# --- PK ATOI MODEL ---
+# Forwards with 4 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler
+# Forwards with 3 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
+# Forwards with 2 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
+# Forwards with 1 season            : Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
+
+# Defence with 4 seasons of > 40 GP: Parent model 7 (128-64-1), 5 epochs, standard scaler
+# Defence with 3 seasons of > 40 GP: Parent model 7 (128-64-1), 5 epochs, minmax scaler
+# Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
+# Defence with 1 season            : Parent model 9 (36-12-1), 5 epochs, minmax scaler
