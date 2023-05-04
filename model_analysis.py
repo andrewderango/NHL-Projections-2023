@@ -105,7 +105,7 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
             for scaler_index, scaler in enumerate(scaler_list):
                 model.compile(optimizer='adam', loss='MeanAbsoluteError', metrics=['mean_squared_error', 'MeanSquaredLogarithmicError'])
 
-                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years)
+                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
 
                 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
 
@@ -163,7 +163,7 @@ def recommend_model(model_performance_df, model_list):
     model_list[recommended_model["Parent Model ID"] - 1].summary()
 
 # Define test cases
-def get_sample_projection(proj_stat, position, prev_years):
+def get_sample_projection(proj_stat, position, prev_years, situation):
 
     if proj_stat == 'GP':
         if prev_years == 4:
@@ -196,34 +196,64 @@ def get_sample_projection(proj_stat, position, prev_years):
                 [29, 73, 192, 75]]
     
     elif proj_stat == 'ATOI':
-        if prev_years == 4:
-            return [
-                [26, 72, 188, 20, 20, 20, 20], 
-                [22, 73, 192, 18, 19, 20, 21], 
-                [40, 70, 178, 19, 18, 17, 16], 
-                [30, 72, 213, 16, 19, 15, 17], 
-                [27, 73, 192, 14, 16, 10, 18]]
-        elif prev_years == 3:
-            return [
-                [26, 72, 188, 20, 20, 20], 
-                [21, 73, 192, 19, 20, 21], 
-                [40, 70, 178, 20, 19, 18], 
-                [30, 72, 213, 19, 15, 17], 
-                [27, 73, 192, 16, 12, 18]]    
-        elif prev_years == 2:
-            return [
-                [26, 72, 188, 20, 20], 
-                [20, 73, 192, 18, 21], 
-                [40, 70, 178, 20, 17], 
-                [30, 72, 213, 19, 15], 
-                [27, 73, 192, 14, 18]]  
-        elif prev_years == 1:
-            return [
-                [27, 72, 188, 20], 
-                [19, 73, 192, 19], 
-                [19, 70, 178, 18], 
-                [29, 72, 213, 17], 
-                [29, 73, 192, 16]]
+        if situation == 'EV':
+            if prev_years == 4:
+                return [
+                    [26, 72, 188, 20, 20, 20, 20], 
+                    [22, 73, 192, 18, 19, 20, 21], 
+                    [40, 70, 178, 19, 18, 17, 16], 
+                    [30, 72, 213, 16, 19, 15, 17], 
+                    [27, 73, 192, 14, 16, 10, 18]]
+            elif prev_years == 3:
+                return [
+                    [26, 72, 188, 20, 20, 20], 
+                    [21, 73, 192, 19, 20, 21], 
+                    [40, 70, 178, 20, 19, 18], 
+                    [30, 72, 213, 19, 15, 17], 
+                    [27, 73, 192, 16, 12, 18]]    
+            elif prev_years == 2:
+                return [
+                    [26, 72, 188, 20, 20], 
+                    [20, 73, 192, 18, 21], 
+                    [40, 70, 178, 20, 17], 
+                    [30, 72, 213, 19, 15], 
+                    [27, 73, 192, 14, 18]]  
+            elif prev_years == 1:
+                return [
+                    [27, 72, 188, 20], 
+                    [19, 73, 192, 19], 
+                    [19, 70, 178, 18], 
+                    [29, 72, 213, 17], 
+                    [29, 73, 192, 16]]
+        elif situation == 'PP':
+            if prev_years == 4:
+                return [
+                [26, 72, 188, 0, 0, 0, 0], 
+                [26, 73, 192, 1, 1, 1, 1], 
+                [26, 70, 178, 2, 2, 2, 2], 
+                [30, 72, 213, 0, 0, 1, 2], 
+                [23, 73, 192, 0, 0, 1.75, 2]]
+            elif prev_years == 3:
+                return [
+                [26, 72, 188, 0, 0, 0], 
+                [26, 73, 192, 1, 1, 1], 
+                [26, 70, 178, 2, 2, 2], 
+                [30, 72, 213, 0, 1, 2], 
+                [22, 73, 192, 0, 1.75, 2]]
+            elif prev_years == 2:
+                return [
+                [26, 72, 188, 0, 0], 
+                [26, 73, 192, 1, 1], 
+                [26, 70, 178, 2, 2], 
+                [30, 72, 213, 0.75, 2], 
+                [21, 73, 192, 1.75, 2]]
+            elif prev_years == 1:
+                return [
+                [26, 72, 188, 0], 
+                [26, 73, 192, 1], 
+                [26, 70, 178, 2], 
+                [30, 72, 213, 0.5], 
+                [20, 73, 192, 2]]
 
 def main():
     start = time.time()
@@ -232,9 +262,9 @@ def main():
     proj_stat = 'ATOI'
     position = 'defence' # [forward, defence]
     prev_years = 1 # [1, 2, 3, 4]
-    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
+    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
 
-    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years), situation)
+    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
     recommend_model(model_performance_df, model_list)
 
@@ -263,3 +293,14 @@ main()
 # Defence with 3 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
 # Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
 # Defence with 1 season            : Parent model 11 (24-1), 50 epochs, standard scaler
+
+# --- PP ATOI MODEL ---
+# Forwards with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
+# Forwards with 3 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
+# Forwards with 2 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
+# Forwards with 1 season            : Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
+
+# Defence with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
+# Defence with 3 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 100 epochs, minmax scaler
+# Defence with 2 seasons of > 40 GP: Parent model 1 (126-42-14-6-1), 30 epochs, standard scaler
+# Defence with 1 season            : Parent model 10 (16-4-1), 50 epochs, standard scaler
