@@ -1,2 +1,2 @@
 Consider using cross-validation for model testing?
-Consider Bayesian neural network?
+Consider Bayesian neural network for uncertainty?
