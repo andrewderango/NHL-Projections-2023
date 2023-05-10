@@ -480,27 +480,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, 'ev', 'G/60'),
                         fetch_data(row, year, 4, 'ev', 'G/60'),
                         fetch_data(row, year, 5, 'ev', 'G/60'),
-                        fetch_data(row, year, 5, 'ev', 'G/60') - prev_avg,
-                        fetch_data(row, year, 1, 'ev', 'ixG/60'),
-                        fetch_data(row, year, 2, 'ev', 'ixG/60'),
-                        fetch_data(row, year, 3, 'ev', 'ixG/60'),
-                        fetch_data(row, year, 4, 'ev', 'ixG/60'),
-                        fetch_data(row, year, 5, 'ev', 'ixG/60'),
-                        fetch_data(row, year, 1, 'ev', 'Shots/60'),
-                        fetch_data(row, year, 2, 'ev', 'Shots/60'),
-                        fetch_data(row, year, 3, 'ev', 'Shots/60'),
-                        fetch_data(row, year, 4, 'ev', 'Shots/60'),
-                        fetch_data(row, year, 5, 'ev', 'Shots/60'),
-                        fetch_data(row, year, 1, 'ev', 'iCF/60'),
-                        fetch_data(row, year, 2, 'ev', 'iCF/60'),
-                        fetch_data(row, year, 3, 'ev', 'iCF/60'),
-                        fetch_data(row, year, 4, 'ev', 'iCF/60'),
-                        fetch_data(row, year, 5, 'ev', 'iCF/60'),
-                        fetch_data(row, year, 1, 'ev', 'Rush Attempts/60'),
-                        fetch_data(row, year, 2, 'ev', 'Rush Attempts/60'),
-                        fetch_data(row, year, 3, 'ev', 'Rush Attempts/60'),
-                        fetch_data(row, year, 4, 'ev', 'Rush Attempts/60'),
-                        fetch_data(row, year, 5, 'ev', 'Rush Attempts/60')
+                        fetch_data(row, year, 5, 'ev', 'G/60') - prev_avg
                     ]
 
     if download_file == True:
@@ -553,23 +533,19 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
             'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y1 {situation} G/60', f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y1 {situation} ixG/60', f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y1 {situation} Shots/60', f'Y2 {situation} Shots/60', f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y1 {situation} iCF/60', f'Y2 {situation} iCF/60', f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ], scrape_player_statistics(True), True)        
         if prev_years == 4:
             instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 50) & (instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-            input_shape = (23,)
+            input_shape = (7,)
         elif prev_years == 3:
             instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-            input_shape = (18,)
+            input_shape = (6,)
         elif prev_years == 2:
             instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-            input_shape = (13,)
+            input_shape = (5,)
         elif prev_years == 1:
             instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 50)]
-            input_shape = (8,)
+            input_shape = (4,)
         else:
             print('Invalid prev_years parameter.')
 
@@ -639,26 +615,14 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation):
             'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y1 {situation} G/60', f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y1 {situation} ixG/60', f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y1 {situation} Shots/60', f'Y2 {situation} Shots/60', f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y1 {situation} iCF/60', f'Y2 {situation} iCF/60', f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]] = instance_df[[
             'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y1 {situation} G/60', f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y1 {situation} ixG/60', f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y1 {situation} Shots/60', f'Y2 {situation} Shots/60', f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y1 {situation} iCF/60', f'Y2 {situation} iCF/60', f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]].fillna(0)
             for index, row in instance_df.iterrows():
                 X.append([row['Age'], row['Height'], row['Weight'],
                           row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                          row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                          row[f'Y1 {situation} Shots/60'], row[f'Y2 {situation} Shots/60'], row[f'Y3 {situation} Shots/60'], row[f'Y4 {situation} Shots/60'],
-                          row[f'Y1 {situation} iCF/60'], row[f'Y2 {situation} iCF/60'], row[f'Y3 {situation} iCF/60'], row[f'Y4 {situation} iCF/60'],
-                          row[f'Y1 {situation} Rush Attempts/60'], row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                           ]) # features
                 y.append(row[f'Y5 d{situation} G/60']) # target
         elif prev_years == 3:
@@ -666,26 +630,14 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation):
             'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y2 {situation} Shots/60', f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y2 {situation} iCF/60', f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]] = instance_df[[
             'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y2 {situation} Shots/60', f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y2 {situation} iCF/60', f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]].fillna(0)
             for index, row in instance_df.iterrows():
                 X.append([row['Age'], row['Height'], row['Weight'],
                           row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                          row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                          row[f'Y2 {situation} Shots/60'], row[f'Y3 {situation} Shots/60'], row[f'Y4 {situation} Shots/60'],
-                          row[f'Y2 {situation} iCF/60'], row[f'Y3 {situation} iCF/60'], row[f'Y4 {situation} iCF/60'],
-                          row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                           ]) # features
                 y.append(row[f'Y5 d{situation} G/60']) # target
         elif prev_years == 2:
@@ -693,26 +645,14 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation):
             'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]] = instance_df[[
             'Y3 GP', 'Y4 GP', 'Y5 GP', 
             f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y3 {situation} Shots/60', f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y3 {situation} iCF/60', f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]].fillna(0)
             for index, row in instance_df.iterrows():
                 X.append([row['Age'], row['Height'], row['Weight'],
                           row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                          row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                          row[f'Y3 {situation} Shots/60'], row[f'Y4 {situation} Shots/60'],
-                          row[f'Y3 {situation} iCF/60'], row[f'Y4 {situation} iCF/60'],
-                          row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                           ]) # features
                 y.append(row[f'Y5 d{situation} G/60']) # target
         elif prev_years == 1:
@@ -720,26 +660,14 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation):
             'Y4 GP', 'Y5 GP', 
             f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]] = instance_df[[
             'Y4 GP', 'Y5 GP', 
             f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
             f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
-            f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60', 
-            f'Y4 {situation} Shots/60', f'Y5 {situation} Shots/60', 
-            f'Y4 {situation} iCF/60', f'Y5 {situation} iCF/60', 
-            f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',             
             ]].fillna(0)
             for index, row in instance_df.iterrows():
                 X.append([row['Age'], row['Height'], row['Weight'],
                           row[f'Y4 {situation} G/60'],
-                          row[f'Y4 {situation} ixG/60'],
-                          row[f'Y4 {situation} Shots/60'],
-                          row[f'Y4 {situation} iCF/60'],
-                          row[f'Y4 {situation} Rush Attempts/60'],
                           ]) # features
                 y.append(row[f'Y5 d{situation} G/60']) # target
         else:
@@ -2192,7 +2120,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
 def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(23,)),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(7,)),
         tf.keras.layers.Dense(42, activation='relu'),
         tf.keras.layers.Dense(14, activation='relu'),
         tf.keras.layers.Dense(6, activation='relu'),
@@ -2200,7 +2128,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     ])
 
     yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(18,)),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(6,)),
         tf.keras.layers.Dense(42, activation='relu'),
         tf.keras.layers.Dense(14, activation='relu'),
         tf.keras.layers.Dense(6, activation='relu'),
@@ -2208,7 +2136,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     ])
 
     yr2_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(13,)),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(5,)),
         tf.keras.layers.Dense(42, activation='relu'),
         tf.keras.layers.Dense(14, activation='relu'),
         tf.keras.layers.Dense(6, activation='relu'),
@@ -2216,7 +2144,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     ])
 
     yr1_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(8,)),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(4,)),
         tf.keras.layers.Dense(42, activation='relu'),
         tf.keras.layers.Dense(14, activation='relu'),
         tf.keras.layers.Dense(6, activation='relu'),
@@ -2239,11 +2167,11 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
-    X_3_scaler = MinMaxScaler().fit(X_3)
+    X_3_scaler = StandardScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
-    X_2_scaler = MinMaxScaler().fit(X_2)
+    X_2_scaler = StandardScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
-    X_1_scaler = MinMaxScaler().fit(X_1)
+    X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
     yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
@@ -2251,13 +2179,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
     yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
 
-    permutation_feature_importance(yr4_model, X_4_scaled, y_4, ['Age', 'Height', 'Weight', 
-                                                                'Y1 G/60', 'Y2 G/60', 'Y3 G/60', 'Y4 G/60', 
-                                                                'Y1 ixG/60', 'Y2 ixG/60', 'Y3 ixG/60', 'Y4 ixG/60',
-                                                                'Y1 Shots/60', 'Y2 Shots/60', 'Y3 Shots/60', 'Y4 Shots/60',
-                                                                'Y1 iCF/60', 'Y2 iCF/60', 'Y3 iCF/60', 'Y4 iCF/60',
-                                                                'Y1 Rush Attempts/60', 'Y2 Rush Attempts/60', 'Y3 Rush Attempts/60', 'Y4 Rush Attempts/60',
-                                                                ])
+    # permutation_feature_importance(yr4_model, X_4_scaled, y_4, ['Age', 'Height', 'Weight', 'Y1 G/60', 'Y2 G/60', 'Y3 G/60', 'Y4 G/60'])
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
@@ -2282,23 +2204,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
             stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0],
             stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
             stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Rush Attempts/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
             ])
 
     for player in yr3_group:
@@ -2308,19 +2214,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
             stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Rush Attempts/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
             ])
         
     for player in yr2_group:
@@ -2329,15 +2223,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV Rush Attempts/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Rush Attempts/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
             ])
         
     for player in yr1_group:
@@ -2371,10 +2257,6 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat,
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Shots/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV iCF/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV Rush Attempts/60'].fillna(0).iloc[0]
             ])
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
@@ -2448,12 +2330,12 @@ def main():
     # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True)
+    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True)
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
-
-    projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
+    projection_df = projection_df.sort_values('EV G/60')
 
     # print(projection_df)
     print(projection_df.to_string())
