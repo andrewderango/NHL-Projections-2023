@@ -123,7 +123,7 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
 
                 print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
 
-                if proj_stat == 'GP' or proj_stat == 'ATOI':
+                if proj_stat == 'GP' or proj_stat == 'ATOI' or proj_stat == 'Gper60':
                     model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
                         int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
                         int(model_index+1), 
@@ -284,15 +284,46 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                 [26, 70, 178, 2], 
                 [30, 72, 213, 0.5], 
                 [20, 73, 192, 2]]
+            
+    elif proj_stat == 'Gper60':
+        if situation == 'EV':
+            if prev_years == 4:
+                return [
+                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62]]
+            elif prev_years == 3:
+                return [
+                    [26, 73, 193, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.45, 1.41, 1.62],
+                    [26, 73, 193, 1.45, 1.41, 1.62]]
+            elif prev_years == 2:
+                return [
+                    [26, 73, 193, 1.41, 1.62],
+                    [26, 73, 193, 1.41, 1.62],
+                    [26, 73, 193, 1.41, 1.62],
+                    [26, 73, 193, 1.41, 1.62],
+                    [26, 73, 193, 1.41, 1.62]]
+            elif prev_years == 1:
+                return [
+                    [26, 73, 193, 1.62],
+                    [26, 73, 193, 1.62],
+                    [26, 73, 193, 1.62],
+                    [26, 73, 193, 1.62],
+                    [26, 73, 193, 1.62]]
 
 def main():
     start = time.time()
 
     # Change these variables to change projection sets
-    proj_stat = 'ATOI'
-    position = 'defence' # [forward, defence]
+    proj_stat = 'Gper60'
+    position = 'forward' # [forward, defence]
     prev_years = 1 # [1, 2, 3, 4]
-    situation = 'PK' # [EV, PP, PK, None] use None for projecting GP
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
@@ -345,3 +376,9 @@ main()
 # Defence with 3 seasons of > 40 GP: Parent model 7 (128-64-1), 5 epochs, minmax scaler
 # Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
 # Defence with 1 season            : Parent model 9 (36-12-1), 5 epochs, minmax scaler
+
+# --- EV G/60 MODEL ---
+# Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
+# Forwards with 3 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
+# Forwards with 2 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
+# Forwards with 1 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
