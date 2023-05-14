@@ -2683,7 +2683,9 @@ def main():
     # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
+    
     # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True)
+        # probably needs revamping due to too heavy regression for top players (4-year model mostly)
     
     # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True)
         # Fix ixG pseudoprolif for game compensation
