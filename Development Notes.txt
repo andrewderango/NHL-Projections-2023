@@ -1,4 +1,7 @@
 dGP is defined to be the amount of games played in the target year above the average number of games played in the previous four seasons. Null values are omitted and not treated as 0. Making dGP the target variable instead of GP improved model accuracy.
 
+For some reason, the earlier models (model 1, epoch 1 standardscaler specifically) tends to over-regress results while maintaining a decent MAE. Investigate this.
+
 Consider using cross-validation for model testing?
 Consider Bayesian neural network for uncertainty?
+Random forest?
