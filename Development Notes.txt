@@ -2,6 +2,8 @@ dGP is defined to be the amount of games played in the target year above the ave
 
 For some reason, the earlier models (model 1, epoch 1 standardscaler specifically) tends to over-regress results while maintaining a decent MAE. Investigate this.
 
+Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
+
 Consider using cross-validation for model testing?
 Consider Bayesian neural network for uncertainty?
 Random forest?
