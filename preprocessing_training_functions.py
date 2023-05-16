@@ -606,16 +606,16 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
                 ], scrape_player_statistics(True), True)        
             if prev_years == 4:
                 instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 50) & (instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-                input_shape = (12,)
+                input_shape = (11,)
             elif prev_years == 3:
                 instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-                input_shape = (10,)
+                input_shape = (9,)
             elif prev_years == 2:
                 instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
-                input_shape = (8,)
+                input_shape = (7,)
             elif prev_years == 1:
                 instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 50)]
-                input_shape = (6,)
+                input_shape = (5,)
             else:
                 print('Invalid prev_years parameter.')            
         else:
@@ -2271,18 +2271,17 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
 def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(7,)),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(7,)),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(6,)),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(6,)),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -2316,7 +2315,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     instance_df_y1, _ = create_year_restricted_instance_df('Gper60', 'forward', 1, 'EV')
     X_1, y_1 = extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'forward')
 
-    X_4_scaler = StandardScaler().fit(X_4)
+    X_4_scaler = MinMaxScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
     X_3_scaler = StandardScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
@@ -2325,10 +2324,10 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
-    yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=30, verbose=1)
     yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
-    yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
-    yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=1, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=1, verbose=1)
 
     # permutation_feature_importance(yr4_model, X_4_scaled, y_4, ['Age', 'Height', 'Weight', 'Y1 G/60', 'Y2 G/60', 'Y3 G/60', 'Y4 G/60'])
 
@@ -2459,18 +2458,18 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(11,)),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(11,)),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(9,)),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(9,)),
+        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -2483,10 +2482,9 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
     ])
 
     yr1_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(5,)),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(5,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -2510,12 +2508,12 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
     X_3_scaled = X_3_scaler.transform(X_3)
     X_2_scaler = StandardScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
-    X_1_scaler = StandardScaler().fit(X_1)
+    X_1_scaler = MinMaxScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
-    yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
     yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
-    yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=1, verbose=1)
     yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
 
     permutation_feature_importance(yr4_model, X_4_scaled, y_4, ['Age', 'Height', 'Weight', 'Y1 G/60', 'Y2 G/60', 'Y3 G/60', 'Y4 G/60', 'Y1 ixG/60', 'Y2 ixG/60', 'Y3 ixG/60', 'Y4 ixG/60'])
@@ -2579,37 +2577,44 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
         y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
         y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0]
+        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
+        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0]
+        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0]
+        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0]
+        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0]
+        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0]
+        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 50 games.
         # Once you reach 50 games, find the ATOI accross these seasons.
         # If they haven't played 50 games in their past 4 seasons, fill the rest of the 50 games with the -1st z-score of the stat.
         if y1_gp >= 50:
-            pseudo_prev_year_stat = y1_stat
+            pseudo_prev_year_stat_1 = y1_stat_1
+            pseudo_prev_year_stat_2 = y1_stat_2
         elif y1_gp + y2_gp >= 50:
-            pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp)/(y1_gp + y2_gp)
         elif y1_gp + y2_gp + y3_gp >= 50:
-            pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp)/(y1_gp + y2_gp + y3_gp)
         elif y1_gp + y2_gp + y3_gp + y4_gp >= 50:
-            pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
         else:
-            negative_first_z_score = max(instance_df_y1['Y4 EV G/60'].mean() - instance_df_y1['Y4 EV G/60'].std(), 0) # should not be negative
+            negative_first_z_score_stat_1 = max(instance_df_y1['Y4 EV G/60'].mean() - instance_df_y1['Y4 EV G/60'].std(), 0) # should not be negative
+            negative_first_z_score_stat_2 = max(instance_df_y1['Y4 EV ixG/60'].mean() - instance_df_y1['Y4 EV ixG/60'].std(), 0) # should not be negative
             games_to_pseudofy = 50-(y1_gp + y2_gp + y3_gp + y4_gp)
-            pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
             calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            pseudo_prev_year_stat,
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0] # ref line
+            pseudo_prev_year_stat_1,
+            pseudo_prev_year_stat_2
             ])
-        
-        # ^^^ Fix this so that other features (like ixG) are not affected by short sample sizes, as well as the target metric (ref line)
-        # Use the same pseudoaddition algorithm for it as done above
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
@@ -2683,16 +2688,17 @@ def main():
     # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
-    
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True)
-        # probably needs revamping due to too heavy regression for top players (4-year model mostly)
-    
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True)
-        # Fix ixG pseudoprolif for game compensation
-        # model_analysis to determine optimal model for all 4 year possibilities (standard process)
+    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
+
+    projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True)
+        # model_analysis and preprocessing_training_functions giving different results for the same model
+        # See: Cale Makar
+        # Mark Friedman's 5 games counting as entire season?
+        # Defence input data in general.
+        # Print Y1-4 player lists to see if they are being partitioned correctly in the first place.
 
     projection_df = projection_df.sort_values('EV G/60', ascending=False)
 
