@@ -105,7 +105,10 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
             for scaler_index, scaler in enumerate(scaler_list):
                 model.compile(optimizer='adam', loss='MeanAbsoluteError', metrics=['mean_squared_error', 'MeanSquaredLogarithmicError'])
 
-                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
+                if proj_stat == 'Gper60':
+                    X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation, position)
+                else:
+                    X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
 
                 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
 
@@ -287,41 +290,72 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
             
     elif proj_stat == 'Gper60':
         if situation == 'EV':
-            if prev_years == 4:
-                return [
-                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.22, 1.45, 1.41, 1.62]]
-            elif prev_years == 3:
-                return [
-                    [26, 73, 193, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.45, 1.41, 1.62],
-                    [26, 73, 193, 1.45, 1.41, 1.62]]
-            elif prev_years == 2:
-                return [
-                    [26, 73, 193, 1.41, 1.62],
-                    [26, 73, 193, 1.41, 1.62],
-                    [26, 73, 193, 1.41, 1.62],
-                    [26, 73, 193, 1.41, 1.62],
-                    [26, 73, 193, 1.41, 1.62]]
-            elif prev_years == 1:
-                return [
-                    [26, 73, 193, 1.62],
-                    [26, 73, 193, 1.62],
-                    [26, 73, 193, 1.62],
-                    [26, 73, 193, 1.62],
-                    [26, 73, 193, 1.62]]
+            if position == 'forward':
+                if prev_years == 4:
+                    return [
+                        [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.22, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.22, 1.45, 1.41, 1.62]]
+                elif prev_years == 3:
+                    return [
+                        [26, 73, 193, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.45, 1.41, 1.62],
+                        [26, 73, 193, 1.45, 1.41, 1.62]]
+                elif prev_years == 2:
+                    return [
+                        [26, 73, 193, 1.41, 1.62],
+                        [26, 73, 193, 1.41, 1.62],
+                        [26, 73, 193, 1.41, 1.62],
+                        [26, 73, 193, 1.41, 1.62],
+                        [26, 73, 193, 1.41, 1.62]]
+                elif prev_years == 1:
+                    return [
+                        [26, 73, 193, 1.62],
+                        [26, 73, 193, 1.62],
+                        [26, 73, 193, 1.62],
+                        [26, 73, 193, 1.62],
+                        [26, 73, 193, 1.62]]
+            elif position == 'defence':
+                    if prev_years == 4:
+                        return [
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]]
+                    elif prev_years == 3:
+                        return [
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]]
+                    elif prev_years == 2:
+                        return [
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.3, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.3, 0.5, 0.3],
+                            [26, 73, 193, 0.5, 0.5, 0.3, 0.3],
+                            [26, 73, 193, 0.2, 0.2, 0.2, 0.2]]
+                    elif prev_years == 1:
+                        return [
+                            [26, 73, 193, 0.5, 0.3],
+                            [26, 73, 193, 0.3, 0.5],
+                            [26, 73, 193, 0.5, 0.5],
+                            [26, 73, 193, 0.2, 0.2],
+                            [26, 73, 193, 0.2, 0.0]]
+
 
 def main():
     start = time.time()
 
     # Change these variables to change projection sets
     proj_stat = 'Gper60'
-    position = 'forward' # [forward, defence]
+    position = 'defence' # [forward, defence]
     prev_years = 1 # [1, 2, 3, 4]
     situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
@@ -382,3 +416,8 @@ main()
 # Forwards with 3 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
 # Forwards with 2 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
 # Forwards with 1 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
+
+# Defence with 4 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, minmax scaler
+# Defence with 3 seasons of > 50 GP: Parent model 8 (64-32-1), 5 epochs, minmax scaler
+# Defence with 2 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 1 epoch, standard scaler
+# Defence with 1 seasons of > 50 GP: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
