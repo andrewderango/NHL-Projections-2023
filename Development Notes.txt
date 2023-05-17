@@ -4,6 +4,8 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 
 Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 
+Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
+
 Consider using cross-validation for model testing?
 Consider Bayesian neural network for uncertainty?
 Random forest?
