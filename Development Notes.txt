@@ -18,6 +18,7 @@ Next Steps:
 11. Defence PP A2/60
 12. Forward SHA/60
 13. Defence SHA/60
+-- GBQ ML using the existing instance dataframes(?)
 
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
