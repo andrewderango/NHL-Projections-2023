@@ -6,6 +6,8 @@ Turn the storage of model architectures/hyperparameters into a CSV (currently co
 
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 
+PP cutoff at 0.61 minutes per game because that equates to 50 mins of total PPTOI in an 82 game season.
+
 Consider using cross-validation for model testing?
 Consider Bayesian neural network for uncertainty?
 Random forest?
