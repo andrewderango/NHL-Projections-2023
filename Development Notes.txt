@@ -2,13 +2,9 @@ dGP is defined to be the amount of games played in the target year above the ave
 
 For some reason, the earlier models (model 1, epoch 1 standardscaler specifically) tends to over-regress results while maintaining a decent MAE. Investigate this.
 
-Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
-
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 
-PP cutoff at 0.61 minutes per game because that equates to 50 mins of total PPTOI in an 82 game season.
-
-!! Add a neural network architecture/hyperparameter catalog CSV file.
+!! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
 
 Consider using cross-validation for model testing?
