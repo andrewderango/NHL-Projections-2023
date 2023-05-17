@@ -9,6 +9,7 @@ Be careful when considering features other than age, height, weight. Make sure t
 PP cutoff at 0.61 minutes per game because that equates to 50 mins of total PPTOI in an 82 game season.
 
 !! Add a neural network architecture/hyperparameter catalog CSV file.
+--> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
 
 Consider using cross-validation for model testing?
 Consider Bayesian neural network for uncertainty?
