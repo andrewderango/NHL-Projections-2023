@@ -3129,8 +3129,6 @@ def main():
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
-
     projection_df = projection_df.sort_values('PP G/60', ascending=False)
 
     # print(projection_df)
