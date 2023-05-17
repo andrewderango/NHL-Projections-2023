@@ -4,6 +4,21 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 
+Next Steps:
+1. Forward PP G/60 Projections
+2. Forward PK G/60 Projections (probably should only consider historical SHxG/60, not even raw SHG/60)
+3. Defence PK G/60 Projections (should have extreme regression)
+4. Forward EV A1/60 (A1 and A2 should consider each other; be features in both P and S assist projection models)
+5. Defence EV A1/60
+6. Forward EV A2/60
+7. Defence EV A2/60
+8. Forward PP A1/60
+9. Defence PP A1/60
+10. Forward PP A2/60
+11. Defence PP A2/60
+12. Forward SHA/60
+13. Defence SHA/60
+
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
 
