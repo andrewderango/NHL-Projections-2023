@@ -414,8 +414,8 @@ def main():
 
     # Change these variables to change projection sets
     proj_stat = 'Gper60'
-    position = 'defence' # [forward, defence]
-    prev_years = 3 # [1, 2, 3, 4]
+    position = 'forward' # [forward, defence]
+    prev_years = 1 # [1, 2, 3, 4]
     situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
@@ -485,9 +485,9 @@ main()
 # Forwards with 4 seasons of > 50 PPTOI: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler
 # Forwards with 3 seasons of > 50 PPTOI: Parent model 3 (48-24-12-6-11), 5 epochs, minmax scaler
 # Forwards with 2 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 10 epochs, minmax scaler
-# Forwards with 1 seasons of > 50 PPTOI: Parent model 5 (64-28-12-1), 5 epochs, standard scaler
+# Forwards with 1 seasons of > 50 PPTOI: Parent model 5 (64-28-12-1), 5 epochs, minmax scaler
 
 # Defence with 4 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 10 epochs, minmax scaler
-# Defence with 3 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
-# Defence with 2 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
+# Defence with 3 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler
+# Defence with 2 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler
 # Defence with 1 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
