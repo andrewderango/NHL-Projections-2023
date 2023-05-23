@@ -350,35 +350,35 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                             [28, 74, 215, 0.51, 0.33], # jake walman
                             [27, 71, 174, 0.12, 0.25]] # alexandre carrier
         elif situation == 'PP':
-            if position == 'foward':
-                if prev_years == 4:
-                    return [
-                        [27, 73, 193, 1.22, 1.45, 1.41, 1.62], # connor mcdavid: 1.45
-                        [26, 75, 208, 1.70, 1.97, 2.08, 1.32], # auston matthews: 1.59
-                        [27, 73, 195, 1.60, 1.65, 1.39, 2.01], # david pastrnak: 1.60
-                        [27, 74, 200, 0.66, 0.58, 0.42, 0.46], # jason dickinson: 0.51
-                        [29, 71, 186, 0.56, 0.61, 0.71, 0.42]] # alexander kerfoot: 0.56
-                elif prev_years == 3:
-                    return [
-                        [26, 73, 193, 1.45, 1.41, 1.62], # 1.49
-                        [26, 73, 193, 1.97, 2.08, 1.32], # 1.60
-                        [26, 73, 193, 1.65, 1.39, 2.01], # 1.60
-                        [26, 73, 193, 0.58, 0.42, 0.46], # 0.50
-                        [26, 73, 193, 0.61, 0.71, 0.42]] # 0.58
-                elif prev_years == 2:
-                    return [
-                        [26, 73, 193, 1.41, 1.62],
-                        [26, 73, 193, 2.08, 1.32],
-                        [26, 73, 193, 1.39, 2.01],
-                        [26, 73, 193, 0.42, 0.46],
-                        [26, 73, 193, 0.71, 0.42]]
-                elif prev_years == 1:
-                    return [
-                        [26, 73, 193, 1.5],
-                        [26, 73, 193, 1.0],
-                        [26, 73, 193, 0.5],
-                        [26, 73, 193, 0.25],
-                        [19, 73, 193, 1.00]]
+            if position == 'forward':
+                    if prev_years == 4:
+                        return [
+                            [25, 71, 187, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42],
+                            [32, 73, 201, 0.51, 0.43, 0.42, 0.43, 0.41, 0.35, 0.36, 0.47, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42],
+                            [24, 75, 202, 0.13, 0.23, 0.37, 0.33, 0.16, 0.24, 0.23, 0.44, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42],
+                            [30, 72, 194, 0.26, 0.58, 0.47, 0.51, 0.30, 0.26, 0.39, 0.43, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42],
+                            [36, 75, 209, 0.31, 0.48, 0.29, 0.17, 0.25, 0.28, 0.20, 0.24, 0.49, 0.28, 0.73, 0.61, 0.29, 0.22, 0.41, 0.42]]
+                    elif prev_years == 3:
+                        return [
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.4, 0.3, 0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.3, 0.4, 0.5, 0.4, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]]
+                    elif prev_years == 2:
+                        return [
+                            [26, 73, 193, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.3, 0.5, 0.3, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.5, 0.5, 0.3, 0.3, 0.5, 0.5, 0.5, 0.5],
+                            [26, 73, 193, 0.2, 0.2, 0.2, 0.2, 0.5, 0.5, 0.5, 0.5]]
+                    elif prev_years == 1:
+                        return [
+                            [28, 74, 204, 0.38, 0.45, 0.38, 0.45],
+                            [31, 72, 204, 0.00, 0.39, 0.38, 0.45],
+                            [21, 78, 218, 0.15, 0.27, 0.38, 0.45],
+                            [28, 74, 215, 0.51, 0.33, 0.38, 0.45],
+                            [27, 71, 174, 0.12, 0.25, 0.38, 0.45]]
             elif position == 'defence':
                     if prev_years == 4:
                         return [
@@ -415,7 +415,7 @@ def main():
     # Change these variables to change projection sets
     proj_stat = 'Gper60'
     position = 'defence' # [forward, defence]
-    prev_years = 2 # [1, 2, 3, 4]
+    prev_years = 3 # [1, 2, 3, 4]
     situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
@@ -482,8 +482,12 @@ main()
 # Defence with 1 seasons of > 50 GP: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
 
 # --- PP G/60 MODEL ---
+# Forwards with 4 seasons of > 50 PPTOI: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler
+# Forwards with 3 seasons of > 50 PPTOI: Parent model 3 (48-24-12-6-11), 5 epochs, minmax scaler
+# Forwards with 2 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 10 epochs, minmax scaler
+# Forwards with 1 seasons of > 50 PPTOI: Parent model 5 (64-28-12-1), 5 epochs, standard scaler
 
-# Defence with 4 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 10 epochs, standard scaler
-# Defence with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
-# Defence with 2 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
-# Defence with 1 seasons of > 50 GP: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
+# Defence with 4 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 10 epochs, minmax scaler
+# Defence with 3 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
+# Defence with 2 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, standard scaler
+# Defence with 1 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
