@@ -10,6 +10,7 @@ Solutions:
 1. Binary/scaled indicator giving probability of maintaining their probability of outperforming their 
   a. Could simply be games played in last 4 seasons.
 2. Add Gax from each 4 season as a feature.
+3. Use MoneyPuck shooting talent adjustment.
 Assure age is adjusted properly at EV (See Jack Hughes - Current Proj = 0.89 EVG/60. PPG/60 is fine.)
 
 Next Steps:
