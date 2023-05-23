@@ -2959,7 +2959,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
     X_3_scaled = X_3_scaler.transform(X_3)
     X_2_scaler = MinMaxScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
-    X_1_scaler = StandardScaler().fit(X_1)
+    X_1_scaler = MinMaxScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
     yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
@@ -3202,9 +3202,9 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file):
 
     X_4_scaler = MinMaxScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
-    X_3_scaler = StandardScaler().fit(X_3)
+    X_3_scaler = MinMaxScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
-    X_2_scaler = StandardScaler().fit(X_2)
+    X_2_scaler = MinMaxScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
     X_1_scaler = MinMaxScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
@@ -3429,13 +3429,14 @@ def main():
     # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
     # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False)
     # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False)
     # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True)
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    # projection_df = projection_df.sort_values('PP G/60', ascending=False)
+    projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True)
+
+    projection_df = projection_df.sort_values('PP G/60', ascending=False)
 
     # print(projection_df)
     print(projection_df.to_string())
