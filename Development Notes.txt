@@ -4,8 +4,16 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 
+Issue: Goals are being underprojected for players that consistently outperform their xG.
+See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
+Solutions:
+1. Binary/scaled indicator giving probability of maintaining their probability of outperforming their 
+  a. Could simply be games played in last 4 seasons.
+2. Add Gax from each 4 season as a feature.
+Assure age is adjusted properly at EV (See Jack Hughes - Current Proj = 0.89 EVG/60. PPG/60 is fine.)
+
 Next Steps:
-1. Forward PP G/60 Projections
+1. Forward PP G/60 Projections (In progress)
 2. Forward PK G/60 Projections (probably should only consider historical SHxG/60, not even raw SHG/60)
 3. Defence PK G/60 Projections (should have extreme regression)
 4. Forward EV A1/60 (A1 and A2 should consider each other; be features in both P and S assist projection models)
