@@ -29,7 +29,7 @@ Next Steps:
 13. Defence SHA/60
 -- GBQ ML using the existing instance dataframes(?)
 
-Make custom shooting talent model.
+Make custom shooting talent model using Bayesian statistics.
 
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
