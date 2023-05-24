@@ -58,7 +58,7 @@ for index, row in shooting_talent_df.iterrows():
 shooting_talent_df['xG/Shot'] = shooting_talent_df['Relevant xGoals'] / shooting_talent_df['Relevant Shots']
 shooting_talent_df['Gax'] = shooting_talent_df['Relevant Goals'] - shooting_talent_df['Relevant xGoals']
 shooting_talent_df['Gax/Shot'] = shooting_talent_df['Gax'] / shooting_talent_df['Relevant Shots']
-shooting_talent_df['Shooting Talent'] = (shooting_talent_df['Relevant Goals'] -  shooting_talent_df['Relevant xGoals']) / shooting_talent_df['Relevant xGoals'] * 100
+shooting_talent_df['Shooting Talent'] = (shooting_talent_df['Relevant Goals'] - shooting_talent_df['Relevant xGoals']) / shooting_talent_df['Relevant xGoals']
 
 shooting_talent_df = shooting_talent_df.sort_values(by='Shooting Talent', ascending=False)
 shooting_talent_df = shooting_talent_df.reset_index(drop=True)
