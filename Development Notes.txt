@@ -12,7 +12,7 @@ Solutions:
 2. Add Gax from each 4 season as a feature.
 3. Use MoneyPuck shooting talent adjustment.
 Assure age is adjusted properly at EV (See Jack Hughes - Current Proj = 0.89 EVG/60. PPG/60 is fine.)
-^^^ Custon shooting talent model was made, needs to be applied to all previous xG statistics. Just edit the scrape_player_statistics function. Loop through the column name, if it contains xG, then multiply the column by 1+shooting_talent.
+^^^ Custon shooting talent model was made, needs to be applied to all previous xG statistics. Just edit the scrape_player_statistics function. Loop through the column name, if it contains xG, then multiply the column by 1+shooting_talent (line 155 ptf). Also deprecate the shooting_talent.py file and migrate it to the ptf file.
 
 Next Steps:
 1. Forward PP G/60 Projections (In progress)
