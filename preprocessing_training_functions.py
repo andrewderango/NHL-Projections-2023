@@ -15,9 +15,8 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import tensorflow as tf
 import statistics
 
-def scrape_bios(download_file=False):
+def scrape_bios(download_file=False, end_year=2023):
     start_year = 2007
-    end_year = 2023
 
     running_df = None
     for year in range(start_year, end_year):
@@ -143,7 +142,7 @@ def scrape_player_statistics(existing_csv=False):
     if existing_csv == True:
         stat_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/historical_player_statistics.csv")
     elif existing_csv == False:
-        player_bio_df = scrape_bios(False)
+        player_bio_df = scrape_bios(False, 2023)
         player_bio_df = player_bio_df.drop(player_bio_df.columns[0], axis=1)
 
         stat_df = prune_bios(player_bio_df)
@@ -154,7 +153,86 @@ def scrape_player_statistics(existing_csv=False):
         stat_df = scrape_statistics(stat_df, 'pp', 'oi', True)
         stat_df = scrape_statistics(stat_df, 'pk', 'oi', True)
 
+        shooting_talent_df = calc_shooting_talent(stat_df, True)
+        stat_df = pd.merge(stat_df, shooting_talent_df[['Player', 'Shooting Talent']], on='Player', how='left')
+
+        ixg_columns = [col for col in stat_df.columns if 'ixG' in col and 'oi' not in col]
+        stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0),4)
+
+        stat_df.set_index('Player', inplace=True)
+
+        filename = f'historical_player_statistics'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        stat_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return stat_df
+
+def aggregate_stats_all_situations(evrate, evatoi, pprate, ppatoi, pkrate, pkatoi, gp, float=False):
+    if float == True:
+        return round((evrate/60 * evatoi + pprate/60 * ppatoi + pkrate/60 * pkatoi) * gp,2)
+    else:
+        return int(round((evrate/60 * evatoi + pprate/60 * ppatoi + pkrate/60 * pkatoi) * gp))
+    
+def calc_shooting_talent(stat_df, download_file=False):
+    stat_df = stat_df.fillna(0)
+    shooting_talent_cols = ['Player', 'Position', 'Age']
+
+    start_year = 2007
+    end_year = 2023
+
+    for year in range(start_year, end_year):
+        shooting_talent_cols.append(f'{year+1} Goals')
+        shooting_talent_cols.append(f'{year+1} xGoals')
+        shooting_talent_cols.append(f'{year+1} Shots')
+        stat_df[f'{year+1} Goals'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV G/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP G/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK G/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
+        stat_df[f'{year+1} xGoals'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV ixG/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP ixG/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK ixG/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP'], True), axis=1)
+        stat_df[f'{year+1} Shots'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV Shots/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP Shots/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK Shots/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
+
+    shooting_talent_df = stat_df[shooting_talent_cols]
+    # shooting_talent_df['Goals'] = shooting_talent_df.filter(like=' Goals').sum(axis=1)
+    # shooting_talent_df['xGoals'] = shooting_talent_df.filter(like='xGoals').sum(axis=1)
+    # shooting_talent_df['Shots'] = shooting_talent_df.filter(like='Shots').sum(axis=1)
+
+    for index, row in shooting_talent_df.iterrows():
+        relevant_shots, relevant_xgoals, relevant_goals = 0, 0, 0
+        for year in range(end_year, start_year, -1):
+            if relevant_shots < 1000:
+                relevant_shots += shooting_talent_df.at[index, f'{year} Shots']
+                relevant_xgoals += shooting_talent_df.at[index, f'{year} xGoals']
+                relevant_goals += shooting_talent_df.at[index, f'{year} Goals']
+        
+        shooting_talent_df.at[index, 'Relevant Shots'] = int(relevant_shots)
+        shooting_talent_df.at[index, 'Relevant xGoals'] = relevant_xgoals
+        shooting_talent_df.at[index, 'Relevant Goals'] = int(relevant_goals)
+
+    avg_xg_per_shot = shooting_talent_df['Relevant xGoals'].sum() / shooting_talent_df['Relevant Shots'].sum()
+    avg_g_per_shot = shooting_talent_df['Relevant Goals'].sum() / shooting_talent_df['Relevant Shots'].sum()
+
+    for index, row in shooting_talent_df.iterrows():
+        if shooting_talent_df.loc[index, f'Relevant Shots'] < 1000:
+            pseudoshots = 1000 - shooting_talent_df.loc[index, f'Relevant Shots']
+            shooting_talent_df.at[index, 'Relevant Shots'] = 1000
+            shooting_talent_df.at[index, 'Relevant xGoals'] = round(avg_xg_per_shot * pseudoshots, 2)
+            shooting_talent_df.at[index, 'Relevant Goals'] = round(avg_g_per_shot * pseudoshots, 2)
+
+    shooting_talent_df['xG/Shot'] = shooting_talent_df['Relevant xGoals'] / shooting_talent_df['Relevant Shots']
+    shooting_talent_df['Gax'] = shooting_talent_df['Relevant Goals'] - shooting_talent_df['Relevant xGoals']
+    shooting_talent_df['Gax/Shot'] = shooting_talent_df['Gax'] / shooting_talent_df['Relevant Shots']
+    shooting_talent_df['Shooting Talent'] = (shooting_talent_df['Relevant Goals'] - shooting_talent_df['Relevant xGoals']) / shooting_talent_df['Relevant xGoals']
+
+    shooting_talent_df = shooting_talent_df.sort_values(by='Shooting Talent', ascending=False)
+    shooting_talent_df = shooting_talent_df.reset_index(drop=True)
+    
+    if download_file == True:
+        filename = f'shooting_talent'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        shooting_talent_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return shooting_talent_df
 
 def create_instance_df(dependent_variable, columns, stat_df, download_file=False):
     # str, list, df, bool
@@ -3428,14 +3506,14 @@ def main():
     # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
     # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
     # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
     # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True)
+    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
     projection_df = projection_df.sort_values('PP G/60', ascending=False)
+    projection_df = projection_df.reset_index(drop=True)
 
     # print(projection_df)
     print(projection_df.to_string())
