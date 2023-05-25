@@ -3,14 +3,11 @@ import os
 import pandas as pd
 import numpy as np
 
-def aggregate_stats(evrate, evatoi, pprate, ppatoi, pkrate, pkatoi, gp, float=False):
+def aggregate_stats_all_situations(evrate, evatoi, pprate, ppatoi, pkrate, pkatoi, gp, float=False):
     if float == True:
         return round((evrate/60 * evatoi + pprate/60 * ppatoi + pkrate/60 * pkatoi) * gp,2)
     else:
         return int(round((evrate/60 * evatoi + pprate/60 * ppatoi + pkrate/60 * pkatoi) * gp))
-    
-def aggregate_years(stat_list):
-    return sum(stat_list)
 
 stat_df = ptf.scrape_player_statistics(True)
 stat_df = stat_df.fillna(0)
@@ -23,9 +20,9 @@ for year in range(start_year, end_year):
     shooting_talent_cols.append(f'{year+1} Goals')
     shooting_talent_cols.append(f'{year+1} xGoals')
     shooting_talent_cols.append(f'{year+1} Shots')
-    stat_df[f'{year+1} Goals'] = stat_df.apply(lambda row: aggregate_stats(row[f'{year+1} EV G/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP G/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK G/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
-    stat_df[f'{year+1} xGoals'] = stat_df.apply(lambda row: aggregate_stats(row[f'{year+1} EV ixG/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP ixG/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK ixG/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP'], True), axis=1)
-    stat_df[f'{year+1} Shots'] = stat_df.apply(lambda row: aggregate_stats(row[f'{year+1} EV Shots/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP Shots/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK Shots/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
+    stat_df[f'{year+1} Goals'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV G/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP G/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK G/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
+    stat_df[f'{year+1} xGoals'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV ixG/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP ixG/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK ixG/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP'], True), axis=1)
+    stat_df[f'{year+1} Shots'] = stat_df.apply(lambda row: aggregate_stats_all_situations(row[f'{year+1} EV Shots/60'], row[f'{year+1} EV ATOI'], row[f'{year+1} PP Shots/60'], row[f'{year+1} PP ATOI'], row[f'{year+1} PK Shots/60'], row[f'{year+1} PK ATOI'], row[f'{year+1} GP']), axis=1)
 
 shooting_talent_df = stat_df[shooting_talent_cols]
 # shooting_talent_df['Goals'] = shooting_talent_df.filter(like=' Goals').sum(axis=1)
