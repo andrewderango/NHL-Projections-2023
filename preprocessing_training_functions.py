@@ -1070,7 +1070,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y1 EV G/60'], row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
                             row[f'Y1 EV ixG/60'], row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                             ]) # features
-                    y.append(row[f'Y5 d{situation} G/60']) # target
+                    y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 3:
                 instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -1094,7 +1094,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
                             row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                             ]) # features
-                    y.append(row[f'Y5 d{situation} G/60']) # target
+                    y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 2:
                 instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -1118,7 +1118,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
                             row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                             ]) # features
-                    y.append(row[f'Y5 d{situation} G/60']) # target
+                    y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 1:
                 instance_df[[
                 'Y4 GP', 'Y5 GP', 
@@ -1142,7 +1142,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y4 EV G/60'],
                             row[f'Y4 EV ixG/60']
                             ]) # features
-                    y.append(row[f'Y5 d{situation} G/60']) # target
+                    y.append(row[f'Y5 {situation} G/60']) # target
             else:
                 print('Invalid prev_years parameter.')
             
