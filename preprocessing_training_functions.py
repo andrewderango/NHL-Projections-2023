@@ -2987,33 +2987,30 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
 def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(48, activation='relu', input_shape=(19,)),
-        tf.keras.layers.Dense(24, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(48, activation='relu', input_shape=(15,)),
-        tf.keras.layers.Dense(24, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    yr2_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(11,)),
-        tf.keras.layers.Dense(32, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(19,)),
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
+    yr3_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(15,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
+
+    yr2_model = tf.keras.Sequential([
+        tf.keras.layers.Dense(256, activation='relu', input_shape=(11,)),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
+
     yr1_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(7,)),
-        tf.keras.layers.Dense(28, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(7,)),
+        tf.keras.layers.Dense(16, activation='relu'),
+        tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -3031,9 +3028,9 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
     instance_df_y1, _ = create_year_restricted_instance_df('Gper60', 'forward', 1, 'PP')
     X_1, y_1 = extract_instance_data(instance_df_y1, 'Gper60', 1, 'PP', 'forward')
 
-    X_4_scaler = MinMaxScaler().fit(X_4)
+    X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
-    X_3_scaler = MinMaxScaler().fit(X_3)
+    X_3_scaler = StandardScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
     X_2_scaler = MinMaxScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
@@ -3042,8 +3039,8 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
     yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
-    yr2_model.fit(X_2_scaled, y_2, epochs=10, verbose=1)
-    yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=10, verbose=1)
 
     # permutation_feature_importance(yr4_model, X_4_scaled, y_4, ['Age', 'Height', 'Weight', 'Y1 PP G/60', 'Y2 PP G/60', 'Y3 PP G/60', 'Y4 PP G/60', 'Y1 PP ixG/60', 'Y2 PP ixG/60', 'Y3 PP ixG/60', 'Y4 PP ixG/60', 'Y1 EV G/60', 'Y2 EV G/60', 'Y3 EV G/60', 'Y4 EV G/60', 'Y1 EV ixG/60', 'Y2 EV ixG/60', 'Y3 EV ixG/60', 'Y4 EV ixG/60'])
 
@@ -3188,6 +3185,9 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
 
+    # for index in range(len(yr4_stat_list)):
+    #     print(yr4_group[index], yr4_stat_list[index])
+
     yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
     proj_y_3 = yr3_model.predict(yr3_stat_list_scaled, verbose=1)
 
@@ -3198,28 +3198,28 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file):
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[3:7]) < 0: # be careful of the statline index when changing feature qty.
+        if proj_y_4[index][0] + statistics.mean(statline[3:7]) < 0:
             projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP G/60'] = 0
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP G/60'] = proj_y_4[index][0] + statistics.mean(statline[3:7]) # be careful of the statline index when changing feature qty
+            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP G/60'] = proj_y_4[index][0]
 
     for index, statline in enumerate(yr3_stat_list):
         if proj_y_3[index][0] + statistics.mean(statline[3:6]) < 0:
             projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP G/60'] = 0
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP G/60'] = proj_y_3[index][0] + statistics.mean(statline[3:6])
+            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP G/60'] = proj_y_3[index][0]
 
     for index, statline in enumerate(yr2_stat_list):
         if proj_y_2[index][0] + statistics.mean(statline[3:5]) < 0:
             projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP G/60'] = 0            
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP G/60'] = proj_y_2[index][0] + statistics.mean(statline[3:5])
+            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP G/60'] = proj_y_2[index][0]
 
     for index, statline in enumerate(yr1_stat_list):
         if proj_y_1[index][0] + statline[3] < 0:
             projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP G/60'] = 0
         else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP G/60'] = proj_y_1[index][0] + statline[3]
+            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP G/60'] = proj_y_1[index][0]
 
     # Download file
     if download_file == True:
@@ -3511,6 +3511,8 @@ def main():
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
+
+    projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True)
 
     projection_df = projection_df.sort_values('PP G/60', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
