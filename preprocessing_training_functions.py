@@ -14,6 +14,7 @@ from sklearn.inspection import permutation_importance
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import tensorflow as tf
 import statistics
+from scipy.signal import savgol_filter
 
 def scrape_bios(download_file=False, end_year=2023):
     start_year = 2007
@@ -1378,6 +1379,8 @@ def fetch_data(row, year, yX, situation, stat):
                     result = result/56*82
                 elif stat == 'GP' and year+yX-4 == 2020:
                     result = result/69.5*82
+                elif stat == 'GP' and year+yX-4 == 2013:
+                    result = result/48*82
                 try:
                     result = int(result)
                 except ValueError:
@@ -1414,6 +1417,21 @@ def permutation_feature_importance(model, X_scaled, y, features, scoring='neg_me
     plt.box(True) # False to hide box
     # plt.tight_layout()
     plt.show()
+
+def make_projection_df(stat_df):
+    projection_df = pd.DataFrame(columns=['Player', 'Position', 'Age', 'Height', 'Weight'])
+
+    for index, row in stat_df.loc[(stat_df['2023 GP'] >= 1)].iterrows():
+        projection_df.loc[index] = [
+            row['Player'], 
+            row['Position'],
+            round(calc_age(row['Date of Birth'], 2023),1),
+            row['Height (in)'], 
+            row['Weight (lbs)']]
+
+    projection_df = projection_df.sort_values('Player')
+    projection_df = projection_df.reset_index(drop=True)
+    return projection_df
 
 def make_forward_gp_projections(stat_df, projection_df, download_file):
     # Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
@@ -4075,19 +4093,57 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file):
 
     return projection_df
 
-def make_projection_df(stat_df):
-    projection_df = pd.DataFrame(columns=['Player', 'Position', 'Age', 'Height', 'Weight'])
+def goal_era_adjustment(stat_df, projection_df, download_file=False):
+    stat_df = stat_df.fillna(0)
+    projection_df = projection_df.fillna(0)
+    hist_goal_df = pd.DataFrame()
 
-    for index, row in stat_df.loc[(stat_df['2023 GP'] >= 1)].iterrows():
-        projection_df.loc[index] = [
-            row['Player'], 
-            row['Position'],
-            round(calc_age(row['Date of Birth'], 2023),1),
-            row['Height (in)'], 
-            row['Weight (lbs)']]
+    for year in range(2007, 2023):
+        col = round(((stat_df[f'{year+1} EV G/60']/60*stat_df[f'{year+1} EV ATOI'] + stat_df[f'{year+1} PP G/60']/60*stat_df[f'{year+1} PP ATOI'] + stat_df[f'{year+1} PK G/60']/60*stat_df[f'{year+1} PK ATOI']) * stat_df[f'{year+1} GP'])).astype(int)
+        col = col.sort_values(ascending=False)
+        col = col.reset_index(drop=True)
+        hist_goal_df = hist_goal_df.reset_index(drop=True)
+        hist_goal_df[year+1] = col
+    hist_goal_df.index = hist_goal_df.index + 1
 
-    projection_df = projection_df.sort_values('Player')
+    try:
+        hist_goal_df[2021] = round(82/56*hist_goal_df[2021]).astype(int)
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2020] = round(82/70*hist_goal_df[2020]).astype(int)
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2013] = round(82/48*hist_goal_df[2013]).astype(int)
+    except KeyError:
+        pass
+
+    hist_goal_df['Historical Average'] = hist_goal_df.mean(axis=1)
+    hist_goal_df['Projected Average'] = hist_goal_df.iloc[:, -5:-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_goal_df['Adjustment'] = hist_goal_df['Projected Average'] - hist_goal_df['Historical Average']
+    hist_goal_df['Smoothed Adjustment'] = savgol_filter(hist_goal_df['Adjustment'], 25, 2)
+    # print(hist_goal_df.head(750).to_string())
+
+    projection_df['GOALS'] = (projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP'].astype(int)
+    projection_df = projection_df.sort_values('GOALS', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
+    projection_df['Era Adjustment Factor'] = hist_goal_df['Smoothed Adjustment']/((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
+    projection_df['EV G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PP G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PK G/60'] *= projection_df['Era Adjustment Factor']
+    # print(projection_df.to_string())
+    projection_df = projection_df.drop(columns=['GOALS', 'Era Adjustment Factor'])
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def main():
@@ -4111,11 +4167,13 @@ def main():
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    projection_df = projection_df.fillna(0)
+    projection_df = goal_era_adjustment(stat_df, projection_df, False)
+    
     projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
 
     projection_df = projection_df.sort_values('GOALS', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
 
     # print(projection_df)
     print(projection_df.to_string())
