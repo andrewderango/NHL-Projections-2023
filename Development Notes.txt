@@ -14,6 +14,8 @@ Solutions:
 Assure age is adjusted properly at EV (See Jack Hughes - Current Proj = 0.89 EVG/60. PPG/60 is fine.)
 ^^^ Custon shooting talent model was made, needs to be applied to all previous xG statistics. Just edit the scrape_player_statistics function. Loop through the column name, if it contains xG, then multiply the column by 1+shooting_talent (line 155 ptf). Also deprecate the shooting_talent.py file and migrate it to the ptf file.
 
+New strategy for adding projections to the projection_df will need to be changed once you get to stats that are delta. For example, dGP, dATOI, etc.
+
 Next Steps:
 1. Forward PP G/60 Projections (In progress)
 2. Forward PK G/60 Projections (probably should only consider historical SHxG/60, not even raw SHG/60)
