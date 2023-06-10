@@ -5,6 +5,8 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
+Every projection that classifies based on GP needs to be reworked because season cutoff accomodations. Ex: /69.5*82
+
 Issue: Goals are being underprojected for players that consistently outperform their xG.
 See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
 Solutions:
