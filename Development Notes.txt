@@ -6,6 +6,7 @@ Be careful when considering features other than age, height, weight. Make sure t
 On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
 Every projection that classifies based on GP needs to be reworked because season cutoff accomodations. Ex: /69.5*82
+Then fix df creation for previous seasons. Only works for 2024 right now.
 
 Issue: Goals are being underprojected for players that consistently outperform their xG.
 See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
