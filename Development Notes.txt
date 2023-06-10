@@ -5,6 +5,8 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
+Fix games played year classifier to account for different projection years. Only works properly for 2023-24 projections because y-4 GP are prorated, same as y-3 and y-2. Need an if statement to determine if the year is 2013, 2020, or 2021.
+
 Issue: Goals are being underprojected for players that consistently outperform their xG.
 See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
 Solutions:
