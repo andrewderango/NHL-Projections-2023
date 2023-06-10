@@ -3,6 +3,7 @@ dGP is defined to be the amount of games played in the target year above the ave
 For some reason, the earlier models (model 1, epoch 1 standardscaler specifically) tends to over-regress results while maintaining a decent MAE. Investigate this.
 
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
+On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
 Issue: Goals are being underprojected for players that consistently outperform their xG.
 See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
