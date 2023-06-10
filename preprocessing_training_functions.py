@@ -1418,22 +1418,23 @@ def permutation_feature_importance(model, X_scaled, y, features, scoring='neg_me
     # plt.tight_layout()
     plt.show()
 
-def make_projection_df(stat_df):
+def make_projection_df(stat_df, year=2024):
     projection_df = pd.DataFrame(columns=['Player', 'Position', 'Age', 'Height', 'Weight'])
 
-    for index, row in stat_df.loc[(stat_df['2023 GP'] >= 1)].iterrows():
+    for index, row in stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)].iterrows():
         projection_df.loc[index] = [
             row['Player'], 
             row['Position'],
-            round(calc_age(row['Date of Birth'], 2023),1),
+            round(calc_age(row['Date of Birth'], year-1),1),
             row['Height (in)'], 
             row['Weight (lbs)']]
 
     projection_df = projection_df.sort_values('Player')
     projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
     return projection_df
 
-def make_forward_gp_projections(stat_df, projection_df, download_file):
+def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024):
     # Forwards with 4 seasons of > 50 GP: Parent model 1 (126-42-14-6-1), 5 epochs, standard scaler
     # Forwards with 3 seasons of > 50 GP: Parent model 12 (8-1), 50 epochs, standard scaler
     # Forwards with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 50 epochs, minmax scaler
@@ -1496,13 +1497,32 @@ def make_forward_gp_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] != 'D':
-            if row['2020 GP']/69.5*82 >= 50 and row['2021 GP']/56*82 >= 50 and row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 50 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 50 and row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -1511,37 +1531,37 @@ def make_forward_gp_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 GP'].iloc[0]/69.5*82,
-            stat_df.loc[stat_df['Player'] == player, '2021 GP'].iloc[0]/56*82,
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 GP'].iloc[0]/56*82,
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr1_group:
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
@@ -1555,42 +1575,52 @@ def make_forward_gp_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'GP'
+
     # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = 82
+        player_name = yr4_group[index]
+        projection = min(proj_y_4[index][0] + statistics.mean(statline[-4:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = 82
+        player_name = yr3_group[index]
+        projection = min(proj_y_3[index][0] + statistics.mean(statline[-3:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = 82
+        player_name = yr2_group[index]
+        projection = min(proj_y_2[index][0] + statistics.mean(statline[-2:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = 82
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = min(proj_y_1[index][0] + statistics.mean(statline[-1:]), 82) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_defence_gp_projections(stat_df, projection_df, download_file):
+def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024):
     # Defence with 4 seasons of > 50 GP: Parent model 5 (64-28-12-1), 30 epochs, standard scaler
     # Defence with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 30 epochs, minmax scaler
     # Defence with 2 seasons of > 50 GP: Parent model 10 (16-4-1), 10 epochs, standard scaler
@@ -1653,13 +1683,32 @@ def make_defence_gp_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] == 'D':
-            if row['2020 GP']/69.5*82 >= 50 and row['2021 GP']/56*82 >= 50 and row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 50 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 50 and row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 50 and row['2023 GP'] >= 50:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -1668,37 +1717,37 @@ def make_defence_gp_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 GP'].iloc[0]/69.5*82,
-            stat_df.loc[stat_df['Player'] == player, '2021 GP'].iloc[0]/56*82,
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 GP'].iloc[0]/56*82,
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 GP'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr1_group:
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2023 GP'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
@@ -1712,42 +1761,52 @@ def make_defence_gp_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'GP'
+
     # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = 82
+        player_name = yr4_group[index]
+        projection = min(proj_y_4[index][0] + statistics.mean(statline[-4:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'GP'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = 82
+        player_name = yr3_group[index]
+        projection = min(proj_y_3[index][0] + statistics.mean(statline[-3:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'GP'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = 82
+        player_name = yr2_group[index]
+        projection = min(proj_y_2[index][0] + statistics.mean(statline[-2:]), 82)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'GP'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) > 82:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = 82
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'GP'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = min(proj_y_1[index][0] + statistics.mean(statline[-1:]), 82) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_forward_ev_atoi_projections(stat_df, projection_df, download_file):
+def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Forwards with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 10 epochs, standard scaler
     # Forwards with 3 seasons of > 40 GP: Parent model 11 (24-1), 10 epochs, standard scaler
     # Forwards with 2 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 10 epochs, standard scaler
@@ -1813,13 +1872,32 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] != 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -1828,40 +1906,40 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 EV ATOI'].fillna(0).iloc[0]
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].fillna(0).iloc[0]
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 45 games.
         # Once you reach 45 games, find the ATOI accross these seasons.
@@ -1880,7 +1958,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -1897,29 +1975,51 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'EV ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_defence_ev_atoi_projections(stat_df, projection_df, download_file):
+def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Defence with 4 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
     # Defence with 3 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
     # Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
@@ -1981,13 +2081,32 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] == 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] == 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -1996,40 +2115,40 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 EV ATOI'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 EV ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 EV ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 EV ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 30 games.
         # Once you reach 30 games, find the ATOI accross these seasons.
@@ -2048,7 +2167,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -2065,29 +2184,51 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'EV ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_forward_pp_atoi_projections(stat_df, projection_df, download_file):
+def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Forwards with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
     # Forwards with 3 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
     # Forwards with 2 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
@@ -2151,13 +2292,32 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] != 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -2166,40 +2326,40 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 PP ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 20 games.
         # Once you reach 20 games, find the ATOI accross these seasons.
@@ -2218,7 +2378,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -2235,41 +2395,51 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'PP ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP ATOI'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP ATOI'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP ATOI'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP ATOI'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_defence_pp_atoi_projections(stat_df, projection_df, download_file):
+def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Defence with 4 seasons of > 40 GP: Parent model 5 (64-28-12-1), 30 epochs, minmax scaler
     # Defence with 3 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 100 epochs, minmax scaler
     # Defence with 2 seasons of > 40 GP: Parent model 1 (126-42-14-6-1), 30 epochs, standard scaler
@@ -2334,13 +2504,32 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] == 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] == 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -2349,40 +2538,40 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 PP ATOI'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 PP ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 PP ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 PP ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 20 games.
         # Once you reach 20 games, find the ATOI accross these seasons.
@@ -2401,7 +2590,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -2419,41 +2608,51 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'PP ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP ATOI'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PP ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP ATOI'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PP ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP ATOI'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PP ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP ATOI'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PP ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_forward_pk_atoi_projections(stat_df, projection_df, download_file):
+def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Forwards with 4 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler
     # Forwards with 3 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
     # Forwards with 2 seasons of > 40 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
@@ -2520,13 +2719,32 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] != 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -2535,40 +2753,40 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 PK ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 20 games.
         # Once you reach 20 games, find the ATOI accross these seasons.
@@ -2587,7 +2805,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -2604,41 +2822,51 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'PK ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PK ATOI'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PK ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PK ATOI'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PK ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PK ATOI'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PK ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PK ATOI'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PK ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
+def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year=2024):
     # Defence with 4 seasons of > 40 GP: Parent model 7 (128-64-1), 5 epochs, standard scaler
     # Defence with 3 seasons of > 40 GP: Parent model 7 (128-64-1), 5 epochs, minmax scaler
     # Defence with 2 seasons of > 40 GP: Parent model 4 (256-64-16-1), 10 epochs, minmax scaler
@@ -2699,13 +2927,32 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] == 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] == 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -2714,40 +2961,40 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat = stat_df.loc[stat_df['Player'] == player, '2023 PK ATOI'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, '2022 PK ATOI'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, '2021 PK ATOI'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, '2020 PK ATOI'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 20 games.
         # Once you reach 20 games, find the ATOI accross these seasons.
@@ -2766,7 +3013,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -2783,41 +3030,51 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'PK ATOI'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] + statistics.mean(statline[-4:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PK ATOI'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0] + statistics.mean(statline[-4:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'PK ATOI'] = proj_y_4[index][0] + statistics.mean(statline[-4:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] + statistics.mean(statline[-3:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PK ATOI'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0] + statistics.mean(statline[-3:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'PK ATOI'] = proj_y_3[index][0] + statistics.mean(statline[-3:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] + statistics.mean(statline[-2:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PK ATOI'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0] + statistics.mean(statline[-2:]), 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'PK ATOI'] = proj_y_2[index][0] + statistics.mean(statline[-2:])
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] + statistics.mean(statline[-1:]) < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PK ATOI'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'PK ATOI'] = proj_y_1[index][0] + statistics.mean(statline[-1:])
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0] + statistics.mean(statline[-1:]), 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
+def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, year=2024):
 
     yr4_model = tf.keras.Sequential([
         tf.keras.layers.Dense(32, activation='relu', input_shape=(11,)),
@@ -2880,13 +3137,32 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] != 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -2895,56 +3171,56 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
-        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0]
-        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0]
-        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0]
-        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
-        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0]
-        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0]
-        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]
+        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]
+        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]
+        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]
+        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0]
+        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0]
+        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 50 games.
         # Once you reach 50 games, find the ATOI accross these seasons.
@@ -2969,7 +3245,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -2977,7 +3253,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -2996,41 +3272,51 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'EV G/60'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV G/60'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV G/60'] = proj_y_4[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV G/60'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV G/60'] = proj_y_3[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV G/60'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV G/60'] = proj_y_2[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV G/60'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV G/60'] = proj_y_1[index][0]
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0], 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
-def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
+def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, year=2024):
 
     yr4_model = tf.keras.Sequential([
         tf.keras.layers.Dense(64, activation='relu', input_shape=(11,)),
@@ -3095,13 +3381,32 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df['2023 GP'] >= 1)]['Player']) and row['Position'] == 'D':
-            if row['2020 GP']/69.5*82 >= 40 and row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] == 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr4_group.append(row['Player'])
-            elif row['2021 GP']/56*82 >= 40 and row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr3_group.append(row['Player'])
-            elif row['2022 GP'] >= 40 and row['2023 GP'] >= 40:
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
                 yr2_group.append(row['Player'])
             else:
                 yr1_group.append(row['Player'])
@@ -3110,56 +3415,56 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
         
     for player in yr1_group:
-        y1_gp = int(stat_df.loc[stat_df['Player'] == player, '2023 GP'].fillna(0).iloc[0])
-        y2_gp = int(stat_df.loc[stat_df['Player'] == player, '2022 GP'].fillna(0).iloc[0])
-        y3_gp = int(stat_df.loc[stat_df['Player'] == player, '2021 GP'].fillna(0).iloc[0])
-        y4_gp = int(stat_df.loc[stat_df['Player'] == player, '2020 GP'].fillna(0).iloc[0])
-        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, '2023 EV G/60'].fillna(0).iloc[0]
-        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, '2022 EV G/60'].fillna(0).iloc[0]
-        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, '2021 EV G/60'].fillna(0).iloc[0]
-        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, '2020 EV G/60'].fillna(0).iloc[0]
-        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, '2023 EV ixG/60'].fillna(0).iloc[0]
-        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, '2022 EV ixG/60'].fillna(0).iloc[0]
-        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, '2021 EV ixG/60'].fillna(0).iloc[0]
-        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, '2020 EV ixG/60'].fillna(0).iloc[0]
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]
+        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]
+        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]
+        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]
+        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0]
+        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0]
+        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 50 games.
         # Once you reach 50 games, find the ATOI accross these seasons.
@@ -3184,7 +3489,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
             pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -3203,37 +3508,47 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file):
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     proj_y_1 = yr1_model.predict(yr1_stat_list_scaled, verbose=1)
 
+    column_name = 'EV G/60'
+
     for index, statline in enumerate(yr4_stat_list):
-        if proj_y_4[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV G/60'] = 0
+        player_name = yr4_group[index]
+        projection = max(proj_y_4[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr4_group[index], 'EV G/60'] = proj_y_4[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr3_stat_list):
-        if proj_y_3[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV G/60'] = 0
+        player_name = yr3_group[index]
+        projection = max(proj_y_3[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr3_group[index], 'EV G/60'] = proj_y_3[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr2_stat_list):
-        if proj_y_2[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV G/60'] = 0            
+        player_name = yr2_group[index]
+        projection = max(proj_y_2[index][0], 0)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
         else:
-            projection_df.loc[projection_df['Player'] == yr2_group[index], 'EV G/60'] = proj_y_2[index][0]
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
-        if proj_y_1[index][0] < 0:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV G/60'] = 0
-        else:
-            projection_df.loc[projection_df['Player'] == yr1_group[index], 'EV G/60'] = proj_y_1[index][0]
+        player_name = yr1_group[index] # watch year yrN
+        projection = max(proj_y_1[index][0], 0) # watch year yrN
 
-    # Download file
-    if download_file == True:
-        filename = f'partial_projections'
-        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
     return projection_df
 
@@ -3599,7 +3914,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0],
@@ -3618,7 +3933,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0],
@@ -3688,7 +4003,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat_4 = (y1_stat_4*y1_pptoi + y2_stat_4*y2_pptoi + y3_stat_4*y3_pptoi + y4_stat_4*y4_pptoi + negative_first_z_score_stat_4*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], 2023),
+            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -4212,17 +4527,17 @@ def goal_era_adjustment(stat_df, projection_df, download_file=False):
 
 def main():
     stat_df = scrape_player_statistics(True)
-    # projection_df = make_projection_df(stat_df)
-    # projection_df = make_forward_gp_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_gp_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False)
+    projection_df = make_projection_df(stat_df, 2015)
+    # projection_df = make_forward_gp_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_defence_gp_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, 2015)
@@ -4232,17 +4547,13 @@ def main():
     # projection_df = projection_df.drop(projection_df.columns[0], axis=1)
     projection_df = pd.DataFrame(columns=['Player'])
 
-    projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False, 2015)
-    projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False, 2015)
-    projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, 2015)
-    projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False, 2015)
     # Do this for all other projections neural nets
 
     # projection_df = goal_era_adjustment(stat_df, projection_df, False).fillna(0)
     # projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
 
     # projection_df = projection_df.sort_values('GOALS', ascending=False)
-    projection_df = projection_df.sort_values('PK G/60', ascending=False)
+    # projection_df = projection_df.sort_values('GP', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
