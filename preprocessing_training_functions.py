@@ -4472,17 +4472,17 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     return projection_df
 
-def goal_era_adjustment(stat_df, projection_df, download_file=False):
+def goal_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for year in range(2007, 2023):
-        col = round(((stat_df[f'{year+1} EV G/60']/60*stat_df[f'{year+1} EV ATOI'] + stat_df[f'{year+1} PP G/60']/60*stat_df[f'{year+1} PP ATOI'] + stat_df[f'{year+1} PK G/60']/60*stat_df[f'{year+1} PK ATOI']) * stat_df[f'{year+1} GP'])).astype(int)
+    for season in range(2007, 2023):
+        col = round(((stat_df[f'{season+1} EV G/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP G/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK G/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])).astype(int)
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
         hist_goal_df = hist_goal_df.reset_index(drop=True)
-        hist_goal_df[year+1] = col
+        hist_goal_df[season+1] = col
     hist_goal_df.index = hist_goal_df.index + 1
 
     try:
@@ -4499,7 +4499,7 @@ def goal_era_adjustment(stat_df, projection_df, download_file=False):
         pass
 
     hist_goal_df['Historical Average'] = hist_goal_df.mean(axis=1)
-    hist_goal_df['Projected Average'] = hist_goal_df.iloc[:, -5:-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_goal_df['Projected Average'] = hist_goal_df.loc[:, year-4:year-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
     hist_goal_df['Adjustment'] = hist_goal_df['Projected Average'] - hist_goal_df['Historical Average']
     hist_goal_df['Smoothed Adjustment'] = savgol_filter(hist_goal_df['Adjustment'], 25, 2)
     # print(hist_goal_df.head(750).to_string())
@@ -4527,7 +4527,7 @@ def goal_era_adjustment(stat_df, projection_df, download_file=False):
 
 def main():
     stat_df = scrape_player_statistics(True)
-    projection_df = make_projection_df(stat_df, 2015)
+    # projection_df = make_projection_df(stat_df, 2015)
     # projection_df = make_forward_gp_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_defence_gp_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False, 2015)
@@ -4543,17 +4543,13 @@ def main():
     # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, 2015)
     # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False, 2015)
 
-    # projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
-    # projection_df = projection_df.drop(projection_df.columns[0], axis=1)
-    projection_df = pd.DataFrame(columns=['Player'])
+    projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
+    projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    # Do this for all other projections neural nets
+    projection_df = goal_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
+    projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
 
-    # projection_df = goal_era_adjustment(stat_df, projection_df, False).fillna(0)
-    # projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
-
-    # projection_df = projection_df.sort_values('GOALS', ascending=False)
-    # projection_df = projection_df.sort_values('GP', ascending=False)
+    projection_df = projection_df.sort_values('GOALS', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
