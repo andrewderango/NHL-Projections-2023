@@ -422,14 +422,45 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                             [28.929, 76, 221, 0.6311066023257405, 0.9490117214791752, 0.1312889093424077, 0.13604532143289172], # rasmus ristolainen: 0.30
                             [30.388, 78, 228, 1.21121469647627, 0.7875929272127551, 0.21725032355549223, 0.19505978794684536], # colton parayko: 0.45
                             [36.716, 73, 227, 0.1640974068352275, 0.4598238732131714, 0.09298721421197276, 0.12818205618623077]] # jack johnson: 0.30
+    elif proj_stat == 'A1per60':
+        if situation == 'EV':
+            if position == 'forward' or position == 'defence':
+                if prev_years == 4:
+                    return [
+                        [26.714, 73, 193, 1.0096, 2.0484, 1.1602, 1.1498, 0.6376, 0.6025, 0.663, 0.3833, 0.7439, 1.0242, 0.953, 1.0221, 0.797, 0.3615, 0.4144, 0.511, 2.9103, 3.5739, 4.1022, 4.0091], # connor mcdavid: 1.20
+                        [26.038, 75, 208, 0.6327, 0.9556, 0.8526, 1.0756, 0.3407, 0.446, 0.7105, 0.3911, 1.2167, 1.083, 1.563, 1.9068, 0.3407, 0.1911, 0.7578, 0.44, 3.2111, 3.3721, 3.7825, 3.7872], # auston matthews: 0.97
+                        [26.922, 76, 215, 1.1135, 0.7985, 1.0357, 0.7315, 0.3712, 0.7259, 0.7061, 0.3251, 0.7424, 1.234, 0.9886, 1.1379, 0.2784, 0.2178, 0.4237, 0.447, 2.9991, 3.2027, 3.5448, 3.4312], # mikko rantanen: 0.88
+                        [28.083, 72, 200, 1.3881, 1.6173, 1.4402, 1.5858, 0.6169, 0.5391, 0.4801, 0.6063, 1.4395, 1.1552, 1.3869, 1.2127, 0.5655, 0.6161, 0.4801, 0.6996, 3.1906, 3.4641, 3.4944, 3.3951], # nathan mackinnon: 1.50
+                        [28.578, 76, 210, 0.4665, 0.3716, 0.9073, 0.9114, 0.622, 0.5574, 0.5833, 0.7595, 0.622, 0.7432, 0.7129, 0.8355, 0.4665, 0.0929, 0.7129, 0.6076, 2.6871, 3.1037, 3.3784, 2.9151]] # valeri nichushkin: 0.85
+                elif prev_years == 3:
+                    return [
+                        [26.432, 70, 202, 1.0188, 1.4601, 0.6784, 0.3639, 0.6123, 0.3653, 0.946, 0.942, 1.096, 0.2911, 0.8007, 0.3131, 2.4589, 2.7746, 3.0311], # kirill kaprizov: 0.80
+                        [25.096, 74, 179, 0.8459, 0.6963, 0.7766, 0.0, 0.1741, 0.5695, 0.6579, 0.4062, 0.6212, 0.6579, 0.4642, 1.5531, 2.1279, 2.7033, 3.5721], # brandon hagel: 0.77
+                        [24.195, 75, 200, 1.4509, 0.7357, 1.0865, 0.403, 0.8408, 0.5669, 0.8061, 1.524, 1.6534, 0.3224, 0.3679, 0.2834, 2.7285, 3.5151, 3.7569], # jason robertson: 1.05
+                        [21.709, 72, 193, 0.6142, 0.6076, 1.0585, 0.4387, 0.2532, 0.5293, 1.0528, 1.0127, 0.9142, 0.2632, 0.3545, 0.6255, 2.3461, 2.71, 3.7828], # tim stutzle: 0.87
+                        [25.92, 78, 220, 0.378, 0.6416, 1.1062, 0.252, 0.6416, 0.6321, 1.1341, 1.1229, 1.9491, 0.6301, 0.6416, 0.6848, 2.4951, 2.9013, 3.677]] # tage thompson: 0.85
+                elif prev_years == 2:
+                    return [
+                        [30.29, 71, 181, 1.1928, 1.0457, 0.6362, 0.8183, 0.7952, 2.0913, 2.0675, 2.3186, 3.2707, 3.8053], # nikita kucherov
+                        [24.74, 73, 175, 0.9858, 1.2503, 0.6958, 0.6252, 0.5799, 1.5108, 0.4639, 1.5629, 2.9544, 4.075], # nico hischier
+                        [24.885, 74, 176, 0.5608, 1.1564, 0.4079, 0.8547, 0.9177, 1.2067, 0.3059, 0.2011, 3.0265, 3.0197], # elias pettersson
+                        [22.744, 67, 174, 0.4551, 0.1769, 0.3251, 0.4422, 0.9752, 0.8844, 0.7151, 1.3266, 2.5822, 2.4251], # cole caufield
+                        [22.533, 72, 185, 0.894, 0.8815, 0.6836, 0.464, 0.894, 0.9279, 0.4207, 0.232, 2.8103, 2.6595]] # trevor zegras
+                elif prev_years == 1:
+                    return [
+                        [34.862, 74, 217, 0.698145652173913, 0.6566967391304348, 1.0764423913043477, 0.7464489130434783, 3.0651249999999997], # max pacioretty
+                        [31.404, 69, 186, 0.7738376344086021, 0.20581505376344084, 2.067366666666667, 0.5165989247311829, 2.8682086021505375], # brendan gallagher
+                        [35.856, 73, 202, 0.6610058139534885, 0.4068732558139535, 0.9147267441860465, 0.15246162790697676, 2.6094558139534887], # nicklas backstrom
+                        [20.904, 74, 178, 0.7273, 0.6234, 0.4676, 0.6234, 2.729], # matty beniers
+                        [19.505, 75, 238, 0.18343551733138838, 0.48495865244833847, 0.9665146689883484, 0.26910138919576726, 1.96986599505593]] # juraj slafkovsky
 
 def main():
     start = time.time()
 
     # Change these variables to change projection sets
-    proj_stat = 'Gper60'
-    position = 'forward' # [forward, defence]
-    prev_years = 2 # [1, 2, 3, 4]
+    proj_stat = 'A1per60'
+    position = 'defence' # [forward, defence]
+    prev_years = 3 # [1, 2, 3, 4]
     situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
@@ -516,3 +547,14 @@ main()
 # Defence with 3 seasons of > 50 PKTOI: Parent model 6 (32-16-8-1), 10 epochs, standard scaler
 # Defence with 2 seasons of > 50 PKTOI: Parent model 6 (32-16-8-1), 10 epochs, standard scaler
 # Defence with 1 seasons of > 50 PKTOI: Parent model 6 (32-16-8-1), 10 epochs, standard scaler
+
+# --- EV A1/60 MODEL ---
+# Forwards with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 5 epochs, minmax scaler
+# Forwards with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler
+# Forwards with 2 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
+# Forwards with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler
+
+# Defence with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
+# Defence with 3 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler
+# Defence with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler (P)
