@@ -459,8 +459,8 @@ def main():
 
     # Change these variables to change projection sets
     proj_stat = 'A1per60'
-    position = 'defence' # [forward, defence]
-    prev_years = 3 # [1, 2, 3, 4]
+    position = 'forward' # [forward, defence]
+    prev_years = 4 # [1, 2, 3, 4]
     situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
@@ -549,7 +549,7 @@ main()
 # Defence with 1 seasons of > 50 PKTOI: Parent model 6 (32-16-8-1), 10 epochs, standard scaler
 
 # --- EV A1/60 MODEL ---
-# Forwards with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 5 epochs, minmax scaler
+# Forwards with 4 seasons of > 50 GP: Parent model 10 (16-4-1), 50 epochs, minmax scaler
 # Forwards with 3 seasons of > 50 GP: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler
 # Forwards with 2 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler
 # Forwards with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler
