@@ -894,7 +894,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     pass
                 elif fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
-                    
+                else:
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -938,7 +938,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 5, 'ev', 'oixGF/60')
                     ]
 
-            elif dependent_variable == 'forward_PP_A1per60' or dependent_variable == 'forward_PP_A2per60':
+            elif dependent_variable == 'forward_PP_A1per60' or dependent_variable == 'forward_PP_A2per60': ### here
                 # filter out:
                     # defence
                     # players with < 50 PPTOI in Y5
@@ -951,6 +951,13 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                 elif fetch_data(row, year, 5, 'pp', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pp', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
 
+                if row['Position'] == 'D':
+                    pass
+                elif np.isnan(fetch_data(row, year, 5, None, 'GP')) or np.isnan(fetch_data(row, year, 4, None, 'GP')):
+                    pass
+                elif fetch_data(row, year, 5, 'pp', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pp', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
+                    pass
+                else:
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -1005,7 +1012,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     pass
                 elif fetch_data(row, year, 5, 'pp', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pp', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
-
+                else:
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -1060,7 +1067,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     pass
                 elif fetch_data(row, year, 5, 'pk', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pk', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
-
+                else:
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -1095,7 +1102,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     pass
                 elif fetch_data(row, year, 5, 'pk', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pk', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
-
+                else:
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -1307,19 +1314,19 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
                 f'Y1 PP oixGF/60', f'Y2 PP oixGF/60', f'Y3 PP oixGF/60', f'Y4 PP oixGF/60', f'Y5 PP oixGF/60'
                 ], scrape_player_statistics(True), True)      
             if prev_years == 4:
-                instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 50) & (instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y1 PP ATOI']*instance_df['Y1 GP'] >= 50) & (instance_df['Y2 PP ATOI']*instance_df['Y2 GP'] >= 50) & (instance_df['Y3 PP ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PP ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (27,)
             elif prev_years == 3:
-                instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y2 PP ATOI']*instance_df['Y2 GP'] >= 50) & (instance_df['Y3 PP ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PP ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (21,)
             elif prev_years == 2:
-                instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y3 PP ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PP ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (15,)
             elif prev_years == 1:
-                instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y4 PP ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (9,)
             else:
-                print('Invalid prev_years parameter.')
+                print('Invalid prev_years parameter.') 
         if situation == 'PK':
             instance_df = create_instance_df(f'{position}_{situation}_A1per60', [
                 'Player', 'Year', 'Position', 'Age', 'Height', 'Weight',
@@ -1329,19 +1336,19 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
                 f'Y1 PK A2/60', f'Y2 PK A2/60', f'Y3 PK A2/60', f'Y4 PK A2/60', f'Y5 PK A2/60'
                 ], scrape_player_statistics(True), True)      
             if prev_years == 4:
-                instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 50) & (instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y1 PK ATOI']*instance_df['Y1 GP'] >= 50) & (instance_df['Y2 PK ATOI']*instance_df['Y2 GP'] >= 50) & (instance_df['Y3 PK ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PK ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (7,)
             elif prev_years == 3:
-                instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 50) & (instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y2 PK ATOI']*instance_df['Y2 GP'] >= 50) & (instance_df['Y3 PK ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PK ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (6,)
             elif prev_years == 2:
-                instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 50) & (instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y3 PK ATOI']*instance_df['Y3 GP'] >= 50) & (instance_df['Y4 PK ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (5,)
             elif prev_years == 1:
-                instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 50)]
+                instance_df = instance_df.loc[(instance_df['Y4 PK ATOI']*instance_df['Y4 GP'] >= 50)]
                 input_shape = (4,)
             else:
-                print('Invalid prev_years parameter.')
+                print('Invalid prev_years parameter.')  
 
     if download_file == True:
         if situation == None:
@@ -1759,7 +1766,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y1 {situation} A2/60'], row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
                             row[f'Y1 {situation} Rebounds Created/60'], row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
                             row[f'Y1 {situation} Rush Attempts/60'], row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y1 {situation} oixGF/60'], row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60'],
+                            row[f'Y1 {situation} oixGF/60'], row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
                     y.append(row[f'Y5 {situation} A1/60']) # target 
             elif prev_years == 3:
@@ -1786,7 +1793,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
                             row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
                             row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60'],
+                            row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
                     y.append(row[f'Y5 {situation} A1/60']) # target 
             elif prev_years == 2:
@@ -1813,7 +1820,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
                             row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
                             row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60'],
+                            row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
                     y.append(row[f'Y5 {situation} A1/60']) # target 
             elif prev_years == 1:
@@ -1840,7 +1847,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y4 {situation} A2/60'],
                             row[f'Y4 {situation} Rebounds Created/60'],
                             row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y4 {situation} oixGF/60'],
+                            row[f'Y4 {situation} oixGF/60']
                             ]) # features
                     y.append(row[f'Y5 {situation} A1/60']) # target 
         elif situation == 'PP':
@@ -5245,10 +5252,8 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
 def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, year=2024):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(48, activation='relu', input_shape=(23,)),
-        tf.keras.layers.Dense(24, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
+        tf.keras.layers.Dense(16, activation='relu', input_shape=(23,)),
+        tf.keras.layers.Dense(4, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -5297,7 +5302,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
     X_1_scaler = MinMaxScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
-    yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=50, verbose=1)
     yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
     yr2_model.fit(X_2_scaled, y_2, epochs=30, verbose=1)
     yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
@@ -5907,13 +5912,13 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
     instance_df_y1, _ = create_year_restricted_instance_df('A1per60', 'forward', 1, 'PP')
     X_1, y_1 = extract_instance_data(instance_df_y1, 'A1per60', 1, 'PP', 'forward')
 
-    X_4_scaler = MinMaxScaler().fit(X_4)
+    X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
-    X_3_scaler = MinMaxScaler().fit(X_3)
+    X_3_scaler = StandardScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
-    X_2_scaler = MinMaxScaler().fit(X_2)
+    X_2_scaler = StandardScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
-    X_1_scaler = MinMaxScaler().fit(X_1)
+    X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
     yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
@@ -5968,7 +5973,10 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP oixGF/60'].fillna(0).iloc[0],
             stat_df.loc[stat_df['Player'] == player, f'{year-1} PP oixGF/60'].fillna(0).iloc[0]
             ])
-
+    
+    # for index in range(len(yr4_group)):
+    #     print(yr4_group[index], y_4[index])
+ 
     for player in yr3_group:
         yr3_stat_list.append([
             calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
@@ -6913,8 +6921,9 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
     projection_df['EV G/60'] *= projection_df['Era Adjustment Factor']
     projection_df['PP G/60'] *= projection_df['Era Adjustment Factor']
     projection_df['PK G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
     # print(projection_df.to_string())
-    projection_df = projection_df.drop(columns=['GOALS', 'Era Adjustment Factor'])
+    projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
 
     # Download file
     if download_file == True:
@@ -6966,8 +6975,9 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
     projection_df['EV A1/60'] *= projection_df['Era Adjustment Factor']
     projection_df['PP A1/60'] *= projection_df['Era Adjustment Factor']
     projection_df['PK A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PRIMARY ASSISTS'] = round((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
     # print(projection_df.to_string())
-    projection_df = projection_df.drop(columns=['PRIMARY ASSISTS', 'Era Adjustment Factor'])
+    projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
 
     # Download file
     if download_file == True:
@@ -6978,9 +6988,6 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
-
-## Primary assist era adjustment
-## Secondary assist era adjustment
 
 def main():
     stat_df = scrape_player_statistics(True)
@@ -7010,16 +7017,13 @@ def main():
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
     projection_df = goal_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
-    projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
     projection_df = a1_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
-    projection_df['PRIMARY ASSISTS'] = round((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
 
     projection_df = projection_df.sort_values('PRIMARY ASSISTS', ascending=False)
-    # projection_df = projection_df.sort_values('EV G/60', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    print(projection_df)
+    print(projection_df[:10])
     # print(projection_df.to_string())
 
 main()
