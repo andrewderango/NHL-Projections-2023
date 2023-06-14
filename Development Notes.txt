@@ -5,6 +5,10 @@ For some reason, the earlier models (model 1, epoch 1 standardscaler specificall
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
+To Do List:
+1. Model testing for primary assist projections. Regression to the mean is too strong.
+2. Apply L1/L2 regularization to see its effect.
+
 Optimize make_projection_df by removing the loop.
 
 Issue: Goals are being underprojected for players that consistently outperform their xG.
