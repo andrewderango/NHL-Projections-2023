@@ -833,6 +833,12 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     pass
                 elif fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
+                else:
+                    prev_stat = [fetch_data(row, year, 1, 'ev', 'A1/60'), fetch_data(row, year, 2, 'ev', 'A1/60'), fetch_data(row, year, 3, 'ev', 'A1/60'), fetch_data(row, year, 4, 'ev', 'A1/60')]
+                    try:
+                        prev_avg = statistics.mean([x for x in prev_stat if not np.isnan(x)])
+                    except statistics.StatisticsError:
+                        prev_avg = 0
                     
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
@@ -855,7 +861,6 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, 'ev', 'A1/60'),
                         fetch_data(row, year, 4, 'ev', 'A1/60'),
                         fetch_data(row, year, 5, 'ev', 'A1/60'),
-                        fetch_data(row, year, 5, 'ev', 'A1/60') - prev_avg,
                         fetch_data(row, year, 1, 'ev', 'A2/60'),
                         fetch_data(row, year, 2, 'ev', 'A2/60'),
                         fetch_data(row, year, 3, 'ev', 'A2/60'),
@@ -911,7 +916,6 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, 'ev', 'A1/60'),
                         fetch_data(row, year, 4, 'ev', 'A1/60'),
                         fetch_data(row, year, 5, 'ev', 'A1/60'),
-                        fetch_data(row, year, 5, 'ev', 'A1/60') - prev_avg,
                         fetch_data(row, year, 1, 'ev', 'A2/60'),
                         fetch_data(row, year, 2, 'ev', 'A2/60'),
                         fetch_data(row, year, 3, 'ev', 'A2/60'),
@@ -1270,7 +1274,7 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
                 'Player', 'Year', 'Position', 'Age', 'Height', 'Weight',
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1735,7 +1739,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 instance_df[[
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1743,7 +1747,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 ]] = instance_df[[
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1762,7 +1766,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1770,7 +1774,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 ]] = instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1789,7 +1793,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1797,7 +1801,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 ]] = instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1816,7 +1820,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 instance_df[[
                 'Y4 GP', 'Y5 GP', 
                 f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -1824,7 +1828,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 ]] = instance_df[[
                 'Y4 GP', 'Y5 GP', 
                 f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
                 f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
                 f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
@@ -2296,6 +2300,14 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024):
@@ -2481,6 +2493,14 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -2695,6 +2715,14 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year=2024):
@@ -2903,6 +2931,14 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -3114,6 +3150,14 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -3327,6 +3371,14 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -3542,6 +3594,14 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year=2024):
@@ -3749,6 +3809,14 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -3992,6 +4060,14 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, year=2024):
@@ -4227,6 +4303,14 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -5148,6 +5232,14 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, year=2024):
@@ -5451,6 +5543,14 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, year=2024):
@@ -5751,6 +5851,14 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, year=2024):
@@ -6047,6 +6155,14 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
 
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
     return projection_df
 
 def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, year=2024):
@@ -6342,6 +6458,14 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
         else:
             new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df
 
@@ -6802,46 +6926,100 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
 
     return projection_df
 
+def a1_era_adjustment(stat_df, projection_df, year=2024, download_file=False):
+    stat_df = stat_df.fillna(0)
+    projection_df = projection_df.fillna(0)
+    hist_goal_df = pd.DataFrame()
+
+    for season in range(2007, 2023):
+        col = round(((stat_df[f'{season+1} EV A1/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A1/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A1/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])).astype(int)
+        col = col.sort_values(ascending=False)
+        col = col.reset_index(drop=True)
+        hist_goal_df = hist_goal_df.reset_index(drop=True)
+        hist_goal_df[season+1] = col
+    hist_goal_df.index = hist_goal_df.index + 1
+
+    try:
+        hist_goal_df[2021] = round(82/56*hist_goal_df[2021]).astype(int)
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2020] = round(82/70*hist_goal_df[2020]).astype(int)
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2013] = round(82/48*hist_goal_df[2013]).astype(int)
+    except KeyError:
+        pass
+
+    hist_goal_df['Historical Average'] = hist_goal_df.mean(axis=1)
+    hist_goal_df['Projected Average'] = hist_goal_df.loc[:, year-4:year-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_goal_df['Adjustment'] = hist_goal_df['Projected Average'] - hist_goal_df['Historical Average']
+    hist_goal_df['Smoothed Adjustment'] = savgol_filter(hist_goal_df['Adjustment'], 25, 2)
+    # print(hist_goal_df.head(750).to_string())
+
+    projection_df['PRIMARY ASSISTS'] = (projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP'].astype(int)
+    projection_df = projection_df.sort_values('PRIMARY ASSISTS', ascending=False)
+    projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
+    projection_df['Era Adjustment Factor'] = hist_goal_df['Smoothed Adjustment']/((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
+    projection_df['EV A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PP A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PK A1/60'] *= projection_df['Era Adjustment Factor']
+    # print(projection_df.to_string())
+    projection_df = projection_df.drop(columns=['PRIMARY ASSISTS', 'Era Adjustment Factor'])
+
+    # Download file
+    if download_file == True:
+        filename = f'partial_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df
 
 ## Primary assist era adjustment
 ## Secondary assist era adjustment
 
 def main():
     stat_df = scrape_player_statistics(True)
-    # projection_df = make_projection_df(stat_df, 2015)
-    # projection_df = make_forward_gp_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_gp_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, False, 2015)
-    # projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, False, 2015)
+    # projection_df = make_projection_df(stat_df)
+    # projection_df = make_forward_gp_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_gp_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, False)
+    # projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, False)
+    # projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, False)
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    # projection_df = goal_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
-    # projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
+    projection_df = goal_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
+    projection_df['GOALS'] = round((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
+    projection_df = a1_era_adjustment(stat_df, projection_df, 2024, False).fillna(0)
+    projection_df['PRIMARY ASSISTS'] = round((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']).astype(int)
 
-    # projection_df = projection_df.sort_values('GOALS', ascending=False)
-    projection_df = projection_df.sort_values('PK A1/60', ascending=False)
+    projection_df = projection_df.sort_values('PRIMARY ASSISTS', ascending=False)
+    # projection_df = projection_df.sort_values('EV G/60', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    # print(projection_df)
-    print(projection_df.to_string())
+    print(projection_df)
+    # print(projection_df.to_string())
 
 main()
