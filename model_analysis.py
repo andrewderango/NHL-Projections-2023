@@ -422,7 +422,7 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                             [28.929, 76, 221, 0.6311066023257405, 0.9490117214791752, 0.1312889093424077, 0.13604532143289172], # rasmus ristolainen: 0.30
                             [30.388, 78, 228, 1.21121469647627, 0.7875929272127551, 0.21725032355549223, 0.19505978794684536], # colton parayko: 0.45
                             [36.716, 73, 227, 0.1640974068352275, 0.4598238732131714, 0.09298721421197276, 0.12818205618623077]] # jack johnson: 0.30
-    elif proj_stat == 'A1per60':
+    elif proj_stat == 'A1per60' or proj_stat == 'A2per60':
         if situation == 'EV':
             if position == 'forward' or position == 'defence':
                 if prev_years == 4:
@@ -488,10 +488,10 @@ def main():
     start = time.time()
 
     # Change these variables to change projection sets
-    proj_stat = 'A1per60'
+    proj_stat = 'A2per60'
     position = 'forward' # [forward, defence]
-    prev_years = 1 # [1, 2, 3, 4]
-    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
+    prev_years = 3 # [1, 2, 3, 4]
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
@@ -593,3 +593,53 @@ main()
 # Forwards with 4 seasons of > 50 PPTOI: Parent model 7 (128-64-1), 1 epochs, standard scaler
 # Forwards with 3 seasons of > 50 PPTOI: Parent model 12 (8-1), 10 epochs, standard scaler
 # Forwards with 2 seasons of > 50 PPTOI: Parent model 5 (64-28-12-1), 30 epochs, standard scaler
+# Forwards with 2 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
+
+# Defence with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler (P)
+# Defence with 3 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler (P)
+# Defence with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler (P)
+
+# --- PK A1/60 MODEL ---
+# Forwards with 4 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 3 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 2 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 1 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+
+# Defence with 4 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 3 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 2 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+
+# --- EV A2/60 MODEL ---
+# Forwards with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 5 epochs, minmax scaler
+# Forwards with 3 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 5 epochs, minmax scaler
+# Forwards with 2 seasons of > 50 GP: Parent model 9 (36-12-1), 10 epochs, minmax scaler (P)
+# Forwards with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler (P)
+
+# Defence with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler (P)
+# Defence with 3 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler (P)
+# Defence with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler (P)
+
+# --- PP A2/60 MODEL ---
+# Forwards with 4 seasons of > 50 PPTOI: Parent model 7 (128-64-1), 1 epochs, standard scaler (P)
+# Forwards with 3 seasons of > 50 PPTOI: Parent model 12 (8-1), 10 epochs, standard scaler (P)
+# Forwards with 2 seasons of > 50 PPTOI: Parent model 5 (64-28-12-1), 30 epochs, standard scaler (P)
+# Forwards with 2 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler (P)
+
+# Defence with 4 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 30 epochs, minmax scaler (P)
+# Defence with 3 seasons of > 50 GP: Parent model 3 (48-24-12-6-1), 10 epochs, minmax scaler (P)
+# Defence with 2 seasons of > 50 GP: Parent model 6 (32-16-8-1), 5 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 GP: Parent model 9 (36-12-1), 5 epochs, minmax scaler (P)
+
+# --- PK A2/60 MODEL ---
+# Forwards with 4 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 3 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 2 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Forwards with 1 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+
+# Defence with 4 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 3 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 2 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
+# Defence with 1 seasons of > 50 PKTOI: Parent model 10 (16-4-1), 10 epochs, minmax scaler (P)
