@@ -1,9 +1,7 @@
 dGP is defined to be the amount of games played in the target year above the average number of games played in the previous four seasons. Null values are omitted and not treated as 0. Making dGP the target variable instead of GP improved model accuracy.
 
-For some reason, the earlier models (model 1, epoch 1 standardscaler specifically) tends to over-regress results while maintaining a decent MAE. Investigate this.
-
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
-On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
+--> On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
 To Do List:
 1. Model testing for primary assist projections. Regression to the mean is too strong.
@@ -11,24 +9,8 @@ To Do List:
 
 Optimize make_projection_df by removing the loop.
 
-Issue: Goals are being underprojected for players that consistently outperform their xG.
-See: Auston Matthews, Connor McDavid, Leon Draisaitl. 
-Solutions:
-1. Binary/scaled indicator giving probability of maintaining their probability of outperforming their 
-  a. Could simply be games played in last 4 seasons.
-2. Add Gax from each 4 season as a feature.
-3. Use MoneyPuck shooting talent adjustment.
-Assure age is adjusted properly at EV (See Jack Hughes - Current Proj = 0.89 EVG/60. PPG/60 is fine.)
-^^^ Custon shooting talent model was made, needs to be applied to all previous xG statistics. Just edit the scrape_player_statistics function. Loop through the column name, if it contains xG, then multiply the column by 1+shooting_talent (line 155 ptf). Also deprecate the shooting_talent.py file and migrate it to the ptf file.
-
 Next Steps:
-6. Forward EV A2/60
-7. Defence EV A2/60
-10. Forward PP A2/60
-11. Defence PP A2/60
-12. Forward SHA/60
-13. Defence SHA/60
--- GBQ ML using the existing instance dataframes(?)
+Create other models. Linear regression, random forest, GBQ options using existing dataframes.
 
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
