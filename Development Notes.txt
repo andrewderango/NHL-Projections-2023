@@ -3,6 +3,8 @@ dGP is defined to be the amount of games played in the target year above the ave
 Be careful when considering features other than age, height, weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in preprocessing_training_functions.py.
 --> On this note, review feature selection for GP and ATOI projections. Make sure that the statistics.mean['index'] 'index' is adjusted appropriately.
 
+Check why Matthew Tkachuk's projection is so high. Powerplay stats are projected high (G, A1, A2). See if he has strong underlying metrics (rebounds created, rush attempts, etc) or adjust these models using different hyperparameters in model_analysis. Resultant CSV files are available in the CSV Data folder.
+
 To Do List:
 1. Model testing for primary assist projections. Regression to the mean is too strong.
 2. Apply L1/L2 regularization to see its effect.
@@ -10,7 +12,7 @@ To Do List:
 Optimize make_projection_df by removing the loop.
 
 Next Steps:
-Create other models. Linear regression, random forest, GBQ options using existing dataframes.
+L1/L2 regularization for existing NN. Create other models. Linear regression, random forest, GBQ options using existing dataframes.
 
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
