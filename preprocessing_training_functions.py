@@ -4355,7 +4355,8 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
 def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, year=2024):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(32, activation='relu', input_shape=(19,)),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(19,)),
+        tf.keras.layers.Dense(32, activation='relu'),
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
@@ -4449,6 +4450,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
             stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
+        print(player, yr4_stat_list[-1])
 
     for player in yr3_group:
         yr3_stat_list.append([
@@ -8716,13 +8718,13 @@ def main():
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    print(projection_df)
+    print(projection_df.iloc[:, :12].to_string())
     # print(projection_df.to_string())
 
-    filename = f'final_projections'
-    if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-        os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-    projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-    print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+    # filename = f'final_projections'
+    # if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+    #     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+    # projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+    # print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
 main()
