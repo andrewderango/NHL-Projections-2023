@@ -139,8 +139,7 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                         round(float(proj_y[1] + sum(proj_x[1][-prev_years:])/prev_years), 2),
                         round(float(proj_y[2] + sum(proj_x[2][-prev_years:])/prev_years), 2),
                         round(float(proj_y[3] + sum(proj_x[3][-prev_years:])/prev_years), 2),
-                        round(float(proj_y[4] + sum(proj_x[4][-prev_years:])/prev_years), 2)
-                        ]
+                        round(float(proj_y[4] + sum(proj_x[4][-prev_years:])/prev_years), 2)]
                 else:
                     model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
                         int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
@@ -153,8 +152,7 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                         round(float(proj_y[1]), 2),
                         round(float(proj_y[2]), 2),
                         round(float(proj_y[3]), 2),
-                        round(float(proj_y[4]), 2)
-                        ]
+                        round(float(proj_y[4]), 2)]
 
     model_performance_df = model_performance_df.sort_values('MAE Test')
     model_performance_df = model_performance_df.reset_index(drop=True)
@@ -369,9 +367,9 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                         return [
                             [27.352, 73, 195, 4.538, 2.1561, 3.5188, 3.4499, 3.356, 2.2985, 3.6623, 3.9301, 1.5971, 1.1623, 1.3946, 2.0056, 1.4408, 1.3076, 1.6164, 1.9446], # david pastrnak: 3.55
                             [27.93, 74, 208, 3.5314, 3.8122, 4.6903, 6.0593, 3.6966, 4.3858, 4.4811, 5.1512, 1.2889, 0.9313, 1.2828, 0.833, 1.3472, 0.9353, 1.3679, 0.976], # leon draisaitl: 4.75
-                            [22.383, 71, 175, 1.233, 0.3627, 2.9989, 2.2033, 1.1787, 1.0143, 1.4203, 2.2632, 0.2353, 0.6688, 1.4058, 1.5606, 0.7673, 0.7557, 1.0782, 1.3243], # jack hughes: 2.75
+                            [22.383, 71, 175, 1.233, 0.3627, 2.9989, 2.2033, 1.1787, 1.0143, 1.4203, 2.2632, 0.2353, 0.6688, 1.4058, 1.5606, 0.7673, 0.7557, 1.0782, 1.3243], # jack hughes: 2.50
                             [31.404, 69, 186, 0.4993, 2.6608, 2.2452, 0.0, 1.0966, 1.9479, 2.1937, 0.6712, 1.4455, 1.457, 0.1709, 1.0449, 1.3279, 1.1384, 0.9523, 1.0289], # brendan gallagher: 1.25
-                            [29.134, 73, 205, 2.2843, 1.5553, 2.7517, 1.5492, 2.1043, 1.5967, 2.2656, 2.8676, 0.9547, 0.9064, 1.8681, 1.2561, 1.1555, 1.0381, 1.3305, 1.3137]] # filip forsberg: 2.00
+                            [25.805, 74, 201, 1.5186, 1.338, 2.996, 2.3991, 1.8493, 2.3453, 3.2629, 3.5936, 1.0231, 0.8681, 1.4726, 1.2651, 0.959, 0.8779, 1.195, 1.2851]] # matthew tkachuk: 2.50
                     elif prev_years == 3:
                         return [
                             [28, 74, 210, 3.81, 4.69, 6.06, 4.39, 4.48, 5.15, 0.93, 1.28, 0.83, 0.94, 1.35, 0.97],
@@ -488,10 +486,10 @@ def main():
     start = time.time()
 
     # Change these variables to change projection sets
-    proj_stat = 'A2per60'
+    proj_stat = 'Gper60'
     position = 'forward' # [forward, defence]
-    prev_years = 3 # [1, 2, 3, 4]
-    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
+    prev_years = 4 # [1, 2, 3, 4]
+    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
@@ -557,7 +555,7 @@ main()
 # Defence with 1 seasons of > 50 GP: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
 
 # --- PP G/60 MODEL ---
-# Forwards with 4 seasons of > 50 PPTOI: Parent model 6 (32-16-8-1), 10 epochs, standard scaler --> 65, 143, 139
+# Forwards with 4 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler --> (65, 143, 139)
 # Forwards with 3 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, standard scaler
 # Forwards with 2 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
 # Forwards with 1 seasons of > 50 PPTOI: Parent model 6 (32-16-8-1), 10 epochs, minmax scaler
