@@ -4355,10 +4355,10 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
 def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, year=2024):
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(19,)),
-        tf.keras.layers.Dense(32, activation='relu'),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dense(8, activation='relu'),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(19,)),
+        tf.keras.layers.Dense(42, activation='relu'),
+        tf.keras.layers.Dense(14, activation='relu'),
+        tf.keras.layers.Dense(6, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
@@ -4669,7 +4669,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
     X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
-    yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
     yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
     yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
     yr1_model.fit(X_1_scaled, y_1, epochs=10, verbose=1)
