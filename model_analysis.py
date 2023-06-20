@@ -4,8 +4,11 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import statistics
+from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 import preprocessing_training_functions
 
 def create_models(input_shape):
@@ -88,13 +91,21 @@ def create_models(input_shape):
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
-    return [model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11, model12]
+    # return [model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11, model12]
+    return [model1]
+
+def r2_metric(y_true, y_pred):
+    SS_res = tf.keras.backend.sum(tf.keras.backend.square(y_true - y_pred))
+    SS_tot = tf.keras.backend.sum(tf.keras.backend.square(y_true - tf.keras.backend.mean(y_true)))
+    r2 = 1 - SS_res / (SS_tot + tf.keras.backend.epsilon())
+    return r2
 
 def test_models(proj_stat, position, prev_years, proj_x, situation, download_model_analysis_file=True):
-    epoch_list = [1, 5, 10, 30, 50, 100]
+    # epoch_list = [1, 5, 10, 30, 50, 100]
+    epoch_list = [1, 10, 100]
     scaler_list = [StandardScaler(), MinMaxScaler()]
 
-    model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MAE Test', 'MAE Train', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
+    model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MSE', 'MAE', 'R²', 'Huber', 'Log-Cosh', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
 
     instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, situation)
     model_list = create_models(input_shape)
@@ -103,7 +114,8 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
     for model_index, model in enumerate(model_list):
         for epoch_index, epochs in enumerate(epoch_list):
             for scaler_index, scaler in enumerate(scaler_list):
-                model.compile(optimizer='adam', loss='MeanAbsoluteError', metrics=['mean_squared_error', 'MeanSquaredLogarithmicError'])
+                # print(f'Commencing Evaluation of Model {model_index*12+epoch_index*2+scaler_index+1}')
+                # print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
 
                 # because algorithm for forward and defence is different for Gper60
                 if proj_stat == 'Gper60':
@@ -111,21 +123,57 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                 else:
                     X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
 
-                X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
+                kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+                fold_no = 1
+                mse_foldhist = []
+                mae_foldhist = []
+                r2_foldhist = []
+                huber_foldhist = []
+                logcosh_foldhist = []
 
-                X_scaler = scaler.fit(X_train)
-                X_train_scaled = X_scaler.transform(X_train)
-                X_test_scaled = X_scaler.transform(X_test)
+                for train, test in kfold.split(X, y):
+                    X_scaler = scaler.fit(X[train])
 
-                model.fit(X_train_scaled, y_train, epochs=epochs, verbose=0)
-                test_loss, test_acc, *rest = model.evaluate(X_test_scaled, y_test, verbose=0)
-                train_loss, train_acc, *rest = model.evaluate(X_train_scaled, y_train, verbose=0)
+                    # Compile model
+                    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error', r2_metric, tf.keras.losses.Huber(), tf.keras.losses.LogCosh()])
+                    # Fit data to model
+                    model.fit(X_scaler.transform(X[train]), y[train], epochs=epochs, verbose=0)
+
+                    scores = model.evaluate(X_scaler.transform(X[test]), y[test], verbose=0)
+
+                    mock_predictions = model.predict(X_scaler.transform(X[test]), verbose=0)
+                    print()
+                    print(np.mean(np.abs(y[test] - mock_predictions)))
+                    print(scores[0])
+
+                    # print(f'Fold #{fold_no} Scoring')
+                    # print(f'MSE     : {scores[0]}')
+                    # print(f'MAE     : {scores[1]}')
+                    # print(f'R²      : {scores[2]}')
+                    # print(f'Huber   : {scores[3]}')
+                    # print(f'Log-Cosh: {scores[4]}')
+
+                    mse_foldhist.append(scores[0])
+                    mae_foldhist.append(scores[1])
+                    r2_foldhist.append(scores[2])
+                    huber_foldhist.append(scores[3])
+                    logcosh_foldhist.append(scores[4])
+
+                    fold_no += 1
+
+                print(f'\n--TOTAL SCORING FOR MODEL {model_index*12+epoch_index*2+scaler_index+1}--')
+                print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
+                print(f'MSE      | AVG: {statistics.mean(mse_foldhist):.3f} | STDEV: {statistics.stdev(mse_foldhist):.3f} | Raw: {mse_foldhist}')
+                print(f'MAE      | AVG: {statistics.mean(mae_foldhist):.3f} | STDEV: {statistics.stdev(mae_foldhist):.3f} | Raw: {mae_foldhist}')
+                print(f'R²       | AVG: {statistics.mean(r2_foldhist):.3f} | STDEV: {statistics.stdev(r2_foldhist):.3f} | Raw: {r2_foldhist}')
+                print(f'Huber    | AVG: {statistics.mean(huber_foldhist):.3f} | STDEV: {statistics.stdev(huber_foldhist):.3f} | Raw: {huber_foldhist}')
+                print(f'Log-Cosh | AVG: {statistics.mean(logcosh_foldhist):.3f} | STDEV: {statistics.stdev(logcosh_foldhist):.3f} | Raw: {logcosh_foldhist}')
 
                 # Make projection
                 proj_scaled_x = X_scaler.transform(proj_x)
                 proj_y = model.predict(proj_scaled_x, verbose=0)
 
-                print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
+                # print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
 
                 if proj_stat == 'GP' or proj_stat == 'ATOI':
                     model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
@@ -133,8 +181,11 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                         int(model_index+1), 
                         int(epochs), 
                         scaler, 
-                        round(test_loss, 2), 
-                        round(train_loss, 2),
+                        round(statistics.mean(mse_foldhist), 2), 
+                        round(statistics.mean(mae_foldhist), 2),
+                        round(statistics.mean(r2_foldhist), 2),
+                        round(statistics.mean(huber_foldhist), 2),
+                        round(statistics.mean(logcosh_foldhist), 2),
                         round(float(proj_y[0] + sum(proj_x[0][-prev_years:])/prev_years), 2),
                         round(float(proj_y[1] + sum(proj_x[1][-prev_years:])/prev_years), 2),
                         round(float(proj_y[2] + sum(proj_x[2][-prev_years:])/prev_years), 2),
@@ -146,15 +197,18 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                         int(model_index+1), 
                         int(epochs), 
                         scaler, 
-                        round(test_loss, 2), 
-                        round(train_loss, 2),
+                        round(statistics.mean(mse_foldhist), 2), 
+                        round(statistics.mean(mae_foldhist), 2),
+                        round(statistics.mean(r2_foldhist), 2),
+                        round(statistics.mean(huber_foldhist), 2),
+                        round(statistics.mean(logcosh_foldhist), 2),
                         round(float(proj_y[0]), 2),
                         round(float(proj_y[1]), 2),
                         round(float(proj_y[2]), 2),
                         round(float(proj_y[3]), 2),
                         round(float(proj_y[4]), 2)]
 
-    model_performance_df = model_performance_df.sort_values('MAE Test')
+    model_performance_df = model_performance_df.sort_values('MSE')
     model_performance_df = model_performance_df.reset_index(drop=True)
     model_performance_df.index += 1
 
@@ -174,7 +228,7 @@ def recommend_model(model_performance_df, model_list):
     recommended_model = model_performance_df.iloc[0]
     print('\n\n--RECOMMENDED MODEL--')
     print(f'Model #{recommended_model["Model ID"]}: Parent Model {recommended_model["Parent Model ID"]} with {recommended_model["Epochs"]} epochs and {recommended_model["Scaler"]}')
-    print(f'This model gave a MAE of {recommended_model["MAE Test"]} on the test and {recommended_model["MAE Train"]} on the train.')
+    print(f'This model gave a MSE of {recommended_model["MSE"]} on the test and {recommended_model["MSE"]} on the train.')
     print(f'Parent Model {recommended_model["Parent Model ID"]} architecture:')
     model_list[recommended_model["Parent Model ID"] - 1].summary()
 
@@ -491,7 +545,7 @@ def main():
     prev_years = 4 # [1, 2, 3, 4]
     situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
 
-    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
+    model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation, False)
     print('\n', model_performance_df.to_string())
     recommend_model(model_performance_df, model_list)
 
