@@ -4,6 +4,7 @@ import numpy as np
 import time
 import statistics
 import preprocessing_training_functions
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 # R² not directly supported by keras
 def r2_metric(y_true, y_pred):
@@ -46,7 +47,8 @@ for train, test in kfold.split(X, y):
     print(f'\nFold #{fold_no} - Cross Validation')
 
     # Fit data to model
-    history = model.fit(X[train], y[train], epochs=10, verbose=1)
+    X_scaler = MinMaxScaler().fit(X[train])
+    history = model.fit(X[train], y[train], epochs=10, verbose=0)
 
     scores = model.evaluate(X[test], y[test], verbose=0)
     print(f'Fold #{fold_no} Scoring')
