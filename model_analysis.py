@@ -10,89 +10,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 import preprocessing_training_functions
-
-def create_models(input_shape):
-    model1 = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(42, activation='relu'),
-        tf.keras.layers.Dense(14, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model2 = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(32, activation='relu'),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dense(8, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model3 = tf.keras.Sequential([
-        tf.keras.layers.Dense(48, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(24, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(6, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model4 = tf.keras.Sequential([
-        tf.keras.layers.Dense(256, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(64, activation='relu'),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model5 = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(28, activation='relu'),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model6 = tf.keras.Sequential([
-        tf.keras.layers.Dense(32, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(16, activation='relu'),
-        tf.keras.layers.Dense(8, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model7 = tf.keras.Sequential([
-        tf.keras.layers.Dense(128, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(64, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model8 = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(32, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model9 = tf.keras.Sequential([
-        tf.keras.layers.Dense(36, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(12, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model10 = tf.keras.Sequential([
-        tf.keras.layers.Dense(16, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(4, activation='relu'),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model11 = tf.keras.Sequential([
-        tf.keras.layers.Dense(24, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    model12 = tf.keras.Sequential([
-        tf.keras.layers.Dense(8, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(1, activation='linear')
-    ])
-
-    # return [model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11, model12]
-    return [model1]
+from sklearn.metrics import mean_squared_error
 
 def r2_metric(y_true, y_pred):
     SS_res = tf.keras.backend.sum(tf.keras.backend.square(y_true - y_pred))
@@ -100,31 +18,116 @@ def r2_metric(y_true, y_pred):
     r2 = 1 - SS_res / (SS_tot + tf.keras.backend.epsilon())
     return r2
 
+def create_model(parent_id, input_shape):
+    if parent_id == 1:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(126, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(42, activation='relu'),
+            tf.keras.layers.Dense(14, activation='relu'),
+            tf.keras.layers.Dense(6, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 2:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(32, activation='relu'),
+            tf.keras.layers.Dense(16, activation='relu'),
+            tf.keras.layers.Dense(8, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 3:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(48, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(24, activation='relu'),
+            tf.keras.layers.Dense(12, activation='relu'),
+            tf.keras.layers.Dense(6, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 4:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(256, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dense(16, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 5:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(28, activation='relu'),
+            tf.keras.layers.Dense(12, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 6:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(32, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(16, activation='relu'),
+            tf.keras.layers.Dense(8, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 7:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(128, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 8:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(64, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(32, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 9:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(36, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(12, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 10:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(16, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(4, activation='relu'),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 11:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(24, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    if parent_id == 12:
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(8, activation='relu', input_shape=input_shape),
+            tf.keras.layers.Dense(1, activation='linear')
+        ])
+    
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error', r2_metric, tf.keras.losses.Huber(), tf.keras.losses.LogCosh()])
+
+    return model
+
+
 def test_models(proj_stat, position, prev_years, proj_x, situation, download_model_analysis_file=True):
-    # epoch_list = [1, 5, 10, 30, 50, 100]
-    epoch_list = [1, 10, 100]
+    epoch_list = [1, 5, 10, 30, 50, 100]
     scaler_list = [StandardScaler(), MinMaxScaler()]
 
     model_performance_df = pd.DataFrame(columns=['Model ID', 'Parent Model ID', 'Epochs', 'Scaler', 'MSE', 'MAE', 'R²', 'Huber', 'Log-Cosh', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
 
     instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, situation)
-    model_list = create_models(input_shape)
+    model_list = [create_model(1, input_shape), create_model(2, input_shape), create_model(3, input_shape), create_model(4, input_shape), create_model(5, input_shape), create_model(6, input_shape), create_model(7, input_shape), create_model(8, input_shape), create_model(9, input_shape), create_model(10, input_shape), create_model(11, input_shape), create_model(12, input_shape)]
 
     print(f'Models to Test: {len(model_list) * len(epoch_list) * len(scaler_list)}')
-    for model_index, model in enumerate(model_list):
+    for model_index in range(len(model_list)):
         for epoch_index, epochs in enumerate(epoch_list):
             for scaler_index, scaler in enumerate(scaler_list):
                 # print(f'Commencing Evaluation of Model {model_index*12+epoch_index*2+scaler_index+1}')
                 # print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
 
-                # because algorithm for forward and defence is different for Gper60
+                # algorithm for forward and defence is different for Gper60
                 if proj_stat == 'Gper60':
                     X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation, position)
                 else:
                     X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
 
                 kfold = KFold(n_splits=5, shuffle=True, random_state=42)
-                fold_no = 1
+                fold = 1
                 mse_foldhist = []
                 mae_foldhist = []
                 r2_foldhist = []
@@ -132,21 +135,16 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                 logcosh_foldhist = []
 
                 for train, test in kfold.split(X, y):
-                    X_scaler = scaler.fit(X[train])
+                    model = create_model(1, input_shape)
 
-                    # Compile model
-                    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_absolute_error', r2_metric, tf.keras.losses.Huber(), tf.keras.losses.LogCosh()])
-                    # Fit data to model
+                    X_scaler = scaler.fit(X[train])
                     model.fit(X_scaler.transform(X[train]), y[train], epochs=epochs, verbose=0)
 
                     scores = model.evaluate(X_scaler.transform(X[test]), y[test], verbose=0)
 
                     mock_predictions = model.predict(X_scaler.transform(X[test]), verbose=0)
-                    print()
-                    print(np.mean(np.abs(y[test] - mock_predictions)))
-                    print(scores[0])
 
-                    # print(f'Fold #{fold_no} Scoring')
+                    # print(f'Fold #{fold} Scoring')
                     # print(f'MSE     : {scores[0]}')
                     # print(f'MAE     : {scores[1]}')
                     # print(f'R²      : {scores[2]}')
@@ -159,21 +157,21 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                     huber_foldhist.append(scores[3])
                     logcosh_foldhist.append(scores[4])
 
-                    fold_no += 1
+                    fold += 1
 
-                print(f'\n--TOTAL SCORING FOR MODEL {model_index*12+epoch_index*2+scaler_index+1}--')
-                print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
-                print(f'MSE      | AVG: {statistics.mean(mse_foldhist):.3f} | STDEV: {statistics.stdev(mse_foldhist):.3f} | Raw: {mse_foldhist}')
-                print(f'MAE      | AVG: {statistics.mean(mae_foldhist):.3f} | STDEV: {statistics.stdev(mae_foldhist):.3f} | Raw: {mae_foldhist}')
-                print(f'R²       | AVG: {statistics.mean(r2_foldhist):.3f} | STDEV: {statistics.stdev(r2_foldhist):.3f} | Raw: {r2_foldhist}')
-                print(f'Huber    | AVG: {statistics.mean(huber_foldhist):.3f} | STDEV: {statistics.stdev(huber_foldhist):.3f} | Raw: {huber_foldhist}')
-                print(f'Log-Cosh | AVG: {statistics.mean(logcosh_foldhist):.3f} | STDEV: {statistics.stdev(logcosh_foldhist):.3f} | Raw: {logcosh_foldhist}')
+                # print(f'\n--TOTAL SCORING FOR MODEL {model_index*12+epoch_index*2+scaler_index+1}--')
+                # print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
+                # print(f'MSE      | AVG: {statistics.mean(mse_foldhist):.3f} | STDEV: {statistics.stdev(mse_foldhist):.3f} | Raw: {mse_foldhist}')
+                # print(f'MAE      | AVG: {statistics.mean(mae_foldhist):.3f} | STDEV: {statistics.stdev(mae_foldhist):.3f} | Raw: {mae_foldhist}')
+                # print(f'R²       | AVG: {statistics.mean(r2_foldhist):.3f} | STDEV: {statistics.stdev(r2_foldhist):.3f} | Raw: {r2_foldhist}')
+                # print(f'Huber    | AVG: {statistics.mean(huber_foldhist):.3f} | STDEV: {statistics.stdev(huber_foldhist):.3f} | Raw: {huber_foldhist}')
+                # print(f'Log-Cosh | AVG: {statistics.mean(logcosh_foldhist):.3f} | STDEV: {statistics.stdev(logcosh_foldhist):.3f} | Raw: {logcosh_foldhist}')
 
                 # Make projection
                 proj_scaled_x = X_scaler.transform(proj_x)
                 proj_y = model.predict(proj_scaled_x, verbose=0)
 
-                # print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {test_loss:.2f} MAE')
+                print(f'Model {model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1}: {statistics.mean(mse_foldhist):.3f} MSE, {statistics.mean(mae_foldhist):.3f} MAE, {statistics.mean(r2_foldhist):.3f} R²')
 
                 if proj_stat == 'GP' or proj_stat == 'ATOI':
                     model_performance_df.loc[model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1] = [
@@ -196,7 +194,7 @@ def test_models(proj_stat, position, prev_years, proj_x, situation, download_mod
                         int(model_index*len(epoch_list)*len(scaler_list) + epoch_index*len(scaler_list) + scaler_index + 1), 
                         int(model_index+1), 
                         int(epochs), 
-                        scaler, 
+                        scaler,
                         round(statistics.mean(mse_foldhist), 2), 
                         round(statistics.mean(mae_foldhist), 2),
                         round(statistics.mean(r2_foldhist), 2),
@@ -609,7 +607,7 @@ main()
 # Defence with 1 seasons of > 50 GP: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
 
 # --- PP G/60 MODEL ---
-# Forwards with 4 seasons of > 50 PPTOI: Parent model 2 (64-32-16-8-1), 5 epochs, minmax scaler --> (65, 143, 139)
+# Forwards with 4 seasons of > 50 PPTOI: Parent model 1 (126-42-14-6-1), 10 epochs, minmax scaler --> (65, 143, 139)
 # Forwards with 3 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, standard scaler
 # Forwards with 2 seasons of > 50 PPTOI: Parent model 4 (256-64-16-1), 5 epochs, minmax scaler
 # Forwards with 1 seasons of > 50 PPTOI: Parent model 6 (32-16-8-1), 10 epochs, minmax scaler
