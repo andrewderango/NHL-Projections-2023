@@ -103,7 +103,6 @@ def create_model(parent_id, input_shape):
 
     return model
 
-
 def test_models(proj_stat, position, prev_years, proj_x, situation, download_model_analysis_file=True):
     epoch_list = [1, 5, 10, 30, 50, 100]
     scaler_list = [StandardScaler(), MinMaxScaler()]
@@ -229,6 +228,123 @@ def recommend_model(model_performance_df, model_list):
     print(f'This model gave a MSE of {recommended_model["MSE"]} on the test and {recommended_model["MSE"]} on the train.')
     print(f'Parent Model {recommended_model["Parent Model ID"]} architecture:')
     model_list[recommended_model["Parent Model ID"] - 1].summary()
+
+def lasso_regularization(proj_stat, position, prev_years, proj_x, situation, parent_model, epochs, scaler, download_model_analysis_file=True):
+    l1_gridrow = [0, 0.002, 0.01, 0.02, 0.05, 0.1, 0.2]
+    l2_gridrow = [0, 0.002, 0.01, 0.02, 0.05, 0.1, 0.2]
+
+    model_performance_df = pd.DataFrame(columns=['L1 (Lambda)', 'L2 (Alpha)', 'MSE', 'MAE', 'R²', 'Huber', 'Log-Cosh', 'Proj. 1', 'Proj. 2', 'Proj. 3', 'Proj. 4', 'Proj. 5'])
+
+    instance_df, input_shape = preprocessing_training_functions.create_year_restricted_instance_df(proj_stat, position, prev_years, situation)
+
+    print(f'Coefficient Combinations to Test: {len(l1_gridrow) * len(l2_gridrow)}')
+    
+    header = model_performance_df.columns
+    max_widths = [max(len(str(value)), len(col)) for value, col in zip(model_performance_df.values.T, header)]
+    print(' \t'.join(f'{col:{width}}' for col, width in zip(header, max_widths)))
+
+    for l1_index, l1_coef in enumerate(l1_gridrow):
+        for l2_index, l2_coef in enumerate(l2_gridrow):
+            model = create_model(parent_model, input_shape)
+            # algorithm for forward and defence is different for Gper60
+            if proj_stat == 'Gper60':
+                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation, position)
+            else:
+                X, y = preprocessing_training_functions.extract_instance_data(instance_df, proj_stat, prev_years, situation)
+
+            kfold = KFold(n_splits=5, shuffle=True, random_state=42)
+            fold = 1
+            mse_foldhist = []
+            mae_foldhist = []
+            r2_foldhist = []
+            huber_foldhist = []
+            logcosh_foldhist = []
+
+            for train, test in kfold.split(X, y):
+
+                X_scaler = scaler.fit(X[train])
+                model.fit(X_scaler.transform(X[train]), y[train], epochs=epochs, verbose=0)
+
+                scores = model.evaluate(X_scaler.transform(X[test]), y[test], verbose=0)
+
+                # mock_predictions = model.predict(X_scaler.transform(X[test]), verbose=0)
+
+                # print(f'Fold #{fold} Scoring')
+                # print(f'MSE     : {scores[0]}')
+                # print(f'MAE     : {scores[1]}')
+                # print(f'R²      : {scores[2]}')
+                # print(f'Huber   : {scores[3]}')
+                # print(f'Log-Cosh: {scores[4]}')
+
+                mse_foldhist.append(scores[0])
+                mae_foldhist.append(scores[1])
+                r2_foldhist.append(scores[2])
+                huber_foldhist.append(scores[3])
+                logcosh_foldhist.append(scores[4])
+
+                fold += 1
+
+            # print(f'\n--TOTAL SCORING FOR MODEL {model_index*12+epoch_index*2+scaler_index+1}--')
+            # print(f'Hyperparameters: Parent Model {model_index+1}, {epochs} epochs, {scaler} scaler')
+            # print(f'MSE      | AVG: {statistics.mean(mse_foldhist):.3f} | STDEV: {statistics.stdev(mse_foldhist):.3f} | Raw: {mse_foldhist}')
+            # print(f'MAE      | AVG: {statistics.mean(mae_foldhist):.3f} | STDEV: {statistics.stdev(mae_foldhist):.3f} | Raw: {mae_foldhist}')
+            # print(f'R²       | AVG: {statistics.mean(r2_foldhist):.3f} | STDEV: {statistics.stdev(r2_foldhist):.3f} | Raw: {r2_foldhist}')
+            # print(f'Huber    | AVG: {statistics.mean(huber_foldhist):.3f} | STDEV: {statistics.stdev(huber_foldhist):.3f} | Raw: {huber_foldhist}')
+            # print(f'Log-Cosh | AVG: {statistics.mean(logcosh_foldhist):.3f} | STDEV: {statistics.stdev(logcosh_foldhist):.3f} | Raw: {logcosh_foldhist}')
+
+            # Make projection
+            proj_scaled_x = X_scaler.transform(proj_x)
+            proj_y = model.predict(proj_scaled_x, verbose=0)
+
+            # print(f'{l2_index*len(l1_gridrow) + l1_index + 1}. Lambda = {l1_coef} | Alpha = {l2_coef}: {statistics.mean(mse_foldhist):.3f} MSE, {statistics.mean(mae_foldhist):.3f} MAE, {statistics.mean(r2_foldhist):.3f} R²')
+
+            if proj_stat == 'GP' or proj_stat == 'ATOI':
+                model_performance_df.loc[l2_index*len(l1_gridrow) + l1_index + 1] = [
+                    l1_coef, 
+                    l2_coef, 
+                    round(statistics.mean(mse_foldhist), 3),
+                    round(statistics.mean(mae_foldhist), 3),
+                    round(statistics.mean(r2_foldhist), 3),
+                    round(statistics.mean(huber_foldhist), 3),
+                    round(statistics.mean(logcosh_foldhist), 3),
+                    round(float(proj_y[0] + sum(proj_x[0][-prev_years:])/prev_years), 2),
+                    round(float(proj_y[1] + sum(proj_x[1][-prev_years:])/prev_years), 2),
+                    round(float(proj_y[2] + sum(proj_x[2][-prev_years:])/prev_years), 2),
+                    round(float(proj_y[3] + sum(proj_x[3][-prev_years:])/prev_years), 2),
+                    round(float(proj_y[4] + sum(proj_x[4][-prev_years:])/prev_years), 2)]
+            else:
+                model_performance_df.loc[l2_index*len(l1_gridrow) + l1_index + 1] = [
+                    l1_coef, 
+                    l2_coef, 
+                    round(statistics.mean(mse_foldhist), 3), 
+                    round(statistics.mean(mae_foldhist), 3),
+                    round(statistics.mean(r2_foldhist), 3),
+                    round(statistics.mean(huber_foldhist), 3),
+                    round(statistics.mean(logcosh_foldhist), 3),
+                    round(float(proj_y[0]), 2),
+                    round(float(proj_y[1]), 2),
+                    round(float(proj_y[2]), 2),
+                    round(float(proj_y[3]), 2),
+                    round(float(proj_y[4]), 2)]
+                
+            # print(*model_performance_df.iloc[-1], sep='\t')
+            print(' \t'.join(f'{value:{width}}' for value, width in zip(model_performance_df.iloc[-1].values, max_widths)))
+
+    model_performance_df = model_performance_df.sort_values('MSE')
+    model_performance_df = model_performance_df.reset_index(drop=True)
+    model_performance_df.index += 1
+
+    if download_model_analysis_file == True:
+        if situation == None:
+            filename = f'{position}_{proj_stat}_{prev_years}year_model_analysis'
+        else:
+            filename = f'{position}_{situation}_{proj_stat}_{prev_years}year_model_analysis'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        model_performance_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return model_performance_df
 
 # Define test cases
 def get_sample_projection(proj_stat, position, prev_years, situation):
@@ -358,18 +474,18 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
             if position == 'forward':
                 if prev_years == 4:
                     return [
-                        [27, 73, 193, 1.22, 1.45, 1.41, 1.62], # connor mcdavid: 1.45
-                        [26, 75, 208, 1.70, 1.97, 2.08, 1.32], # auston matthews: 1.59
-                        [27, 73, 195, 1.60, 1.65, 1.39, 2.01], # david pastrnak: 1.60
-                        [27, 74, 200, 0.66, 0.58, 0.42, 0.46], # jason dickinson: 0.51
-                        [29, 71, 186, 0.56, 0.61, 0.71, 0.42]] # alexander kerfoot: 0.56
+                        [27, 73, 193, 1.22, 1.45, 1.41, 1.62, 1.22, 1.45, 1.41, 1.62], # connor mcdavid: 1.45
+                        [26, 75, 208, 1.70, 1.97, 2.08, 1.32, 1.70, 1.97, 2.08, 1.32], # auston matthews: 1.59
+                        [27, 73, 195, 1.60, 1.65, 1.39, 2.01, 1.60, 1.65, 1.39, 2.01], # david pastrnak: 1.60
+                        [27, 74, 200, 0.66, 0.58, 0.42, 0.46, 0.66, 0.58, 0.42, 0.46], # jason dickinson: 0.51
+                        [29, 71, 186, 0.56, 0.61, 0.71, 0.42, 0.56, 0.61, 0.71, 0.42]] # alexander kerfoot: 0.56
                 elif prev_years == 3:
                     return [
-                        [26, 73, 193, 1.45, 1.41, 1.62], # 1.49
-                        [26, 73, 193, 1.97, 2.08, 1.32], # 1.60
-                        [26, 73, 193, 1.65, 1.39, 2.01], # 1.60
-                        [26, 73, 193, 0.58, 0.42, 0.46], # 0.50
-                        [26, 73, 193, 0.61, 0.71, 0.42]] # 0.58
+                        [25.43, 75, 200, 0.9705, 1.1698, 0.3984, 0.875, 0.7256, 0.9344], # drake batherson: 0.80
+                        [24.195, 75, 200, 1.2897, 1.4714, 1.5589, 0.7451, 1.0287, 1.0204], # jason robertson: 1.55
+                        [26.432, 70, 202, 1.3827, 1.5543, 1.2003, 0.8337, 0.9854, 1.0043], # kirill kaprizov: 1.35
+                        [25.92, 78, 220, 0.7561, 1.3902, 1.3696, 1.1323, 0.9071, 1.1983], # tage thompson: 1.30
+                        [21.709, 72, 193, 0.7019, 0.7089, 1.2029, 0.6068, 0.7761, 0.9998]] # tim stutzle: 1.10
                 elif prev_years == 2:
                     return [
                         [26, 73, 193, 0.5, 0.5, 0.5, 0.5],
@@ -533,19 +649,39 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                         [27.355, 71, 179, 0.6223323474261325, 0.25054190696949846, 1.2504267766831358, 0.31263752366036607, 1.2504400511840212, 5.708204219659896], # pius suter: 1.20
                         [24.102, 71, 220, 0.647167562835548, 0.33023935137003824, 1.016688086423377, 0.15751235475510675, 1.0172134680576337, 5.745427775266393], # fabian zetterlund: 1.05
                         [31.856, 75, 208, 0.399877124472204, 0.2651930650348834, 0.38764285779136304, 0.2817472021371184, 0.388582624108337, 5.086026044587531]] # garnet hathaway: 0.35
-                
+
+# architecture, epochs, scaling tuning             
 def main():
     start = time.time()
 
     # Change these variables to change projection sets
     proj_stat = 'Gper60'
     position = 'forward' # [forward, defence]
-    prev_years = 4 # [1, 2, 3, 4]
-    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
+    prev_years = 3 # [1, 2, 3, 4]
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation, False)
     print('\n', model_performance_df.to_string())
     recommend_model(model_performance_df, model_list)
+
+    print(f'Results generated in {time.time()-start:.3f} seconds')
+
+# lasso regularization optimization
+def main2():
+    start = time.time()
+
+    # Change these variables to change projection sets
+    proj_stat = 'Gper60'
+    position = 'forward' # [forward, defence]
+    prev_years = 4 # [1, 2, 3, 4]
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
+
+    parent_model = 6
+    epochs = 30
+    scaler = MinMaxScaler()
+
+    model_performance_df = lasso_regularization(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation, parent_model, epochs, scaler, False)
+    print('\n', model_performance_df.to_string())
 
     print(f'Results generated in {time.time()-start:.3f} seconds')
 
