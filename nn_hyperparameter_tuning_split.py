@@ -313,11 +313,11 @@ def get_sample_projection(proj_stat, position, prev_years, situation):
                         [29, 71, 186, 0.56, 0.61, 0.71, 0.42]] # alexander kerfoot: 0.56
                 elif prev_years == 3:
                     return [
-                        [26, 73, 193, 1.45, 1.41, 1.62], # 1.49
-                        [26, 73, 193, 1.97, 2.08, 1.32], # 1.60
-                        [26, 73, 193, 1.65, 1.39, 2.01], # 1.60
-                        [26, 73, 193, 0.58, 0.42, 0.46], # 0.50
-                        [26, 73, 193, 0.61, 0.71, 0.42]] # 0.58
+                        [25.43, 75, 200, 0.9705, 1.1698, 0.3984, 0.875, 0.7256, 0.9344], # drake batherson: 0.80
+                        [24.195, 75, 200, 1.2897, 1.4714, 1.5589, 0.7451, 1.0287, 1.0204], # jason robertson: 1.55
+                        [26.432, 70, 202, 1.3827, 1.5543, 1.2003, 0.8337, 0.9854, 1.0043], # kirill kaprizov: 1.35
+                        [25.92, 78, 220, 0.7561, 1.3902, 1.3696, 1.1323, 0.9071, 1.1983], # tage thompson: 1.30
+                        [21.709, 72, 193, 0.7019, 0.7089, 1.2029, 0.6068, 0.7761, 0.9998]] # tim stutzle: 1.10
                 elif prev_years == 2:
                     return [
                         [26, 73, 193, 0.5, 0.5, 0.5, 0.5],
@@ -488,8 +488,8 @@ def main():
     # Change these variables to change projection sets
     proj_stat = 'Gper60'
     position = 'forward' # [forward, defence]
-    prev_years = 4 # [1, 2, 3, 4]
-    situation = 'PP' # [EV, PP, PK, None] use None for projecting GP
+    prev_years = 3 # [1, 2, 3, 4]
+    situation = 'EV' # [EV, PP, PK, None] use None for projecting GP
 
     model_performance_df, model_list = test_models(proj_stat, position, prev_years, get_sample_projection(proj_stat, position, prev_years, situation), situation)
     print('\n', model_performance_df.to_string())
