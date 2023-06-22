@@ -8,7 +8,7 @@ Check why Matthew Tkachuk's projection is so high. Powerplay stats are projected
 Optimize make_projection_df by removing the loop.
 
 Next Steps:
-1. Grid search for L1 and L2 regularizations using ~5-fold cross-validation. This should be done separately from other hyperparameter/architecture tuning; after scaling, architecture and epochs have been decided.
+1. Grid search for L1 and L2 regularizations using ~5-fold cross-validation. This should be done separately from other hyperparameter/architecture tuning; after scaling, architecture and epochs have been decided. Possibilities for each L1 and L2 should be something like [0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1].
 2. Create other models. Linear regression, random forest, GBQ options using existing dataframes.
 
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
