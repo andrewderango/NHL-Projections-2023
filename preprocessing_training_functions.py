@@ -272,11 +272,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, None, 'GP'),
                         fetch_data(row, year, 4, None, 'GP'),
                         fetch_data(row, year, 5, None, 'GP'),
-                        fetch_data(row, year, 5, None, 'GP') - prev_avg,
-                        (fetch_data(row, year, 1, 'ev', 'G/60')+fetch_data(row, year, 1, 'ev', 'A1/60')+fetch_data(row, year, 1, 'ev', 'A2/60'))*fetch_data(row, year, 1, 'ev', 'ATOI') + (fetch_data(row, year, 1, 'pp', 'G/60')+fetch_data(row, year, 1, 'pp', 'A1/60')+fetch_data(row, year, 1, 'pp', 'A2/60'))*fetch_data(row, year, 1, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 2, 'ev', 'G/60')+fetch_data(row, year, 2, 'ev', 'A1/60')+fetch_data(row, year, 2, 'ev', 'A2/60'))*fetch_data(row, year, 2, 'ev', 'ATOI') + (fetch_data(row, year, 2, 'pp', 'G/60')+fetch_data(row, year, 2, 'pp', 'A1/60')+fetch_data(row, year, 2, 'pp', 'A2/60'))*fetch_data(row, year, 2, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 3, 'ev', 'G/60')+fetch_data(row, year, 3, 'ev', 'A1/60')+fetch_data(row, year, 3, 'ev', 'A2/60'))*fetch_data(row, year, 3, 'ev', 'ATOI') + (fetch_data(row, year, 3, 'pp', 'G/60')+fetch_data(row, year, 3, 'pp', 'A1/60')+fetch_data(row, year, 3, 'pp', 'A2/60'))*fetch_data(row, year, 3, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 4, 'ev', 'G/60')+fetch_data(row, year, 4, 'ev', 'A1/60')+fetch_data(row, year, 4, 'ev', 'A2/60'))*fetch_data(row, year, 4, 'ev', 'ATOI') + (fetch_data(row, year, 4, 'pp', 'G/60')+fetch_data(row, year, 4, 'pp', 'A1/60')+fetch_data(row, year, 4, 'pp', 'A2/60'))*fetch_data(row, year, 4, 'pp', 'ATOI')
+                        fetch_data(row, year, 5, None, 'GP') - prev_avg
                     ]
             elif dependent_variable == 'defence_GP':
                 # filter out:
@@ -305,11 +301,7 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, None, 'GP'),
                         fetch_data(row, year, 4, None, 'GP'),
                         fetch_data(row, year, 5, None, 'GP'),
-                        fetch_data(row, year, 5, None, 'GP') - prev_avg,
-                        (fetch_data(row, year, 1, 'ev', 'G/60')+fetch_data(row, year, 1, 'ev', 'A1/60')+fetch_data(row, year, 1, 'ev', 'A2/60'))*fetch_data(row, year, 1, 'ev', 'ATOI') + (fetch_data(row, year, 1, 'pp', 'G/60')+fetch_data(row, year, 1, 'pp', 'A1/60')+fetch_data(row, year, 1, 'pp', 'A2/60'))*fetch_data(row, year, 1, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 2, 'ev', 'G/60')+fetch_data(row, year, 2, 'ev', 'A1/60')+fetch_data(row, year, 2, 'ev', 'A2/60'))*fetch_data(row, year, 2, 'ev', 'ATOI') + (fetch_data(row, year, 2, 'pp', 'G/60')+fetch_data(row, year, 2, 'pp', 'A1/60')+fetch_data(row, year, 2, 'pp', 'A2/60'))*fetch_data(row, year, 2, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 3, 'ev', 'G/60')+fetch_data(row, year, 3, 'ev', 'A1/60')+fetch_data(row, year, 3, 'ev', 'A2/60'))*fetch_data(row, year, 3, 'ev', 'ATOI') + (fetch_data(row, year, 3, 'pp', 'G/60')+fetch_data(row, year, 3, 'pp', 'A1/60')+fetch_data(row, year, 3, 'pp', 'A2/60'))*fetch_data(row, year, 3, 'pp', 'ATOI'),
-                        (fetch_data(row, year, 4, 'ev', 'G/60')+fetch_data(row, year, 4, 'ev', 'A1/60')+fetch_data(row, year, 4, 'ev', 'A2/60'))*fetch_data(row, year, 4, 'ev', 'ATOI') + (fetch_data(row, year, 4, 'pp', 'G/60')+fetch_data(row, year, 4, 'pp', 'A1/60')+fetch_data(row, year, 4, 'pp', 'A2/60'))*fetch_data(row, year, 4, 'pp', 'ATOI')
+                        fetch_data(row, year, 5, None, 'GP') - prev_avg
                     ]
             elif dependent_variable == 'forward_EV_ATOI':
                 # filter out:
@@ -1145,19 +1137,19 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
 
 def create_year_restricted_instance_df(proj_stat, position, prev_years, situation, year=2023, download_file=True):
     if proj_stat == 'GP':
-        instance_df = create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP', 'Y1 PTS/60GP', 'Y2 PTS/60GP', 'Y3 PTS/60GP', 'Y4 PTS/60GP'], scrape_player_statistics(True), True)
+        instance_df = create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP'], scrape_player_statistics(True), True)
         if prev_years == 4:
             instance_df = instance_df.loc[(instance_df['Y1 GP'] >= 60) & (instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (11,)
+            input_shape = (7,)
         elif prev_years == 3:
             instance_df = instance_df.loc[(instance_df['Y2 GP'] >= 60) & (instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (9,)
+            input_shape = (6,)
         elif prev_years == 2:
             instance_df = instance_df.loc[(instance_df['Y3 GP'] >= 60) & (instance_df['Y4 GP'] >= 60)]
-            input_shape = (7,)
+            input_shape = (5,)
         elif prev_years == 1:
             instance_df = instance_df.loc[(instance_df['Y4 GP'] >= 40)]
-            input_shape = (5,)
+            input_shape = (4,)
         else:
             print('Invalid prev_years parameter.')
 
@@ -1374,19 +1366,19 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
     if proj_stat == 'GP':
         if prev_years == 4:
             for index, row in instance_df.iterrows():
-                X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP'], row['Y1 PTS/60GP'], row['Y2 PTS/60GP'], row['Y3 PTS/60GP'], row['Y4 PTS/60GP']]) # features
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
                 y.append(row['Y5 dGP']) # target
         elif prev_years == 3:
             for index, row in instance_df.iterrows():
-                X.append([row['Age'], row['Height'], row['Weight'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP'], row['Y2 PTS/60GP'], row['Y3 PTS/60GP'], row['Y4 PTS/60GP']]) # features
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
                 y.append(row['Y5 dGP']) # target
         elif prev_years == 2:
             for index, row in instance_df.iterrows():
-                X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP'], row['Y3 PTS/60GP'], row['Y4 PTS/60GP']]) # features
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP']]) # features
                 y.append(row['Y5 dGP']) # target
         elif prev_years == 1:
             for index, row in instance_df.iterrows():
-                X.append([row['Age'], row['Height'], row['Weight'], row['Y4 GP'], row['Y4 PTS/60GP']]) # features
+                X.append([row['Age'], row['Height'], row['Weight'], row['Y4 GP']]) # features
                 y.append(row['Y5 dGP']) # target
         else:
             print('Invalid prev_years parameter.')
@@ -2169,7 +2161,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
     # Forwards with 1 seasons of > 50 GP: Parent model 6 (32-16-8-1), 100 epochs, minmax scaler
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(126, activation='relu', input_shape=(11,)),
+        tf.keras.layers.Dense(126, activation='relu', input_shape=(7,)),
         tf.keras.layers.Dense(42, activation='relu'),
         tf.keras.layers.Dense(14, activation='relu'),
         tf.keras.layers.Dense(6, activation='relu'),
@@ -2177,19 +2169,19 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
     ])
 
     yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(8, activation='relu', input_shape=(9,)),
+        tf.keras.layers.Dense(8, activation='relu', input_shape=(6,)),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr2_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(32, activation='relu', input_shape=(7,)),
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(5,)),
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr1_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(32, activation='relu', input_shape=(5,)),
+        tf.keras.layers.Dense(32, activation='relu', input_shape=(4,)),
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(8, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
@@ -2219,9 +2211,9 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
     X_1_scaled = X_1_scaler.transform(X_1)
 
     yr4_model.fit(X_4_scaled, y_4, epochs=5, verbose=1)
-    yr3_model.fit(X_3_scaled, y_3, epochs=5, verbose=1)
-    yr2_model.fit(X_2_scaled, y_2, epochs=5, verbose=1)
-    yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=50, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=50, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=100, verbose=1)
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
@@ -2265,11 +2257,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
             stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-4} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     for player in yr3_group:
         yr3_stat_list.append([
@@ -2278,10 +2266,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr2_group:
         yr2_stat_list.append([
@@ -2289,17 +2274,14 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr1_group:
         yr1_stat_list.append([
             calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
@@ -2318,7 +2300,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
     # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
         player_name = yr4_group[index]
-        projection = min(proj_y_4[index][0] + statistics.mean(statline[3:7]), 82)
+        projection = min(proj_y_4[index][0] + statistics.mean(statline[-4:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2328,7 +2310,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = min(proj_y_3[index][0] + statistics.mean(statline[3:6]), 82)
+        projection = min(proj_y_3[index][0] + statistics.mean(statline[-3:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2338,7 +2320,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = min(proj_y_2[index][0] + statistics.mean(statline[3:5]), 82)
+        projection = min(proj_y_2[index][0] + statistics.mean(statline[-2:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2348,7 +2330,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index] # watch year yrN
-        projection = min(proj_y_1[index][0] + statistics.mean(statline[3:4]), 82) # watch year yrN
+        projection = min(proj_y_1[index][0] + statistics.mean(statline[-1:]), 82) # watch year yrN
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2373,14 +2355,14 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
     # Forwards with 1 season            : Parent model 7 (128-64-1), 50 epochs, minmax scaler
 
     yr4_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(11,)),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(7,)),
         tf.keras.layers.Dense(28, activation='relu'),
         tf.keras.layers.Dense(12, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr3_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(9,)),
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(6,)),
         tf.keras.layers.Dense(32, activation='relu'),
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dense(8, activation='relu'),
@@ -2388,13 +2370,13 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
     ])
 
     yr2_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(16, activation='relu', input_shape=(7,)),
+        tf.keras.layers.Dense(16, activation='relu', input_shape=(5,)),
         tf.keras.layers.Dense(4, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
 
     yr1_model = tf.keras.Sequential([
-        tf.keras.layers.Dense(128, activation='relu', input_shape=(5,)),
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(4,)),
         tf.keras.layers.Dense(64, activation='relu'),
         tf.keras.layers.Dense(1, activation='linear')
     ])
@@ -2469,11 +2451,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
             stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-4} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-4} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     for player in yr3_group:
         yr3_stat_list.append([
@@ -2482,10 +2460,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-3} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr2_group:
         yr2_stat_list.append([
@@ -2493,17 +2468,14 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-2} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
         
     for player in yr1_group:
         yr1_stat_list.append([
             calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1],
-            (stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].fillna(0).iloc[0] + (stat_df.loc[stat_df['Player'] == player, f'{year-1} PP G/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A1/60'].fillna(0).iloc[0]+stat_df.loc[stat_df['Player'] == player, f'{year-1} PP A2/60'].fillna(0).iloc[0])*stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].fillna(0).iloc[0]])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
 
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     proj_y_4 = yr4_model.predict(yr4_stat_list_scaled, verbose=1)
@@ -2522,7 +2494,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
     # Assuring that games played is <= 82
     for index, statline in enumerate(yr4_stat_list):
         player_name = yr4_group[index]
-        projection = min(proj_y_4[index][0] + statistics.mean(statline[3:7]), 82)
+        projection = min(proj_y_4[index][0] + statistics.mean(statline[-4:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2532,7 +2504,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = min(proj_y_3[index][0] + statistics.mean(statline[3:6]), 82)
+        projection = min(proj_y_3[index][0] + statistics.mean(statline[-3:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2542,7 +2514,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = min(proj_y_2[index][0] + statistics.mean(statline[3:5]), 82)
+        projection = min(proj_y_2[index][0] + statistics.mean(statline[-2:]), 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2552,7 +2524,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index] # watch year yrN
-        projection = min(proj_y_1[index][0] + statistics.mean(statline[3:4]), 82) # watch year yrN
+        projection = min(proj_y_1[index][0] + statistics.mean(statline[-1:]), 82) # watch year yrN
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -8750,11 +8722,6 @@ def main():
 
     projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
     projection_df = projection_df.drop(projection_df.columns[0], axis=1)
-
-    projection_df = make_forward_gp_projections(stat_df, projection_df, False)
-    projection_df = make_defence_gp_projections(stat_df, projection_df, False)
-
-    print(projection_df)
 
     projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
     projection_df = a1_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
