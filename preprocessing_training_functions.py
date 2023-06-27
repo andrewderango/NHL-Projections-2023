@@ -5,16 +5,7 @@ import os
 import time
 from datetime import date
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.cm import ScalarMappable, plasma_r
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.inspection import permutation_importance
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-import tensorflow as tf
 import statistics
-from scipy.signal import savgol_filter
 
 def scrape_bios(download_file=False, end_year=2023):
     start_year = 2007
