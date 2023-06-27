@@ -224,7 +224,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -418,7 +418,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -639,7 +639,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -856,7 +856,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -1075,7 +1075,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -1296,7 +1296,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -1518,7 +1518,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -1734,7 +1734,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -1990,7 +1990,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -2234,7 +2234,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -2500,7 +2500,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -2761,7 +2761,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -2963,7 +2963,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -3165,7 +3165,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -3474,7 +3474,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -3782,7 +3782,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -4081,7 +4081,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -4383,7 +4383,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -4581,7 +4581,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -4779,7 +4779,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -5088,7 +5088,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -5402,7 +5402,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -5701,7 +5701,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6005,7 +6005,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6203,7 +6203,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6401,7 +6401,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6456,7 +6456,7 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6511,7 +6511,7 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6566,7 +6566,7 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
 
     # Download file
     if download_file == True:
-        filename = f'partial_projections_{year}'
+        filename = f'nn_partial_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -6574,8 +6574,8 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
 
     return projection_df
 
-def make_projections(existing_partial_projections=True, year=2024, download_csv=False):
-    stat_df = preprocessing_training_functions.scrape_player_statistics(existing_partial_projections)
+def make_projections(existing_stat_df=True, existing_partial_projections=True, year=2024, download_csv=False):
+    stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
     
     if existing_partial_projections == False:
         projection_df = preprocessing_training_functions.make_projection_df(stat_df)
@@ -6607,7 +6607,7 @@ def make_projections(existing_partial_projections=True, year=2024, download_csv=
         projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, False, year)
         projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, False, year)
     else:
-        projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
+        projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/nn_partial_projections_{year}.csv")
         projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
     projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
@@ -6622,10 +6622,10 @@ def make_projections(existing_partial_projections=True, year=2024, download_csv=
     print(projection_df)
 
     if download_csv == True:
-        filename = f'final_projections_{year}'
+        filename = f'nn_final_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-make_projections(True, 2024, False)
+make_projections(True, True, 2024, False)
