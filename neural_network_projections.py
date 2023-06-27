@@ -1,15 +1,9 @@
-import requests
-from bs4 import BeautifulSoup
 import pandas as pd
 import os
-import time
-from datetime import date
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.cm import ScalarMappable, plasma_r
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from matplotlib.cm import ScalarMappable
 from sklearn.inspection import permutation_importance
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import tensorflow as tf
@@ -141,7 +135,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
@@ -151,7 +145,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
@@ -160,7 +154,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
@@ -168,7 +162,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file, year=2024
         
     for player in yr1_group:
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
@@ -335,7 +329,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].iloc[0]*gp_adjustment_factor[year-4],
@@ -345,7 +339,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3],
@@ -354,7 +348,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2],
@@ -362,7 +356,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
         
     for player in yr1_group:
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1]])
@@ -532,7 +526,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].iloc[0],
@@ -542,7 +536,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
@@ -551,7 +545,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
@@ -584,7 +578,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -749,7 +743,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ATOI'].iloc[0],
@@ -759,7 +753,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0],
@@ -768,7 +762,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0],
@@ -801,7 +795,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -968,7 +962,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
@@ -978,7 +972,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
@@ -987,7 +981,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
@@ -1020,7 +1014,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -1188,7 +1182,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PP ATOI'].fillna(0).iloc[0],
@@ -1198,7 +1192,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].fillna(0).iloc[0],
@@ -1207,7 +1201,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].fillna(0).iloc[0],
@@ -1240,7 +1234,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -1411,7 +1405,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0],
@@ -1421,7 +1415,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
@@ -1430,7 +1424,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
@@ -1463,7 +1457,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -1627,7 +1621,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0],
@@ -1637,7 +1631,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0],
@@ -1646,7 +1640,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0],
@@ -1679,7 +1673,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file, year
             pseudo_prev_year_stat = (y1_stat*y1_gp + y2_stat*y2_gp + y3_stat*y3_gp + y4_stat*y4_gp + negative_first_z_score*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
@@ -1851,7 +1845,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
@@ -1866,7 +1860,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
@@ -1879,7 +1873,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
@@ -1925,7 +1919,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+        #     preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -1933,7 +1927,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file, ye
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -2103,7 +2097,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
@@ -2118,7 +2112,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
@@ -2131,7 +2125,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
@@ -2177,7 +2171,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -2326,7 +2320,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PP G/60'].fillna(0).iloc[0],
@@ -2349,7 +2343,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0],
@@ -2368,7 +2362,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0],
@@ -2438,7 +2432,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat_4 = (y1_stat_4*y1_pptoi + y2_stat_4*y2_pptoi + y3_stat_4*y3_pptoi + y4_stat_4*y4_pptoi + negative_first_z_score_stat_4*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -2590,7 +2584,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PP G/60'].fillna(0).iloc[0],
@@ -2613,7 +2607,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PP G/60'].fillna(0).iloc[0],
@@ -2632,7 +2626,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PP G/60'].fillna(0).iloc[0],
@@ -2702,7 +2696,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat_4 = (y1_stat_4*y1_pptoi + y2_stat_4*y2_pptoi + y3_stat_4*y3_pptoi + y4_stat_4*y4_pptoi + negative_first_z_score_stat_4*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -2852,7 +2846,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0],
@@ -2863,7 +2857,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
@@ -2873,7 +2867,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
@@ -2907,7 +2901,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -3054,7 +3048,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0],
@@ -3065,7 +3059,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
@@ -3075,7 +3069,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
@@ -3109,7 +3103,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file, ye
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -3275,7 +3269,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -3302,7 +3296,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -3324,7 +3318,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -3406,7 +3400,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp + negative_first_z_score_stat_5*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+        #     preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -3414,7 +3408,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file, y
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -3583,7 +3577,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -3610,7 +3604,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -3632,7 +3626,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -3714,7 +3708,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp + negative_first_z_score_stat_5*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+        #     preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -3722,7 +3716,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file, y
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -3870,7 +3864,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -3901,7 +3895,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
  
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -3926,7 +3920,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -4020,7 +4014,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_6 = (y1_stat_6*y1_pptoi + y2_stat_6*y2_pptoi + y3_stat_6*y3_pptoi + y4_stat_6*y4_pptoi + negative_first_z_score_stat_6*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -4172,7 +4166,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -4203,7 +4197,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -4228,7 +4222,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -4322,7 +4316,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_6 = (y1_stat_6*y1_pptoi + y2_stat_6*y2_pptoi + y3_stat_6*y3_pptoi + y4_stat_6*y4_pptoi + negative_first_z_score_stat_6*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -4470,7 +4464,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
@@ -4481,7 +4475,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
@@ -4491,7 +4485,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
@@ -4525,7 +4519,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -4668,7 +4662,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
@@ -4679,7 +4673,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
@@ -4689,7 +4683,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
@@ -4723,7 +4717,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -4889,7 +4883,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -4916,7 +4910,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -4938,7 +4932,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -5020,7 +5014,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp + negative_first_z_score_stat_5*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+        #     preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -5028,7 +5022,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file, y
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -5203,7 +5197,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -5230,7 +5224,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -5252,7 +5246,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -5334,7 +5328,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp + negative_first_z_score_stat_5*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
         # print(player, [
-        #     calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+        #     preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
         #     int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
         #     pseudo_prev_year_stat_1,
@@ -5342,7 +5336,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file, y
         #     ])
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -5490,7 +5484,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -5521,7 +5515,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file, y
  
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -5546,7 +5540,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -5640,7 +5634,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_6 = (y1_stat_6*y1_pptoi + y2_stat_6*y2_pptoi + y3_stat_6*y3_pptoi + y4_stat_6*y4_pptoi + negative_first_z_score_stat_6*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -5794,7 +5788,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
@@ -5825,7 +5819,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
@@ -5850,7 +5844,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
@@ -5944,7 +5938,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat_6 = (y1_stat_6*y1_pptoi + y2_stat_6*y2_pptoi + y3_stat_6*y3_pptoi + y4_stat_6*y4_pptoi + negative_first_z_score_stat_6*games_to_pseudofy)/(y1_pptoi + y2_pptoi + y3_pptoi + y4_pptoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat_1,
@@ -6092,7 +6086,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
@@ -6103,7 +6097,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
@@ -6113,7 +6107,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
@@ -6147,7 +6141,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -6290,7 +6284,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr4_group:
         yr4_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
@@ -6301,7 +6295,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
 
     for player in yr3_group:
         yr3_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
@@ -6311,7 +6305,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
         
     for player in yr2_group:
         yr2_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
@@ -6345,7 +6339,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
             pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
 
         yr1_stat_list.append([
-            calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat
@@ -6580,38 +6574,41 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
 
     return projection_df
 
-def main():
-    stat_df = preprocessing_training_functions.scrape_player_statistics(True)
-    # projection_df = preprocessing_training_functions.make_projection_df(stat_df)
-    # projection_df = make_forward_gp_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_gp_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, False)
-    # projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, False)
-    # projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, False)
+def make_projections(existing_partial_projections=True, year=2024, download_csv=False):
+    stat_df = preprocessing_training_functions.scrape_player_statistics(existing_partial_projections)
+    
+    if existing_partial_projections == False:
+        projection_df = preprocessing_training_functions.make_projection_df(stat_df)
 
-    projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
-    projection_df = projection_df.drop(projection_df.columns[0], axis=1)
+        projection_df = make_forward_gp_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_gp_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, False, year)
+    else:
+        projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/partial_projections.csv")
+        projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
     projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
     projection_df = a1_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
@@ -6622,16 +6619,13 @@ def main():
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    # projection_df = projection_df[projection_df['Position'] == 'D']
-    # print(projection_df[['Player', 'Age', 'Height', 'Weight', 'GP', 'PP ATOI', 'PP G/60', 'PP A1/60', 'PP A2/60', 'GOALS', 'POINTS']].to_string())
-    # print(projection_df[['Player', 'Age', 'Height', 'Weight', 'GP', 'EV ATOI', 'EV G/60', 'EV A1/60', 'EV A2/60', 'GOALS', 'POINTS']].to_string())
-    print(projection_df.to_string())
-    # print(projection_df)
+    print(projection_df)
 
-    # filename = f'final_projections'
-    # if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-    #     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-    # projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-    # print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+    if download_csv == True:
+        filename = f'final_projections'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-main()
+make_projections(True, 2024, False)
