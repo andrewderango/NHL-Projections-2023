@@ -115,7 +115,7 @@ def make_forward_gp_projections(stat_df, projection_df, distribution_df, downloa
         
         player_name = yr4_group[index]
         projection = statistics.mean(simulations)
-        print(yr4_group[index], round(projection, 1), simulations)
+        # print(yr4_group[index], round(projection, 1), simulations)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -159,8 +159,8 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    print(projection_df)
-    print(distribution_df.to_string())
+    # print(projection_df)
+    # print(distribution_df)
 
     if download_csv == True:
         filename = f'bayesian_nn_final_projections_{year}'
