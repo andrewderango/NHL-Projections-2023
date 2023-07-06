@@ -5,13 +5,13 @@ import ast
 import pandas as pd
 import os
 
-player = 'Connor McDavid'
+player = 'Andrei Svechnikov'
 stat = 'GP'
 
 year = 2024
 distribution_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_distributions_{year}.csv")
 distribution_df = distribution_df.drop(distribution_df.columns[0], axis=1)
-distribution = ast.literal_eval(distribution_df.loc[distribution_df['Player'] == 'Connor McDavid', 'GP'].values[0])
+distribution = ast.literal_eval(distribution_df.loc[distribution_df['Player'] == player, stat].values[0])
 print(distribution)
 
 plt.style.use('ggplot')
