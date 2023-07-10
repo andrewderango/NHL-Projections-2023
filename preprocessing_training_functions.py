@@ -149,7 +149,7 @@ def scrape_player_statistics(existing_csv=False):
         stat_df = pd.merge(stat_df, shooting_talent_df[['Player', 'Shooting Talent']], on='Player', how='left')
 
         ixg_columns = [col for col in stat_df.columns if 'ixG' in col and 'oi' not in col]
-        stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0),4)
+        stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0), 4)
 
         stat_df.set_index('Player', inplace=True)
 
@@ -190,7 +190,7 @@ def calc_shooting_talent(stat_df, download_file=False):
     for index, row in shooting_talent_df.iterrows():
         relevant_shots, relevant_xgoals, relevant_goals = 0, 0, 0
         for year in range(end_year, start_year, -1):
-            if relevant_shots < 1000:
+            if relevant_shots < 400:
                 relevant_shots += shooting_talent_df.at[index, f'{year} Shots']
                 relevant_xgoals += shooting_talent_df.at[index, f'{year} xGoals']
                 relevant_goals += shooting_talent_df.at[index, f'{year} Goals']
@@ -203,11 +203,11 @@ def calc_shooting_talent(stat_df, download_file=False):
     avg_g_per_shot = shooting_talent_df['Relevant Goals'].sum() / shooting_talent_df['Relevant Shots'].sum()
 
     for index, row in shooting_talent_df.iterrows():
-        if shooting_talent_df.loc[index, f'Relevant Shots'] < 1000:
-            pseudoshots = 1000 - shooting_talent_df.loc[index, f'Relevant Shots']
-            shooting_talent_df.at[index, 'Relevant Shots'] = 1000
-            shooting_talent_df.at[index, 'Relevant xGoals'] = round(avg_xg_per_shot * pseudoshots, 2)
-            shooting_talent_df.at[index, 'Relevant Goals'] = round(avg_g_per_shot * pseudoshots, 2)
+        if shooting_talent_df.loc[index, f'Relevant Shots'] < 400:
+            pseudoshots = 400 - shooting_talent_df.loc[index, f'Relevant Shots']
+            shooting_talent_df.at[index, 'Relevant Shots'] = 400
+            shooting_talent_df.at[index, 'Relevant xGoals'] += round(avg_xg_per_shot * pseudoshots, 2)
+            shooting_talent_df.at[index, 'Relevant Goals'] += round(avg_g_per_shot * pseudoshots, 2)
 
     shooting_talent_df['xG/Shot'] = shooting_talent_df['Relevant xGoals'] / shooting_talent_df['Relevant Shots']
     shooting_talent_df['Gax'] = shooting_talent_df['Relevant Goals'] - shooting_talent_df['Relevant xGoals']
