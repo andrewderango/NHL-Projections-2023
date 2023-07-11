@@ -72,14 +72,14 @@ def make_forward_gp_projections(stat_df, projection_df, distribution_df, downloa
     yr1_model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
     # yr4_model.summary()
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 4, None)
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'GP', 4, None)
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 3, None)
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'GP', 3, None)
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 2, None)
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'GP', 2, None)
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 1, None)
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'GP', 1, None)
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 4, None, 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'GP', 4, None, None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 3, None, 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'GP', 3, None, None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 2, None, 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'GP', 2, None, None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'forward', 1, None, 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'GP', 1, None, None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -301,14 +301,14 @@ def make_defence_gp_projections(stat_df, projection_df, distribution_df, downloa
     yr2_model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 4, None)
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'GP', 4, None)
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 3, None)
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'GP', 3, None)
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 2, None)
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'GP', 2, None)
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 1, None)
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'GP', 1, None)
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 4, None, 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'GP', 4, None, None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 3, None, 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'GP', 3, None, None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 2, None, 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'GP', 2, None, None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('GP', 'defence', 1, None, 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'GP', 1, None, None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -520,14 +520,14 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'EV')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'EV')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'EV')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'EV')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'EV')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'EV')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'EV')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'EV')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'EV', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'EV', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'EV', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'EV', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'EV', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -763,14 +763,14 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'EV')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'EV')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'EV')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'EV')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'EV')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'EV')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'EV')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'EV')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'EV', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'EV', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'EV', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'EV', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'EV', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -1006,14 +1006,14 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'PP')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PP')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'PP')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PP')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'PP')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PP')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'PP')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PP')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'PP', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PP', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'PP', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PP', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'PP', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PP', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'PP', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PP', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -1249,14 +1249,14 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'PP')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PP')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'PP')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PP')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'PP')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PP')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'PP')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PP')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'PP', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PP', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'PP', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PP', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'PP', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PP', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'PP', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PP', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -1492,14 +1492,14 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'PK')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PK')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'PK')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PK')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'PK')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PK')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'PK')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PK')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 4, 'PK', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PK', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 3, 'PK', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PK', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 2, 'PK', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PK', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'forward', 1, 'PK', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PK', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -1735,14 +1735,14 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, distribution_df, do
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'PK')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PK')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'PK')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PK')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'PK')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PK')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'PK')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PK')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 4, 'PK', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'ATOI', 4, 'PK', None, 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 3, 'PK', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'ATOI', 3, 'PK', None, 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 2, 'PK', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'ATOI', 2, 'PK', None, 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('ATOI', 'defence', 1, 'PK', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'ATOI', 1, 'PK', None, 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -1957,71 +1957,70 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     max_input_shape = 11
     input_descent = 2
 
-    # yr4_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.20, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(64, activation = 'relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
+    yr4_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.20, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
     yr3_model = tf.keras.Sequential([
         tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
         tf.keras.layers.Dense(64, activation = 'relu'),
         tf.keras.layers.Dense(1)
     ])
-    # yr2_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.40, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(64, activation = 'relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
-    # yr1_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 3*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*((max_input_shape - 3*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tfp.layers.DenseVariational(64, activation='relu', make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=(64+1)*64, bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(1)
-    # ])
-
+    yr2_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr1_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 3*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*((max_input_shape - 3*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tfp.layers.DenseVariational(64, activation='relu', make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=(64+1)*64, bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(1)
+    ])
 
     l1_lambda = 0.20
     l2_alpha = 0.02
-    # for layer in yr4_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr4_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
     for layer in yr3_model.layers:
         if isinstance(layer, tf.keras.layers.Dense):
             layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
-    # for layer in yr2_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
-    # for layer in yr1_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr2_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr1_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
 
     optimizer = tf.keras.optimizers.RMSprop(0.001)
-    # yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
-    # yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
-    # yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    # instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 4, 'EV')
-    # X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'forward')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 3, 'EV')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'forward')
-    # instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 2, 'EV')
-    # X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'forward')
-    # instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 1, 'EV')
-    # X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'forward')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'forward', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'forward', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'forward', 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 1, 'EV', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'forward', 'BNN')
 
-    # X_4_scaler = StandardScaler().fit(X_4)
-    # X_4_scaled = X_4_scaler.transform(X_4)
+    X_4_scaler = StandardScaler().fit(X_4)
+    X_4_scaled = X_4_scaler.transform(X_4)
     X_3_scaler = StandardScaler().fit(X_3)
     X_3_scaled = X_3_scaler.transform(X_3)
-    # X_2_scaler = StandardScaler().fit(X_2)
-    # X_2_scaled = X_2_scaler.transform(X_2)
-    # X_1_scaler = StandardScaler().fit(X_1)
-    # X_1_scaled = X_1_scaler.transform(X_1)
+    X_2_scaler = StandardScaler().fit(X_2)
+    X_2_scaled = X_2_scaler.transform(X_2)
+    X_1_scaler = StandardScaler().fit(X_1)
+    X_1_scaled = X_1_scaler.transform(X_1)
 
-    # yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
-    yr3_model.fit(X_3_scaled, y_3, epochs=15, verbose=0)
-    # yr2_model.fit(X_2_scaled, y_2, epochs=10, verbose=1)
-    # yr1_model.fit(X_1_scaled, y_1, epochs=15, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=15, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=15, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=15, verbose=1)
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
 
@@ -2057,20 +2056,20 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
 
     yr4_stat_list, yr3_stat_list, yr2_stat_list, yr1_stat_list = [], [], [], []
 
-    # for player in yr4_group:
-    #     yr4_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #         ])
+    for player in yr4_group:
+        yr4_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+            ])
 
     for player in yr3_group:
         yr3_stat_list.append([
@@ -2085,97 +2084,85 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
             stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
             ])
         
-        print(player, yr3_stat_list[-1])
+    for player in yr2_group:
+        yr2_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+            ])
         
-    # for player in yr2_group:
-    #     yr2_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #         ])
-        
-    # for player in yr1_group:
-    #     y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
-    #     y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
-    #     y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
-    #     y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
-    #     y1_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]
-    #     y2_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]
-    #     y3_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]
-    #     y4_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]
-    #     y1_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #     y2_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0]
-    #     y3_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0]
-    #     y4_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0]
+    for player in yr1_group:
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0]
+        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0]
+        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0]
+        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0]
+        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0]
+        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0]
+        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0]
 
-    #     # Keep getting games from previous seasons until you reach threshold of 50 games.
-    #     # Once you reach 50 games, find the ATOI accross these seasons.
-    #     # If they haven't played 50 games in their past 4 seasons, fill the rest of the 50 games with the -1st z-score of the stat.
-    #     if y1_gp >= 50:
-    #         pseudo_prev_year_stat_1 = y1_stat_1
-    #         pseudo_prev_year_stat_2 = y1_stat_2
-    #     elif y1_gp + y2_gp >= 50:
-    #         pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp)/(y1_gp + y2_gp)
-    #         pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp)/(y1_gp + y2_gp)
-    #     elif y1_gp + y2_gp + y3_gp >= 50:
-    #         pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp)/(y1_gp + y2_gp + y3_gp)
-    #         pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp)/(y1_gp + y2_gp + y3_gp)
-    #     elif y1_gp + y2_gp + y3_gp + y4_gp >= 50:
-    #         pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
-    #         pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
-    #     else:
-    #         negative_first_z_score_stat_1 = max(instance_df_y1['Y4 EV G/60'].mean() - instance_df_y1['Y4 EV G/60'].std(), 0) # should not be negative
-    #         negative_first_z_score_stat_2 = max(instance_df_y1['Y4 EV ixG/60'].mean() - instance_df_y1['Y4 EV ixG/60'].std(), 0)
-    #         games_to_pseudofy = 50-(y1_gp + y2_gp + y3_gp + y4_gp)
-    #         pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
-    #         pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+        # Keep getting games from previous seasons until you reach threshold of 50 games.
+        # Once you reach 50 games, find the ATOI accross these seasons.
+        # If they haven't played 50 games in their past 4 seasons, fill the rest of the 50 games with the -1st z-score of the stat.
+        if y1_gp >= 50:
+            pseudo_prev_year_stat_1 = y1_stat_1
+            pseudo_prev_year_stat_2 = y1_stat_2
+        elif y1_gp + y2_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp)/(y1_gp + y2_gp)
+        elif y1_gp + y2_gp + y3_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp)/(y1_gp + y2_gp + y3_gp)
+        elif y1_gp + y2_gp + y3_gp + y4_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+        else:
+            negative_first_z_score_stat_1 = max(instance_df_y1['Y4 EV G/60'].mean() - instance_df_y1['Y4 EV G/60'].std(), 0) # should not be negative
+            negative_first_z_score_stat_2 = max(instance_df_y1['Y4 EV ixG/60'].mean() - instance_df_y1['Y4 EV ixG/60'].std(), 0)
+            games_to_pseudofy = 50-(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
 
-    #     yr1_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         pseudo_prev_year_stat_1,
-    #         pseudo_prev_year_stat_2
-    #         ])
+        yr1_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            pseudo_prev_year_stat_1,
+            pseudo_prev_year_stat_2
+            ])
 
-    # yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
-    # yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
+    yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
+    yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
     yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
-    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled, verbose=0) for _ in range(sim_count)]
-    # yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
-    # yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
-    # yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
-    # yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled) for _ in range(sim_count)]
+    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
+    yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
+    yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
+    yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
+    yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled) for _ in range(sim_count)]
 
     column_name = 'EV G/60'
 
-    # for index, statline in enumerate(yr4_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         simulations.append(max(yr4_predictions[sim][index][0], 0))
-        
-    #     player_name = yr4_group[index]
-    #     projection = statistics.mean(simulations)
-
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
-
-    for index, statline in enumerate(yr3_stat_list):
+    for index, statline in enumerate(yr4_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr3_predictions[sim][index][0], 0))
+            # simulations.append(max(yr4_predictions[sim][index][0], 0))
+            simulations.append(max(yr4_predictions[sim][index][0] + statistics.mean(statline[-3:]), 0))
+
+        simulations = np.array(simulations)
+        # temperature = 23.0661224967399795
+        temperature = 1.0661224967399795
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
         
-        player_name = yr3_group[index]
+        player_name = yr4_group[index]
         projection = statistics.mean(simulations)
 
         if player_name in projection_df['Player'].values:
@@ -2187,39 +2174,73 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
             new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
             distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
 
-    # for index, statline in enumerate(yr2_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         simulations.append(max(yr2_predictions[sim][index][0], 0))
+    for index, statline in enumerate(yr3_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0] + statistics.mean(statline[-3:]), 0))
+
+        simulations = np.array(simulations)
+        # temperature = 23.0661224967399795
+        temperature = 1.0661224967399795
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
         
-    #     player_name = yr2_group[index]
-    #     projection = statistics.mean(simulations)
+        player_name = yr3_group[index]
+        projection = statistics.mean(simulations)
 
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+        if player_name in ['Kirill Kaprizov', 'Jason Robertson', 'Tage Thompson']:
+            print(player_name, statline, projection)
 
-    # for index, statline in enumerate(yr1_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         simulations.append(max(yr1_predictions[sim][index][0], 0))
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr2_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0] + statistics.mean(statline[-2:]), 0))
+
+        simulations = np.array(simulations)
+        # temperature = 23.0661224967399795
+        temperature = 1.0661224967399795
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
+
+        player_name = yr2_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr1_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            simulations.append(max(yr1_predictions[sim][index][0], 0))
         
-    #     player_name = yr1_group[index]
-    #     projection = statistics.mean(simulations)
+        player_name = yr1_group[index]
+        projection = statistics.mean(simulations)
 
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
 
     # Download file
     if download_file == True:
@@ -2283,14 +2304,14 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 4, 'EV')
-    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'defence')
-    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 3, 'EV')
-    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'defence')
-    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 2, 'EV')
-    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'defence')
-    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 1, 'EV')
-    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'defence')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'defence', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'defence', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'defence', 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 1, 'EV', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'defence', 'BNN')
 
     X_4_scaler = StandardScaler().fit(X_4)
     X_4_scaled = X_4_scaler.transform(X_4)
@@ -2437,7 +2458,13 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     for index, statline in enumerate(yr4_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr4_predictions[sim][index][0], 0))
+            # simulations.append(max(yr4_predictions[sim][index][0], 0))
+            simulations.append(max(yr4_predictions[sim][index][0] + statistics.mean(statline[-3:]), 0))
+
+        simulations = np.array(simulations)
+        temperature = 14.4367839982302031
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
         
         player_name = yr4_group[index]
         projection = statistics.mean(simulations)
@@ -2454,7 +2481,13 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     for index, statline in enumerate(yr3_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr3_predictions[sim][index][0], 0))
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0] + statistics.mean(statline[-3:]), 0))
+
+        simulations = np.array(simulations)
+        temperature = 14.4367839982302031
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
         
         player_name = yr3_group[index]
         projection = statistics.mean(simulations)
@@ -2471,8 +2504,14 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     for index, statline in enumerate(yr2_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr2_predictions[sim][index][0], 0))
-        
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0] + statistics.mean(statline[-2:]), 0))
+
+        simulations = np.array(simulations)
+        temperature = 14.4367839982302031
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
+
         player_name = yr2_group[index]
         projection = statistics.mean(simulations)
 
@@ -2488,7 +2527,13 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     for index, statline in enumerate(yr1_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr1_predictions[sim][index][0], 0))
+            # simulations.append(max(yr1_predictions[sim][index][0], 0))
+            simulations.append(max(yr1_predictions[sim][index][0] + statistics.mean(statline[-1:]), 0))
+
+        simulations = np.array(simulations)
+        temperature = 14.4367839982302031
+        simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        simulations = simulations.tolist()
         
         player_name = yr1_group[index]
         projection = statistics.mean(simulations)
