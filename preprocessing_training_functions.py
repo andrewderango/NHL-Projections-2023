@@ -825,7 +825,17 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                 elif fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
                 else:
-                    
+                    prev_ev_a1per60 = [fetch_data(row, year, 1, 'ev', 'A1/60'), fetch_data(row, year, 2, 'ev', 'A1/60'), fetch_data(row, year, 3, 'ev', 'A1/60'), fetch_data(row, year, 4, 'ev', 'A1/60')]
+                    prev_ev_a2per60 = [fetch_data(row, year, 1, 'ev', 'A2/60'), fetch_data(row, year, 2, 'ev', 'A2/60'), fetch_data(row, year, 3, 'ev', 'A2/60'), fetch_data(row, year, 4, 'ev', 'A2/60')]
+                    try:
+                        prev_a1_avg = statistics.mean([x for x in prev_ev_a1per60 if not np.isnan(x)])
+                    except statistics.StatisticsError:
+                        prev_a1_avg = 0
+                    try:
+                        prev_a2_avg = statistics.mean([x for x in prev_ev_a2per60 if not np.isnan(x)])
+                    except statistics.StatisticsError:
+                        prev_a2_avg = 0
+
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -847,11 +857,13 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, 'ev', 'A1/60'),
                         fetch_data(row, year, 4, 'ev', 'A1/60'),
                         fetch_data(row, year, 5, 'ev', 'A1/60'),
+                        fetch_data(row, year, 5, 'ev', 'A1/60') - prev_a1_avg,
                         fetch_data(row, year, 1, 'ev', 'A2/60'),
                         fetch_data(row, year, 2, 'ev', 'A2/60'),
                         fetch_data(row, year, 3, 'ev', 'A2/60'),
                         fetch_data(row, year, 4, 'ev', 'A2/60'),
                         fetch_data(row, year, 5, 'ev', 'A2/60'),
+                        fetch_data(row, year, 5, 'ev', 'A2/60') - prev_a2_avg,
                         fetch_data(row, year, 1, 'ev', 'Rebounds Created/60'),
                         fetch_data(row, year, 2, 'ev', 'Rebounds Created/60'),
                         fetch_data(row, year, 3, 'ev', 'Rebounds Created/60'),
@@ -1267,8 +1279,8 @@ def create_year_restricted_instance_df(proj_stat, position, prev_years, situatio
                 'Player', 'Year', 'Position', 'Age', 'Height', 'Weight',
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y1 {situation} oixGF/60', f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
@@ -1822,16 +1834,16 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 instance_df[[
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y1 {situation} oixGF/60', f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]] = instance_df[[
                 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y1 {situation} ATOI', f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y1 {situation} A1/60', f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y1 {situation} A2/60', f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y1 {situation} Rebounds Created/60', f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y1 {situation} oixGF/60', f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
@@ -1844,24 +1856,30 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y1 {situation} Rush Attempts/60'], row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                             row[f'Y1 {situation} oixGF/60'], row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
-                    if proj_stat == 'A1per60':
-                        y.append(row[f'Y5 {situation} A1/60']) # target 
-                    elif proj_stat == 'A2per60':
-                        y.append(row[f'Y5 {situation} A2/60']) # target
+                    if model_type == 'BNN':
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 d{situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 d{situation} A2/60']) # target
+                    else:
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 {situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 3:
                 instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]] = instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y2 {situation} ATOI', f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y2 {situation} A1/60', f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y2 {situation} A2/60', f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y2 {situation} Rebounds Created/60', f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
@@ -1874,24 +1892,30 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                             row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
-                    if proj_stat == 'A1per60':
-                        y.append(row[f'Y5 {situation} A1/60']) # target 
-                    elif proj_stat == 'A2per60':
-                        y.append(row[f'Y5 {situation} A2/60']) # target
+                    if model_type == 'BNN':
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 d{situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 d{situation} A2/60']) # target
+                    else:
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 {situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 2:
                 instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]] = instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
                 f'Y3 {situation} ATOI', f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y3 {situation} A1/60', f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y3 {situation} A2/60', f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y3 {situation} Rebounds Created/60', f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
@@ -1904,40 +1928,58 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
                             row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
                             ]) # features
-                    if proj_stat == 'A1per60':
-                        y.append(row[f'Y5 {situation} A1/60']) # target 
-                    elif proj_stat == 'A2per60':
-                        y.append(row[f'Y5 {situation} A2/60']) # target
+                    if model_type == 'BNN':
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 d{situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 d{situation} A2/60']) # target
+                    else:
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 {situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 1:
                 instance_df[[
                 'Y4 GP', 'Y5 GP', 
                 f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]] = instance_df[[
                 'Y4 GP', 'Y5 GP', 
                 f'Y4 {situation} ATOI', f'Y5 {situation} ATOI', 
-                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60',
-                f'Y4 {situation} A2/60', f'Y5 {situation} A2/60',
+                f'Y4 {situation} A1/60', f'Y5 {situation} A1/60', f'Y5 d{situation} A1/60',
+                f'Y4 {situation} A2/60', f'Y5 {situation} A2/60', f'Y5 d{situation} A2/60',
                 f'Y4 {situation} Rebounds Created/60', f'Y5 {situation} Rebounds Created/60',
                 f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y4 {situation} A1/60'],
-                            row[f'Y4 {situation} A2/60'],
-                            row[f'Y4 {situation} Rebounds Created/60'],
-                            row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y4 {situation} oixGF/60']
-                            ]) # features
-                    if proj_stat == 'A1per60':
-                        y.append(row[f'Y5 {situation} A1/60']) # target 
-                    elif proj_stat == 'A2per60':
-                        y.append(row[f'Y5 {situation} A2/60']) # target
+                    if model_type == 'BNN':
+                        X.append([row['Age'],
+                                row[f'Y4 {situation} A1/60'],
+                                row[f'Y4 {situation} A2/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y4 {situation} A1/60'],
+                                row[f'Y4 {situation} A2/60'],
+                                row[f'Y4 {situation} Rebounds Created/60'],
+                                row[f'Y4 {situation} Rush Attempts/60'],
+                                row[f'Y4 {situation} oixGF/60']
+                                ]) # features 
+                    if model_type == 'BNN':
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 {situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 {situation} A2/60']) # target
+                    else:
+                        if proj_stat == 'A1per60':
+                            y.append(row[f'Y5 {situation} A1/60']) # target 
+                        elif proj_stat == 'A2per60':
+                            y.append(row[f'Y5 {situation} A2/60']) # target
         elif situation == 'PP':
             if prev_years == 4:
                 instance_df[[
@@ -2207,3 +2249,27 @@ def make_projection_df(stat_df, year=2024):
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
     return projection_df
+
+# stat_df = scrape_player_statistics(True)
+# shooting_talent_df = calc_shooting_talent(stat_df, True)
+# stat_df = pd.merge(stat_df, shooting_talent_df[['Player', 'Shooting Talent']], on='Player', how='left')
+
+# ixg_columns = [col for col in stat_df.columns if 'ixG' in col and 'oi' not in col]
+# stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0), 4)
+
+# stat_df.set_index('Player', inplace=True)
+
+# print(stat_df)
+# print(shooting_talent_df)
+
+# filename = f'shooting_talent'
+# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+# shooting_talent_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+# filename = f'historical_player_statistics'
+# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+# stat_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
