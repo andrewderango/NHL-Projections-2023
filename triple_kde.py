@@ -5,10 +5,34 @@ import ast
 import pandas as pd
 import os
 
-player1 = 'Kirill Kaprizov'
-player2 = 'Jason Robertson'
-player3 = 'Tage Thompson'
-stat = 'EV G/60'
+# player1 = 'Connor McDavid'
+# player2 = 'Auston Matthews'
+# player3 = 'Jack Hughes'
+# player3 = 'Leon Draisaitl'
+
+# player1 = 'Kirill Kaprizov'
+# player2 = 'Jason Robertson'
+# player3 = 'Tage Thompson'
+
+# player1 = 'Cole Caufield'
+# player2 = 'Trevor Zegras'
+# player3 = 'Nikita Kucherov'
+
+player1 = 'Juraj Slafkovsky'
+player2 = 'Matty Beniers'
+player3 = 'Matias Maccelli'
+
+# player1 = 'Dougie Hamilton'
+# player2 = 'Cale Makar'
+# player3 = 'Adam Fox'
+# player1 = "K'Andre Miller"
+# player2 = 'Artem Zub'
+# player3 = 'Moritz Seider'
+# player1 = 'Brady Skjei'
+# player2 = 'J.J. Moser'
+# player3 = 'Owen Power'
+
+stat = 'EV A1/60'
 
 year = 2024
 distribution_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_distributions_{year}.csv")
@@ -16,7 +40,6 @@ distribution_df = distribution_df.drop(distribution_df.columns[0], axis=1)
 distribution1 = ast.literal_eval(distribution_df.loc[distribution_df['Player'] == player1, stat].values[0])
 distribution2 = ast.literal_eval(distribution_df.loc[distribution_df['Player'] == player2, stat].values[0])
 distribution3 = ast.literal_eval(distribution_df.loc[distribution_df['Player'] == player3, stat].values[0])
-# print(distribution)
 
 x1 = np.linspace(min(distribution1), max(distribution1), 1000)
 x2 = np.linspace(min(distribution2), max(distribution2), 1000)
