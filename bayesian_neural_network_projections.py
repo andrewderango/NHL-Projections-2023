@@ -1950,21 +1950,21 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
     max_input_shape = 11
     input_descent = 2
 
-    # yr4_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.20, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(64, activation = 'relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
-    # yr3_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(64, activation = 'relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
-    # yr2_model = tf.keras.Sequential([
-    #     tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
-    #     tf.keras.layers.Dense(64, activation = 'relu'),
-    #     tf.keras.layers.Dense(1)
-    # ])
+    yr4_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.20, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr3_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr2_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
     yr1_model = tf.keras.Sequential([
         tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 3*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*((max_input_shape - 3*input_descent)+1), bias_size=0, dtype=np.float64)),
         tfp.layers.DenseVariational(64, activation='relu', make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=(64+1)*64, bias_size=0, dtype=np.float64)),
@@ -1973,46 +1973,46 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
 
     l1_lambda = 0.20
     l2_alpha = 0.02
-    # for layer in yr4_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
-    # for layer in yr3_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
-    # for layer in yr2_model.layers:
-    #     if isinstance(layer, tf.keras.layers.Dense):
-    #         layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr4_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr3_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr2_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
     for layer in yr1_model.layers:
         if isinstance(layer, tf.keras.layers.Dense):
             layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
 
     optimizer = tf.keras.optimizers.RMSprop(0.001)
-    # yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
-    # yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
-    # yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
 
-    # instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 4, 'EV', 'BNN')
-    # X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'forward', 'BNN')
-    # instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 3, 'EV', 'BNN')
-    # X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'forward', 'BNN')
-    # instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 2, 'EV', 'BNN')
-    # X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'forward', 'BNN')
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'EV', 'forward', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'EV', 'forward', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'EV', 'forward', 'BNN')
     instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 1, 'EV', 'BNN')
     X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'EV', 'forward', 'BNN')
 
-    # X_4_scaler = StandardScaler().fit(X_4)
-    # X_4_scaled = X_4_scaler.transform(X_4)
-    # X_3_scaler = StandardScaler().fit(X_3)
-    # X_3_scaled = X_3_scaler.transform(X_3)
-    # X_2_scaler = StandardScaler().fit(X_2)
-    # X_2_scaled = X_2_scaler.transform(X_2)
+    X_4_scaler = StandardScaler().fit(X_4)
+    X_4_scaled = X_4_scaler.transform(X_4)
+    X_3_scaler = StandardScaler().fit(X_3)
+    X_3_scaled = X_3_scaler.transform(X_3)
+    X_2_scaler = StandardScaler().fit(X_2)
+    X_2_scaled = X_2_scaler.transform(X_2)
     X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
-    # yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
-    # yr3_model.fit(X_3_scaled, y_3, epochs=15, verbose=1)
-    # yr2_model.fit(X_2_scaled, y_2, epochs=15, verbose=1)
+    yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=15, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=15, verbose=1)
     yr1_model.fit(X_1_scaled, y_1, epochs=15, verbose=1)
 
     yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
@@ -2049,44 +2049,44 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
 
     yr4_stat_list, yr3_stat_list, yr2_stat_list, yr1_stat_list = [], [], [], []
 
-    # for player in yr4_group:
-    #     yr4_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #         ])
+    for player in yr4_group:
+        yr4_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+            ])
 
-    # for player in yr3_group:
-    #     yr3_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #         ])
+    for player in yr3_group:
+        yr3_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+            ])
         
-    # for player in yr2_group:
-    #     yr2_stat_list.append([
-    #         preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
-    #         int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
-    #         ])
+    for player in yr2_group:
+        yr2_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV G/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ixG/60'].fillna(0).iloc[0]
+            ])
         
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
@@ -2132,91 +2132,91 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, 
             pseudo_prev_year_stat_2
             ])
 
-    # yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
-    # yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
-    # yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
-    # yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
-    # yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
-    # yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
+    yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
+    yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
+    yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
+    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
+    yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
+    yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
     yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
     yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled) for _ in range(sim_count)]
 
     column_name = 'EV G/60'
 
-    # for index, statline in enumerate(yr4_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         # simulations.append(max(yr4_predictions[sim][index][0], 0))
-    #         simulations.append(max(yr4_predictions[sim][index][0] + statistics.mean(statline[3:7]), 0))
+    for index, statline in enumerate(yr4_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr4_predictions[sim][index][0], 0))
+            simulations.append(max(yr4_predictions[sim][index][0] + statistics.mean(statline[3:7]), 0))
 
-    #     # simulations = np.array(simulations)
-    #     # # temperature = 23.0661224967399795
-    #     # temperature = 1.0661224967399795
-    #     # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
-    #     # simulations = simulations.tolist()
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
         
-    #     player_name = yr4_group[index]
-    #     projection = statistics.mean(simulations)
+        player_name = yr4_group[index]
+        projection = statistics.mean(simulations)
 
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
 
-    # for index, statline in enumerate(yr3_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         # simulations.append(max(yr3_predictions[sim][index][0], 0))
-    #         simulations.append(max(yr3_predictions[sim][index][0] + statistics.mean(statline[3:6]), 0))
+    for index, statline in enumerate(yr3_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0] + statistics.mean(statline[3:6]), 0))
 
-    #     # simulations = np.array(simulations)
-    #     # # temperature = 23.0661224967399795
-    #     # temperature = 1.0661224967399795
-    #     # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
-    #     # simulations = simulations.tolist()
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
         
-    #     player_name = yr3_group[index]
-    #     projection = statistics.mean(simulations)
+        player_name = yr3_group[index]
+        projection = statistics.mean(simulations)
 
-    #     if player_name in ['Kirill Kaprizov', 'Jason Robertson', 'Tage Thompson']:
-    #         print(player_name, statline, projection)
+        if player_name in ['Kirill Kaprizov', 'Jason Robertson', 'Tage Thompson']:
+            print(player_name, statline, projection)
 
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
 
-    # for index, statline in enumerate(yr2_stat_list):
-    #     simulations = []
-    #     for sim in range(sim_count):
-    #         # simulations.append(max(yr2_predictions[sim][index][0], 0))
-    #         simulations.append(max(yr2_predictions[sim][index][0] + statistics.mean(statline[3:5]), 0))
+    for index, statline in enumerate(yr2_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0] + statistics.mean(statline[3:5]), 0))
 
-    #     # simulations = np.array(simulations)
-    #     # # temperature = 23.0661224967399795
-    #     # temperature = 1.0661224967399795
-    #     # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
-    #     # simulations = simulations.tolist()
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
 
-    #     player_name = yr2_group[index]
-    #     projection = statistics.mean(simulations)
+        player_name = yr2_group[index]
+        projection = statistics.mean(simulations)
 
-    #     if player_name in projection_df['Player'].values:
-    #         projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
-    #         distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
-    #     else:
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
-    #         projection_df = pd.concat([projection_df, new_row], ignore_index=True)
-    #         new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
-    #         distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
 
     for index, statline in enumerate(yr1_stat_list):
         simulations = []
@@ -2967,7 +2967,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, distribution_df, 
     X_3_scaled = X_3_scaler.transform(X_3)
     X_2_scaler = MinMaxScaler().fit(X_2)
     X_2_scaled = X_2_scaler.transform(X_2)
-    X_1_scaler = MinMaxScaler().fit(X_1)
+    X_1_scaler = StandardScaler().fit(X_1)
     X_1_scaled = X_1_scaler.transform(X_1)
 
     yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
@@ -3218,13 +3218,948 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, distribution_df, 
     for index, statline in enumerate(yr1_stat_list):
         simulations = []
         for sim in range(sim_count):
-            simulations.append(max(yr1_predictions[sim][index][0] + statistics.mean(statline[3:4]), 0))
+            # simulations.append(max(yr1_predictions[sim][index][0] + statistics.mean(statline[3:4]), 0))
+            simulations.append(yr1_predictions[sim][index][0] + statistics.mean(statline[3:4]))
 
         simulations = np.array(simulations)
         temperature = 23.0661224967399795
         simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
         simulations = simulations.tolist()
         simulations = [max(0, num) for num in simulations]
+        
+        player_name = yr1_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'bayesian_nn_partial_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'bayesian_nn_partial_distributions_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df, distribution_df
+
+def make_forward_pk_gper60_projections(stat_df, projection_df, distribution_df, download_file, sim_count, year=2024):
+    max_input_shape = 7
+    input_descent = 1
+
+    yr4_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.10, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr3_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr2_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr1_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 3*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*((max_input_shape - 3*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tfp.layers.DenseVariational(64, activation='relu', make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=(64+1)*64, bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(1)
+    ])
+
+    l1_lambda = 0.20
+    l2_alpha = 0.02
+    for layer in yr4_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr3_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr2_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr1_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+    yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 4, 'PK', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'PK', 'forward', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 3, 'PK', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'PK', 'forward', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 2, 'PK', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'PK', 'forward', 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'forward', 1, 'PK', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'PK', 'forward', 'BNN')
+
+    X_4_scaler = MinMaxScaler().fit(X_4)
+    X_4_scaled = X_4_scaler.transform(X_4)
+    X_3_scaler = MinMaxScaler().fit(X_3)
+    X_3_scaled = X_3_scaler.transform(X_3)
+    X_2_scaler = MinMaxScaler().fit(X_2)
+    X_2_scaled = X_2_scaler.transform(X_2)
+    X_1_scaler = MinMaxScaler().fit(X_1)
+    X_1_scaled = X_1_scaler.transform(X_1)
+
+    yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=10, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=10, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=10, verbose=1)
+
+    yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
+
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
+    for index, row in stat_df.iterrows():
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} PK ATOI'] > 0)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} PK ATOI']*row[f'{year-4} GP'] >= 50 and row[f'{year-3} PK ATOI']*row[f'{year-3} GP'] >= 50 and row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr4_group.append(row['Player'])
+            elif row[f'{year-3} PK ATOI']*row[f'{year-3} GP'] >= 50 and row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr3_group.append(row['Player'])
+            elif row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr2_group.append(row['Player'])
+            else:
+                yr1_group.append(row['Player'])
+
+    yr4_stat_list, yr3_stat_list, yr2_stat_list, yr1_stat_list = [], [], [], []
+
+    for player in yr4_group:
+        yr4_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+
+    for player in yr3_group:
+        yr3_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr2_group:
+        yr2_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr1_group:
+        y1_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0]
+        y2_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0]
+        y3_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0]
+        y4_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0]
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0]
+
+        # Keep getting games from previous seasons until you reach threshold of 75 PKTOI.
+        # Once you reach 75 PKTOI, find the PPG/60 accross these seasons.
+        # If they haven't played 75 PKTOI in their past 4 seasons, fill the rest of the 75 PKTOI with the -1st z-score of the stat.
+        if y1_pktoi >= 75:
+            pseudo_prev_year_stat = y1_stat
+        elif y1_pktoi + y2_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi)/(y1_pktoi + y2_pktoi)
+        elif y1_pktoi + y2_pktoi + y3_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi)/(y1_pktoi + y2_pktoi + y3_pktoi)
+        elif y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi)
+        else:
+            negative_first_z_score_stat_1 = max(instance_df_y1['Y4 PK ixG/60'].mean() - instance_df_y1['Y4 PK ixG/60'].std(), 0) # should not be negative
+            games_to_pseudofy = 75-(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi)
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
+
+        yr1_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            pseudo_prev_year_stat
+            ])
+
+    yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
+    yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
+    yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
+    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
+    yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
+    yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
+    yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
+    yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled) for _ in range(sim_count)]
+
+    column_name = 'PK G/60'
+
+    for index, statline in enumerate(yr4_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr4_predictions[sim][index][0], 0))
+            simulations.append(max(yr4_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        
+        player_name = yr4_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr3_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        
+        player_name = yr3_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in ['Kirill Kaprizov', 'Jason Robertson', 'Tage Thompson']:
+            print(player_name, statline, projection)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr2_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+
+        player_name = yr2_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr1_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            simulations.append(max(yr1_predictions[sim][index][0], 0))
+        
+        player_name = yr1_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'bayesian_nn_partial_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'bayesian_nn_partial_distributions_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df, distribution_df
+
+def make_defence_pk_gper60_projections(stat_df, projection_df, distribution_df, download_file, sim_count, year=2024):
+    max_input_shape = 7
+    input_descent = 1
+
+    yr4_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.10, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr3_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr2_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr1_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 3*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*((max_input_shape - 3*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tfp.layers.DenseVariational(64, activation='relu', make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=(64+1)*64, bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(1)
+    ])
+
+    l1_lambda = 0.20
+    l2_alpha = 0.02
+    for layer in yr4_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr3_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr2_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr1_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+    yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 4, 'PK', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'Gper60', 4, 'PK', 'defence', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 3, 'PK', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'Gper60', 3, 'PK', 'defence', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 2, 'PK', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'Gper60', 2, 'PK', 'defence', 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('Gper60', 'defence', 1, 'PK', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'Gper60', 1, 'PK', 'defence', 'BNN')
+
+    X_4_scaler = MinMaxScaler().fit(X_4)
+    X_4_scaled = X_4_scaler.transform(X_4)
+    X_3_scaler = MinMaxScaler().fit(X_3)
+    X_3_scaled = X_3_scaler.transform(X_3)
+    X_2_scaler = MinMaxScaler().fit(X_2)
+    X_2_scaled = X_2_scaler.transform(X_2)
+    X_1_scaler = MinMaxScaler().fit(X_1)
+    X_1_scaled = X_1_scaler.transform(X_1)
+
+    yr4_model.fit(X_4_scaled, y_4, epochs=10, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=10, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=10, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=10, verbose=1)
+
+    yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
+
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
+    for index, row in stat_df.iterrows():
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} PK ATOI'] > 0)]['Player']) and row['Position'] == 'D':
+            if row[f'{year-4} PK ATOI']*row[f'{year-4} GP'] >= 50 and row[f'{year-3} PK ATOI']*row[f'{year-3} GP'] >= 50 and row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr4_group.append(row['Player'])
+            elif row[f'{year-3} PK ATOI']*row[f'{year-3} GP'] >= 50 and row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr3_group.append(row['Player'])
+            elif row[f'{year-2} PK ATOI']*row[f'{year-2} GP'] >= 50 and row[f'{year-1} PK ATOI']*row[f'{year-1} GP'] >= 50:
+                yr2_group.append(row['Player'])
+            else:
+                yr1_group.append(row['Player'])
+
+    yr4_stat_list, yr3_stat_list, yr2_stat_list, yr1_stat_list = [], [], [], []
+
+    for player in yr4_group:
+        yr4_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+
+    for player in yr3_group:
+        yr3_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr2_group:
+        yr2_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr1_group:
+        y1_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0]
+        y2_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0]
+        y3_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0]
+        y4_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0]
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ixG/60'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ixG/60'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ixG/60'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ixG/60'].fillna(0).iloc[0]
+
+        # Keep getting games from previous seasons until you reach threshold of 75 PKTOI.
+        # Once you reach 75 PKTOI, find the PPG/60 accross these seasons.
+        # If they haven't played 75 PKTOI in their past 4 seasons, fill the rest of the 75 PKTOI with the -1st z-score of the stat.
+        if y1_pktoi >= 75:
+            pseudo_prev_year_stat = y1_stat
+        elif y1_pktoi + y2_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi)/(y1_pktoi + y2_pktoi)
+        elif y1_pktoi + y2_pktoi + y3_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi)/(y1_pktoi + y2_pktoi + y3_pktoi)
+        elif y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi >= 75:
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi)
+        else:
+            negative_first_z_score_stat_1 = max(instance_df_y1['Y4 PK ixG/60'].mean() - instance_df_y1['Y4 PK ixG/60'].std(), 0) # should not be negative
+            games_to_pseudofy = 75-(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi)
+            pseudo_prev_year_stat = (y1_stat*y1_pktoi + y2_stat*y2_pktoi + y3_stat*y3_pktoi + y4_stat*y4_pktoi + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_pktoi + y2_pktoi + y3_pktoi + y4_pktoi + games_to_pseudofy)
+
+        yr1_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            pseudo_prev_year_stat
+            ])
+
+    yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
+    yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
+    yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
+    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
+    yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
+    yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
+    yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
+    yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled) for _ in range(sim_count)]
+
+    column_name = 'PK G/60'
+
+    for index, statline in enumerate(yr4_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr4_predictions[sim][index][0], 0))
+            simulations.append(max(yr4_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        
+        player_name = yr4_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr3_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        
+        player_name = yr3_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in ['Kirill Kaprizov', 'Jason Robertson', 'Tage Thompson']:
+            print(player_name, statline, projection)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr2_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0], 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+
+        player_name = yr2_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr1_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            simulations.append(max(yr1_predictions[sim][index][0], 0))
+        
+        player_name = yr1_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    # Download file
+    if download_file == True:
+        filename = f'bayesian_nn_partial_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'bayesian_nn_partial_distributions_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df, distribution_df
+
+def make_forward_ev_a1per60_projections(stat_df, projection_df, distribution_df, download_file, sim_count, year=2024):
+    max_input_shape = 23
+    input_descent = 5
+
+    yr4_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 0*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.20, kernel_size=64*((max_input_shape - 0*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr3_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 1*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.30, kernel_size=64*((max_input_shape - 1*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr2_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(max_input_shape - 2*input_descent,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.50, kernel_size=64*((max_input_shape - 2*input_descent)+1), bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+    yr1_model = tf.keras.Sequential([
+        tfp.layers.DenseVariational(64, activation='relu', input_shape=(3,), make_posterior_fn=posterior_mean_field, make_prior_fn=lambda *args, **kwargs: prior_trainable(stdev=0.01, kernel_size=64*4, bias_size=0, dtype=np.float64)),
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        tf.keras.layers.Dense(1)
+    ])
+
+    l1_lambda = 0.20
+    l2_alpha = 0.02
+    for layer in yr4_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr3_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr2_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+    for layer in yr1_model.layers:
+        if isinstance(layer, tf.keras.layers.Dense):
+            layer.add_loss(lambda: tf.keras.regularizers.l1_l2(l1_lambda, l2_alpha)(layer.kernel))
+
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+    yr4_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr3_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr2_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    yr1_model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+
+    instance_df_y4, _ = preprocessing_training_functions.create_year_restricted_instance_df('A1per60', 'forward', 4, 'EV', 'BNN')
+    X_4, y_4 = preprocessing_training_functions.extract_instance_data(instance_df_y4, 'A1per60', 4, 'EV', 'forward', 'BNN')
+    instance_df_y3, _ = preprocessing_training_functions.create_year_restricted_instance_df('A1per60', 'forward', 3, 'EV', 'BNN')
+    X_3, y_3 = preprocessing_training_functions.extract_instance_data(instance_df_y3, 'A1per60', 3, 'EV', 'forward', 'BNN')
+    instance_df_y2, _ = preprocessing_training_functions.create_year_restricted_instance_df('A1per60', 'forward', 2, 'EV', 'BNN')
+    X_2, y_2 = preprocessing_training_functions.extract_instance_data(instance_df_y2, 'A1per60', 2, 'EV', 'forward', 'BNN')
+    instance_df_y1, _ = preprocessing_training_functions.create_year_restricted_instance_df('A1per60', 'forward', 1, 'EV', 'BNN')
+    X_1, y_1 = preprocessing_training_functions.extract_instance_data(instance_df_y1, 'A1per60', 1, 'EV', 'forward', 'BNN')
+
+    X_4_scaler = StandardScaler().fit(X_4)
+    X_4_scaled = X_4_scaler.transform(X_4)
+    X_3_scaler = StandardScaler().fit(X_3)
+    X_3_scaled = X_3_scaler.transform(X_3)
+    X_2_scaler = StandardScaler().fit(X_2)
+    X_2_scaled = X_2_scaler.transform(X_2)
+    X_1_scaler = StandardScaler().fit(X_1)
+    X_1_scaled = X_1_scaler.transform(X_1)
+
+    yr4_model.fit(X_4_scaled, y_4, epochs=15, verbose=1)
+    yr3_model.fit(X_3_scaled, y_3, epochs=15, verbose=1)
+    yr2_model.fit(X_2_scaled, y_2, epochs=15, verbose=1)
+    yr1_model.fit(X_1_scaled, y_1, epochs=5, verbose=1)
+
+    for item in range(len(X_1_scaled)):
+        print(X_1_scaled[item], y_1[item])
+
+    yr4_group, yr3_group, yr2_group, yr1_group = [], [], [], []
+
+    gp_adjustment_factor = {
+        2023: 1,
+        2022: 1,
+        2021: 82/56,
+        2020: 82/69.5,
+        2019: 1,
+        2018: 1,
+        2017: 1,
+        2016: 1,
+        2015: 1,
+        2014: 1,
+        2013: 82/48,
+        2012: 1,
+        2011: 1,
+        2010: 1,
+        2009: 1,
+        2008: 1
+    }
+
+    for index, row in stat_df.iterrows():
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+            if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 40 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
+                yr4_group.append(row['Player'])
+            elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 40 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
+                yr3_group.append(row['Player'])
+            elif row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 40 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 40:
+                yr2_group.append(row['Player'])
+            else:
+                yr1_group.append(row['Player'])
+
+    yr4_stat_list, yr3_stat_list, yr2_stat_list, yr1_stat_list = [], [], [], []
+
+    for player in yr4_group:
+        yr4_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV oixGF/60'].fillna(0).iloc[0]
+            ])
+
+    for player in yr3_group:
+        yr3_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV oixGF/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr2_group:
+        yr2_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rebounds Created/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rush Attempts/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV oixGF/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV oixGF/60'].fillna(0).iloc[0]
+            ])
+        
+    for player in yr1_group:
+        y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
+        y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
+        y3_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0])
+        y4_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0])
+        y1_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A1/60'].fillna(0).iloc[0]
+        y2_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A1/60'].fillna(0).iloc[0]
+        y3_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A1/60'].fillna(0).iloc[0]
+        y4_stat_1 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A1/60'].fillna(0).iloc[0]
+        y1_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV A2/60'].fillna(0).iloc[0]
+        y2_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV A2/60'].fillna(0).iloc[0]
+        y3_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV A2/60'].fillna(0).iloc[0]
+        y4_stat_2 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV A2/60'].fillna(0).iloc[0]
+        y1_stat_3 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rebounds Created/60'].fillna(0).iloc[0]
+        y2_stat_3 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rebounds Created/60'].fillna(0).iloc[0]
+        y3_stat_3 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rebounds Created/60'].fillna(0).iloc[0]
+        y4_stat_3 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV Rebounds Created/60'].fillna(0).iloc[0]
+        y1_stat_4 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV Rush Attempts/60'].fillna(0).iloc[0]
+        y2_stat_4 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV Rush Attempts/60'].fillna(0).iloc[0]
+        y3_stat_4 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV Rush Attempts/60'].fillna(0).iloc[0]
+        y4_stat_4 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV Rush Attempts/60'].fillna(0).iloc[0]
+        y1_stat_5 = stat_df.loc[stat_df['Player'] == player, f'{year-1} EV oixGF/60'].fillna(0).iloc[0]
+        y2_stat_5 = stat_df.loc[stat_df['Player'] == player, f'{year-2} EV oixGF/60'].fillna(0).iloc[0]
+        y3_stat_5 = stat_df.loc[stat_df['Player'] == player, f'{year-3} EV oixGF/60'].fillna(0).iloc[0]
+        y4_stat_5 = stat_df.loc[stat_df['Player'] == player, f'{year-4} EV oixGF/60'].fillna(0).iloc[0]
+
+        # Keep getting games from previous seasons until you reach threshold of 50 games.
+        # Once you reach 50 games, find the ATOI accross these seasons.
+        # If they haven't played 50 games in their past 4 seasons, fill the rest of the 50 games with the -1st z-score of the stat.
+        if y1_gp >= 50:
+            pseudo_prev_year_stat_1 = y1_stat_1
+            pseudo_prev_year_stat_2 = y1_stat_2
+            pseudo_prev_year_stat_3 = y1_stat_3
+            pseudo_prev_year_stat_4 = y1_stat_4
+            pseudo_prev_year_stat_5 = y1_stat_5
+        elif y1_gp + y2_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_3 = (y1_stat_3*y1_gp + y2_stat_3*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_4 = (y1_stat_4*y1_gp + y2_stat_4*y2_gp)/(y1_gp + y2_gp)
+            pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp)/(y1_gp + y2_gp)
+        elif y1_gp + y2_gp + y3_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_3 = (y1_stat_3*y1_gp + y2_stat_3*y2_gp + y3_stat_3*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_4 = (y1_stat_4*y1_gp + y2_stat_4*y2_gp + y3_stat_4*y3_gp)/(y1_gp + y2_gp + y3_gp)
+            pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp)/(y1_gp + y2_gp + y3_gp)
+        elif y1_gp + y2_gp + y3_gp + y4_gp >= 50:
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_3 = (y1_stat_3*y1_gp + y2_stat_3*y2_gp + y3_stat_3*y3_gp + y4_stat_3*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_4 = (y1_stat_4*y1_gp + y2_stat_4*y2_gp + y3_stat_4*y3_gp + y4_stat_4*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp)/(y1_gp + y2_gp + y3_gp + y4_gp)
+        else:
+            negative_first_z_score_stat_1 = max(instance_df_y1['Y4 EV A1/60'].mean() - instance_df_y1['Y4 EV A1/60'].std(), 0) # should not be negative
+            negative_first_z_score_stat_2 = max(instance_df_y1['Y4 EV A2/60'].mean() - instance_df_y1['Y4 EV A2/60'].std(), 0)
+            negative_first_z_score_stat_3 = max(instance_df_y1['Y4 EV Rebounds Created/60'].mean() - instance_df_y1['Y4 EV Rebounds Created/60'].std(), 0)
+            negative_first_z_score_stat_4 = max(instance_df_y1['Y4 EV Rush Attempts/60'].mean() - instance_df_y1['Y4 EV Rush Attempts/60'].std(), 0)
+            negative_first_z_score_stat_5 = max(instance_df_y1['Y4 EV oixGF/60'].mean() - instance_df_y1['Y4 EV oixGF/60'].std(), 0)
+            games_to_pseudofy = 50-(y1_gp + y2_gp + y3_gp + y4_gp)
+            pseudo_prev_year_stat_1 = (y1_stat_1*y1_gp + y2_stat_1*y2_gp + y3_stat_1*y3_gp + y4_stat_1*y4_gp + negative_first_z_score_stat_1*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy) # denominator = 50
+            pseudo_prev_year_stat_2 = (y1_stat_2*y1_gp + y2_stat_2*y2_gp + y3_stat_2*y3_gp + y4_stat_2*y4_gp + negative_first_z_score_stat_2*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_3 = (y1_stat_3*y1_gp + y2_stat_3*y2_gp + y3_stat_3*y3_gp + y4_stat_3*y4_gp + negative_first_z_score_stat_3*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_4 = (y1_stat_4*y1_gp + y2_stat_4*y2_gp + y3_stat_4*y3_gp + y4_stat_4*y4_gp + negative_first_z_score_stat_4*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+            pseudo_prev_year_stat_5 = (y1_stat_5*y1_gp + y2_stat_5*y2_gp + y3_stat_5*y3_gp + y4_stat_5*y4_gp + negative_first_z_score_stat_5*games_to_pseudofy)/(y1_gp + y2_gp + y3_gp + y4_gp + games_to_pseudofy)
+
+        yr1_stat_list.append([
+            preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
+            int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
+            int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
+            pseudo_prev_year_stat_1,
+            pseudo_prev_year_stat_2,
+            pseudo_prev_year_stat_3,
+            pseudo_prev_year_stat_4,
+            pseudo_prev_year_stat_5
+            ])
+
+    yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
+    yr4_predictions = [yr4_model.predict(yr4_stat_list_scaled) for _ in range(sim_count)]
+    yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
+    yr3_predictions = [yr3_model.predict(yr3_stat_list_scaled) for _ in range(sim_count)]
+    yr2_stat_list_scaled = X_2_scaler.transform(yr2_stat_list)
+    yr2_predictions = [yr2_model.predict(yr2_stat_list_scaled) for _ in range(sim_count)]
+    yr1_stat_list_scaled = X_1_scaler.transform(yr1_stat_list)
+    yr1_predictions = [yr1_model.predict(yr1_stat_list_scaled, verbose=0) for _ in range(sim_count)]
+
+    column_name = 'EV A1/60'
+
+    for index, statline in enumerate(yr4_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            simulations.append(max(yr4_predictions[sim][index][0] + statistics.mean(statline[3:7]), 0))
+
+        # simulations = np.array(simulations)
+        # temperature = 0.6661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        # simulations = [max(0, num) for num in simulations]
+        
+        player_name = yr4_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr3_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr3_predictions[sim][index][0], 0))
+            simulations.append(max(yr3_predictions[sim][index][0] + statistics.mean(statline[3:6]), 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+        
+        player_name = yr3_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr2_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            # simulations.append(max(yr2_predictions[sim][index][0], 0))
+            simulations.append(max(yr2_predictions[sim][index][0] + statistics.mean(statline[3:5]), 0))
+
+        # simulations = np.array(simulations)
+        # # temperature = 23.0661224967399795
+        # temperature = 1.0661224967399795
+        # simulations = temperature*(simulations-np.mean(simulations)) + np.mean(simulations)
+        # simulations = simulations.tolist()
+
+        player_name = yr2_group[index]
+        projection = statistics.mean(simulations)
+
+        if player_name in projection_df['Player'].values:
+            projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
+            distribution_df.loc[distribution_df['Player'] == player_name, column_name] = [str(simulations)]
+        else:
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [projection]})
+            projection_df = pd.concat([projection_df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'Player': [player_name], column_name: [str(simulations)]})
+            distribution_df = pd.concat([distribution_df, new_row], ignore_index=True)
+
+    for index, statline in enumerate(yr1_stat_list):
+        simulations = []
+        for sim in range(sim_count):
+            simulations.append(max(yr1_predictions[sim][index][0], 0))
         
         player_name = yr1_group[index]
         projection = statistics.mean(simulations)
@@ -3280,8 +4215,11 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     # projection_df, distribution_df = make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
     # projection_df, distribution_df = make_forward_pp_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
     # projection_df, distribution_df = make_defence_pp_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
+    # projection_df, distribution_df = make_forward_pk_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
+    # projection_df, distribution_df = make_defence_pk_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
+    # projection_df, distribution_df = make_forward_ev_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
 
-    projection_df = projection_df.sort_values('PP G/60', ascending=False)
+    projection_df = projection_df.sort_values('EV A1/60', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
