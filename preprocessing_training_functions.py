@@ -893,6 +893,17 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                 elif fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, None, 'GP') < 50:
                     pass
                 else:
+                    prev_ev_a1per60 = [fetch_data(row, year, 1, 'ev', 'A1/60'), fetch_data(row, year, 2, 'ev', 'A1/60'), fetch_data(row, year, 3, 'ev', 'A1/60'), fetch_data(row, year, 4, 'ev', 'A1/60')]
+                    prev_ev_a2per60 = [fetch_data(row, year, 1, 'ev', 'A2/60'), fetch_data(row, year, 2, 'ev', 'A2/60'), fetch_data(row, year, 3, 'ev', 'A2/60'), fetch_data(row, year, 4, 'ev', 'A2/60')]
+                    try:
+                        prev_a1_avg = statistics.mean([x for x in prev_ev_a1per60 if not np.isnan(x)])
+                    except statistics.StatisticsError:
+                        prev_a1_avg = 0
+                    try:
+                        prev_a2_avg = statistics.mean([x for x in prev_ev_a2per60 if not np.isnan(x)])
+                    except statistics.StatisticsError:
+                        prev_a2_avg = 0
+
                     instance_df.loc[f"{row['Player']} {year+1}"] = [
                         row['Player'], 
                         year+1, row['Position'],
@@ -914,11 +925,13 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                         fetch_data(row, year, 3, 'ev', 'A1/60'),
                         fetch_data(row, year, 4, 'ev', 'A1/60'),
                         fetch_data(row, year, 5, 'ev', 'A1/60'),
+                        fetch_data(row, year, 5, 'ev', 'A1/60') - prev_a1_avg,
                         fetch_data(row, year, 1, 'ev', 'A2/60'),
                         fetch_data(row, year, 2, 'ev', 'A2/60'),
                         fetch_data(row, year, 3, 'ev', 'A2/60'),
                         fetch_data(row, year, 4, 'ev', 'A2/60'),
                         fetch_data(row, year, 5, 'ev', 'A2/60'),
+                        fetch_data(row, year, 5, 'ev', 'A2/60') - prev_a2_avg,
                         fetch_data(row, year, 1, 'ev', 'Rebounds Created/60'),
                         fetch_data(row, year, 2, 'ev', 'Rebounds Created/60'),
                         fetch_data(row, year, 3, 'ev', 'Rebounds Created/60'),
@@ -941,13 +954,6 @@ def create_instance_df(dependent_variable, columns, stat_df, download_file=False
                     # defence
                     # players with < 50 PPTOI in Y5
                     # players with < 50 PPTOI in Y4
-
-                if row['Position'] == 'D':
-                    pass
-                elif np.isnan(fetch_data(row, year, 5, None, 'GP')) or np.isnan(fetch_data(row, year, 4, None, 'GP')):
-                    pass
-                elif fetch_data(row, year, 5, 'pp', 'ATOI')*fetch_data(row, year, 5, None, 'GP') < 50 or fetch_data(row, year, 4, 'pp', 'ATOI')*fetch_data(row, year, 4, None, 'GP') < 50:
-                    pass
 
                 if row['Position'] == 'D':
                     pass
@@ -1859,8 +1865,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                     if model_type == 'BNN':
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 d{situation} A1/60']) # target 
+                        # elif proj_stat == 'A2per60':
+                        #     y.append(row[f'Y5 d{situation} A2/60']) # target
                         elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 d{situation} A2/60']) # target
+                            y.append(row[f'Y5 {situation} A2/60']) # target
                     else:
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 {situation} A1/60']) # target 
