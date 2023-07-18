@@ -6089,10 +6089,10 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
 
     for player in yr3_group:
@@ -6100,9 +6100,9 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
         
     for player in yr2_group:
@@ -6110,8 +6110,8 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
         
     for player in yr1_group:
@@ -6119,10 +6119,10 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file, y
         y2_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0]
         y3_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0]
         y4_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0]
-        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0]
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A2/60'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 75 PKTOI.
         # Once you reach 75 PKTOI, find the PPG/60 accross these seasons.
@@ -6287,10 +6287,10 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
 
     for player in yr3_group:
@@ -6298,9 +6298,9 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
         
     for player in yr2_group:
@@ -6308,8 +6308,8 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
             preprocessing_training_functions.calc_age(stat_df.loc[stat_df['Player'] == player, 'Date of Birth'].iloc[0], year-1),
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0],
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0],
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
             ])
         
     for player in yr1_group:
@@ -6317,10 +6317,10 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file, y
         y2_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0]
         y3_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].fillna(0).iloc[0]
         y4_pktoi = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK ATOI'].fillna(0).iloc[0] * stat_df.loc[stat_df['Player'] == player, f'{year-4} GP'].fillna(0).iloc[0]
-        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A1/60'].fillna(0).iloc[0]
-        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A1/60'].fillna(0).iloc[0]
-        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A1/60'].fillna(0).iloc[0]
-        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A1/60'].fillna(0).iloc[0]
+        y1_stat = stat_df.loc[stat_df['Player'] == player, f'{year-1} PK A2/60'].fillna(0).iloc[0]
+        y2_stat = stat_df.loc[stat_df['Player'] == player, f'{year-2} PK A2/60'].fillna(0).iloc[0]
+        y3_stat = stat_df.loc[stat_df['Player'] == player, f'{year-3} PK A2/60'].fillna(0).iloc[0]
+        y4_stat = stat_df.loc[stat_df['Player'] == player, f'{year-4} PK A2/60'].fillna(0).iloc[0]
 
         # Keep getting games from previous seasons until you reach threshold of 75 PKTOI.
         # Once you reach 75 PKTOI, find the PPG/60 accross these seasons.
