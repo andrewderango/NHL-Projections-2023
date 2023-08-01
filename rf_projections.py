@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+from scipy.signal import savgol_filter
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
@@ -6486,6 +6487,252 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, stdev_df, downlo
 
     return projection_df, stdev_df
 
+def normal_distribution_prod(mean1, stdev1, mean2, stdev2):
+    mean = mean1 * mean2
+    stdev = np.sqrt(mean1**2*stdev2**2 + mean2**2*stdev1**2 + stdev1**2*stdev2**2)
+    return mean, stdev
+
+
+def goal_era_adjustment(stat_df, projection_df, stdev_df, year=2024, apply_adjustment=True, download_file=False):
+    stat_df = stat_df.fillna(0)
+    projection_df = projection_df.fillna(0)
+    hist_goal_df = pd.DataFrame()
+
+    for season in range(2007, 2023):
+        col = round(((stat_df[f'{season+1} EV G/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP G/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK G/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
+        col = col.sort_values(ascending=False)
+        col = col.reset_index(drop=True)
+        hist_goal_df = hist_goal_df.reset_index(drop=True)
+        hist_goal_df[season+1] = col
+    hist_goal_df.index = hist_goal_df.index + 1
+
+    try:
+        hist_goal_df[2021] = round(82/56*hist_goal_df[2021]) 
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2020] = round(82/70*hist_goal_df[2020]) 
+    except KeyError:
+        pass
+    try:
+        hist_goal_df[2013] = round(82/48*hist_goal_df[2013]) 
+    except KeyError:
+        pass
+
+    hist_goal_df['Historical Average'] = hist_goal_df.mean(axis=1)
+    hist_goal_df['Projected Average'] = hist_goal_df.loc[:, year-4:year-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_goal_df['Adjustment'] = hist_goal_df['Projected Average'] - hist_goal_df['Historical Average']
+    hist_goal_df['Smoothed Adjustment'] = savgol_filter(hist_goal_df['Adjustment'], 25, 2)
+    # print(hist_goal_df.head(750).to_string())
+
+    projection_df['GOALS'] = (projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']
+    projection_df = projection_df.sort_values('GOALS', ascending=False)
+    projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
+
+    for index, player_name in enumerate(stdev_df['Player']):
+        stdev_df.loc[index, 'EV GOALS/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'EV G/60'].values[0]/60)**2 * stdev_df.loc[index, 'EV ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'EV ATOI'].values[0]**2 * (stdev_df.loc[index, 'EV G/60']/60)**2 + (stdev_df.loc[index, 'EV G/60']/60)**2 * stdev_df.loc[index, 'EV ATOI']**2), nan=0.010958)
+        stdev_df.loc[index, 'PP GOALS/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PP G/60'].values[0]/60)**2 * stdev_df.loc[index, 'PP ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PP ATOI'].values[0]**2 * (stdev_df.loc[index, 'PP G/60']/60)**2 + (stdev_df.loc[index, 'PP G/60']/60)**2 * stdev_df.loc[index, 'PP ATOI']**2), nan=0.000998)
+        stdev_df.loc[index, 'PK GOALS/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PK G/60'].values[0]/60)**2 * stdev_df.loc[index, 'PK ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PK ATOI'].values[0]**2 * (stdev_df.loc[index, 'PK G/60']/60)**2 + (stdev_df.loc[index, 'PK G/60']/60)**2 * stdev_df.loc[index, 'PK ATOI']**2), nan=0.001583)
+        stdev_df.loc[index, 'GOALS/GP'] = np.sqrt(stdev_df.loc[index, 'EV GOALS/GP']**2 + stdev_df.loc[index, 'PP GOALS/GP']**2 + stdev_df.loc[index, 'PK GOALS/GP']**2)
+
+        stdev_df.loc[index, 'GOALS'] = np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'GOALS/GP']**2 + (projection_df.loc[projection_df['Player'] == player_name, 'GOALS'].values[0]/projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'GP']**2 + stdev_df.loc[index, 'GOALS/GP']**2 + stdev_df.loc[index, 'GP']**2)
+    stdev_df = stdev_df.sort_values('GOALS', ascending=False)
+    stdev_df = stdev_df.reset_index(drop=True)
+    stdev_df.index = stdev_df.index + 1
+
+    if apply_adjustment == True:
+        projection_df['Era Adjustment Factor'] = hist_goal_df['Smoothed Adjustment']/((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
+        projection_df['EV G/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PP G/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PK G/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['GOALS'] = (projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']
+
+        stdev_df = stdev_df.merge(projection_df[['Player', 'Era Adjustment Factor']], on='Player', how='outer')
+        stdev_df['EV G/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PP G/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PK G/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        projection_df['GOALS'] *= abs(stdev_df['Era Adjustment Factor'])
+
+        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+        stdev_df = stdev_df.drop(columns=['PP GOALS/GP', 'PK GOALS/GP', 'EV GOALS/GP', 'GOALS/GP', 'Era Adjustment Factor'])
+
+    # Download file
+    if download_file == True:
+        filename = f'rf_final_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'rf_final_stdeviations_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        stdev_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df.fillna(0), stdev_df
+
+def a1_era_adjustment(stat_df, projection_df, stdev_df, year=2024, apply_adjustment=True, download_file=False):
+    stat_df = stat_df.fillna(0)
+    projection_df = projection_df.fillna(0)
+    hist_a1_df = pd.DataFrame()
+
+    for season in range(2007, 2023):
+        col = round(((stat_df[f'{season+1} EV A1/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A1/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A1/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
+        col = col.sort_values(ascending=False)
+        col = col.reset_index(drop=True)
+        hist_a1_df = hist_a1_df.reset_index(drop=True)
+        hist_a1_df[season+1] = col
+    hist_a1_df.index = hist_a1_df.index + 1
+
+    try:
+        hist_a1_df[2021] = round(82/56*hist_a1_df[2021]) 
+    except KeyError:
+        pass
+    try:
+        hist_a1_df[2020] = round(82/70*hist_a1_df[2020]) 
+    except KeyError:
+        pass
+    try:
+        hist_a1_df[2013] = round(82/48*hist_a1_df[2013]) 
+    except KeyError:
+        pass
+
+    hist_a1_df['Historical Average'] = hist_a1_df.mean(axis=1)
+    hist_a1_df['Projected Average'] = hist_a1_df.loc[:, year-4:year-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_a1_df['Adjustment'] = hist_a1_df['Projected Average'] - hist_a1_df['Historical Average']
+    hist_a1_df['Smoothed Adjustment'] = savgol_filter(hist_a1_df['Adjustment'], 25, 2)
+    # print(hist_a1_df.head(750).to_string())
+
+    projection_df['PRIMARY ASSISTS'] = (projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP'] 
+    projection_df = projection_df.sort_values('PRIMARY ASSISTS', ascending=False)
+    projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
+
+    for index, player_name in enumerate(stdev_df['Player']):
+        stdev_df.loc[index, 'EV A1/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'EV A1/60'].values[0]/60)**2 * stdev_df.loc[index, 'EV ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'EV ATOI'].values[0]**2 * (stdev_df.loc[index, 'EV A1/60']/60)**2 + (stdev_df.loc[index, 'EV A1/60']/60)**2 * stdev_df.loc[index, 'EV ATOI']**2), nan=0.003923)
+        stdev_df.loc[index, 'PP A1/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PP A1/60'].values[0]/60)**2 * stdev_df.loc[index, 'PP ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PP ATOI'].values[0]**2 * (stdev_df.loc[index, 'PP A1/60']/60)**2 + (stdev_df.loc[index, 'PP A1/60']/60)**2 * stdev_df.loc[index, 'PP ATOI']**2), nan=0.000312)
+        stdev_df.loc[index, 'PK A1/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PK A1/60'].values[0]/60)**2 * stdev_df.loc[index, 'PK ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PK ATOI'].values[0]**2 * (stdev_df.loc[index, 'PK A1/60']/60)**2 + (stdev_df.loc[index, 'PK A1/60']/60)**2 * stdev_df.loc[index, 'PK ATOI']**2), nan=0.001796)
+        stdev_df.loc[index, 'A1/GP'] = np.sqrt(stdev_df.loc[index, 'EV A1/GP']**2 + stdev_df.loc[index, 'PP A1/GP']**2 + stdev_df.loc[index, 'PK A1/GP']**2)
+
+        stdev_df.loc[index, 'PRIMARY ASSISTS'] = np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'A1/GP']**2 + (projection_df.loc[projection_df['Player'] == player_name, 'PRIMARY ASSISTS'].values[0]/projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'GP']**2 + stdev_df.loc[index, 'A1/GP']**2 + stdev_df.loc[index, 'GP']**2)
+    stdev_df = stdev_df.sort_values('PRIMARY ASSISTS', ascending=False)
+    stdev_df = stdev_df.reset_index(drop=True)
+    stdev_df.index = stdev_df.index + 1
+
+    if apply_adjustment == True:
+        projection_df['Era Adjustment Factor'] = hist_a1_df['Smoothed Adjustment']/((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
+        projection_df['EV A1/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PP A1/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PK A1/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PRIMARY ASSISTS'] = round((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']) 
+
+        stdev_df = stdev_df.merge(projection_df[['Player', 'Era Adjustment Factor']], on='Player', how='outer')
+        stdev_df['EV A1/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PP A1/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PK A1/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        projection_df['PRIMARY ASSISTS'] *= abs(stdev_df['Era Adjustment Factor'])
+
+        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+        stdev_df = stdev_df.drop(columns=['PP A1/GP', 'PK A1/GP', 'EV A1/GP', 'A1/GP', 'Era Adjustment Factor'])
+
+    # Download file
+    if download_file == True:
+        filename = f'rf_final_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'rf_final_stdeviations_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        stdev_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df.fillna(0), stdev_df
+
+def a2_era_adjustment(stat_df, projection_df, stdev_df, year=2024, apply_adjustment=True, download_file=False):
+    stat_df = stat_df.fillna(0)
+    projection_df = projection_df.fillna(0)
+    hist_a2_df = pd.DataFrame()
+
+    for season in range(2007, 2023):
+        col = round(((stat_df[f'{season+1} EV A2/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A2/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A2/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
+        col = col.sort_values(ascending=False)
+        col = col.reset_index(drop=True)
+        hist_a2_df = hist_a2_df.reset_index(drop=True)
+        hist_a2_df[season+1] = col
+    hist_a2_df.index = hist_a2_df.index + 1
+
+    try:
+        hist_a2_df[2021] = round(82/56*hist_a2_df[2021]) 
+    except KeyError:
+        pass
+    try:
+        hist_a2_df[2020] = round(82/70*hist_a2_df[2020]) 
+    except KeyError:
+        pass
+    try:
+        hist_a2_df[2013] = round(82/48*hist_a2_df[2013]) 
+    except KeyError:
+        pass
+
+    hist_a2_df['Historical Average'] = hist_a2_df.mean(axis=1)
+    hist_a2_df['Projected Average'] = hist_a2_df.loc[:, year-4:year-1].mul([0.1, 0.2, 0.3, 0.4]).sum(axis=1)
+    hist_a2_df['Adjustment'] = hist_a2_df['Projected Average'] - hist_a2_df['Historical Average']
+    hist_a2_df['Smoothed Adjustment'] = savgol_filter(hist_a2_df['Adjustment'], 25, 2)
+    # print(hist_a2_df.head(750).to_string())
+
+    projection_df['SECONDARY ASSISTS'] = (projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP'] 
+    projection_df = projection_df.sort_values('SECONDARY ASSISTS', ascending=False)
+    projection_df = projection_df.reset_index(drop=True)
+    projection_df.index = projection_df.index + 1
+
+    for index, player_name in enumerate(stdev_df['Player']):
+        stdev_df.loc[index, 'EV A2/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'EV A2/60'].values[0]/60)**2 * stdev_df.loc[index, 'EV ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'EV ATOI'].values[0]**2 * (stdev_df.loc[index, 'EV A2/60']/60)**2 + (stdev_df.loc[index, 'EV A2/60']/60)**2 * stdev_df.loc[index, 'EV ATOI']**2), nan=0.004842)
+        stdev_df.loc[index, 'PP A2/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PP A2/60'].values[0]/60)**2 * stdev_df.loc[index, 'PP ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PP ATOI'].values[0]**2 * (stdev_df.loc[index, 'PP A2/60']/60)**2 + (stdev_df.loc[index, 'PP A2/60']/60)**2 * stdev_df.loc[index, 'PP ATOI']**2), nan=0.001004)
+        stdev_df.loc[index, 'PK A2/GP'] = np.nan_to_num(np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'PK A2/60'].values[0]/60)**2 * stdev_df.loc[index, 'PK ATOI']**2 + projection_df.loc[projection_df['Player'] == player_name, 'PK ATOI'].values[0]**2 * (stdev_df.loc[index, 'PK A2/60']/60)**2 + (stdev_df.loc[index, 'PK A2/60']/60)**2 * stdev_df.loc[index, 'PK ATOI']**2), nan=0.001037)
+        stdev_df.loc[index, 'A2/GP'] = np.sqrt(stdev_df.loc[index, 'EV A2/GP']**2 + stdev_df.loc[index, 'PP A2/GP']**2 + stdev_df.loc[index, 'PK A2/GP']**2)
+
+        stdev_df.loc[index, 'SECONDARY ASSISTS'] = np.sqrt((projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'A2/GP']**2 + (projection_df.loc[projection_df['Player'] == player_name, 'SECONDARY ASSISTS'].values[0]/projection_df.loc[projection_df['Player'] == player_name, 'GP'].values[0])**2 * stdev_df.loc[index, 'GP']**2 + stdev_df.loc[index, 'A2/GP']**2 + stdev_df.loc[index, 'GP']**2)
+    stdev_df = stdev_df.sort_values('SECONDARY ASSISTS', ascending=False)
+    stdev_df = stdev_df.reset_index(drop=True)
+    stdev_df.index = stdev_df.index + 1
+
+    if apply_adjustment == True:
+        projection_df['Era Adjustment Factor'] = hist_a2_df['Smoothed Adjustment']/((projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
+        projection_df['EV A2/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PP A2/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['PK A2/60'] *= projection_df['Era Adjustment Factor']
+        projection_df['SECONDARY ASSISTS'] = round((projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']) 
+
+        stdev_df = stdev_df.merge(projection_df[['Player', 'Era Adjustment Factor']], on='Player', how='outer')
+        stdev_df['EV A2/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PP A2/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        stdev_df['PK A2/60'] *= abs(stdev_df['Era Adjustment Factor'])
+        projection_df['SECONDARY ASSISTS'] *= abs(stdev_df['Era Adjustment Factor'])
+
+        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+        stdev_df = stdev_df.drop(columns=['PP A2/GP', 'PK A2/GP', 'EV A2/GP', 'A2/GP', 'Era Adjustment Factor'])
+
+    # Download file
+    if download_file == True:
+        filename = f'rf_final_projections_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+        filename = f'rf_final_stdeviations_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        stdev_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return projection_df.fillna(0), stdev_df
+
 def make_projections(existing_stat_df=True, existing_partial_projections=True, year=2024, download_csv=False):
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
 
@@ -6525,9 +6772,18 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     # projection_df, stdev_df = make_forward_pk_a2per60_projections(stat_df, projection_df, stdev_df, True, 1000, year)
     # projection_df, stdev_df = make_defence_pk_a2per60_projections(stat_df, projection_df, stdev_df, True, 1000, year)
 
-    projection_df = projection_df.sort_values('EV G/60', ascending=False)
+    projection_df, stdev_df = goal_era_adjustment(stat_df, projection_df, stdev_df, 2024, True, False)
+    projection_df, stdev_df = a1_era_adjustment(stat_df, projection_df, stdev_df, 2024, True, False)
+    projection_df, stdev_df = a2_era_adjustment(stat_df, projection_df, stdev_df, 2024, True, False)
+    projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
+    stdev_df['POINTS'] = np.sqrt(stdev_df['GOALS']**2 + stdev_df['PRIMARY ASSISTS']**2 + stdev_df['SECONDARY ASSISTS']**2)
+
+    projection_df = projection_df.sort_values('POINTS', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
+    stdev_df = stdev_df.sort_values('POINTS', ascending=False)
+    stdev_df = stdev_df.reset_index(drop=True)
+    stdev_df.index = stdev_df.index + 1
     print(projection_df)
     print(stdev_df)
 
@@ -6545,5 +6801,3 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
 make_projections(True, True, 2024, False)
-
-### add more features to GP projections for random forest.
