@@ -2,14 +2,5 @@ dGP is defined to be the amount of games played in the target year above the ave
 
 Be careful when considering features other than age, height, and weight. Make sure to index 'statline' correctly so that the subset of the list represents the target/dependent variable. This applies in the for index, statline in enumerate() loop in neural_network_projections.py.
 
-Optimize make_projection_df function by removing the loop.
-
-Next Steps:
-Create other models. Linear regression, random forest, GBQ options using existing dataframes.
-Search player and statistic by search, which returns a histogram. This could be a separate file.
-
 !! Add a neural network architecture/hyperparameter catalog CSV file / Turn the storage of model architectures/hyperparameters into a CSV (currently commented in model_analysis.py)
 --> Also another document briefing the differences between each NN projector for the different stats (filters, features, etc.)
-
-Random forest?
-SVM?
