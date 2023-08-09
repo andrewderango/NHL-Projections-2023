@@ -252,7 +252,7 @@ def create_instance_df(dependent_variable, columns, model_type, stat_df, downloa
                     prev_gps = [fetch_data(row, year, 1, None, 'GP'), fetch_data(row, year, 2, None, 'GP'), fetch_data(row, year, 3, None, 'GP'), fetch_data(row, year, 4, None, 'GP')]
                     prev_avg = statistics.mean([x for x in prev_gps if not np.isnan(x)])
                     
-                    if model_type in ['RF', 'SVR']:
+                    if model_type in ['RF', 'SVR', 'RR']:
                         instance_df.loc[f"{row['Player']} {year+1}"] = [
                             row['Player'], 
                             year+1, row['Position'],
@@ -298,7 +298,7 @@ def create_instance_df(dependent_variable, columns, model_type, stat_df, downloa
                     prev_gps = [fetch_data(row, year, 1, None, 'GP'), fetch_data(row, year, 2, None, 'GP'), fetch_data(row, year, 3, None, 'GP'), fetch_data(row, year, 4, None, 'GP')]
                     prev_avg = statistics.mean([x for x in prev_gps if not np.isnan(x)])
                     
-                    if model_type in ['RF', 'SVR']:
+                    if model_type in ['RF', 'SVR', 'RR']:
                         instance_df.loc[f"{row['Player']} {year+1}"] = [
                             row['Player'], 
                             year+1, row['Position'],
@@ -1206,7 +1206,7 @@ def create_instance_df(dependent_variable, columns, model_type, stat_df, downloa
 
 def create_year_restricted_instance_df(proj_stat, position, prev_years, situation, model_type, year=2023, download_file=True):
     if proj_stat == 'GP':
-        if model_type in ['RF', 'SVR']:
+        if model_type in ['RF', 'SVR', 'RR']:
             instance_df = create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP', 'Y4 EV ATOI', 'Y4 EV P/60'], model_type, scrape_player_statistics(True), True)
         else:   
             instance_df = create_instance_df(f'{position}_GP', ['Player', 'Year', 'Position', 'Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 'Y5 dGP',], model_type, scrape_player_statistics(True), True)
@@ -1441,6 +1441,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP'], row['Y4 EV ATOI'], row['Y4 EV P/60']]) # features
                     y.append(row['Y5 GP']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
+                    y.append(row['Y5 GP']) # target
             else:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y1 GP'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
@@ -1449,6 +1453,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
             if model_type in ['RF', 'SVR']:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
+                    y.append(row['Y5 GP']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row['Y2 GP'], row['Y3 GP'], row['Y4 GP']]) # features
                     y.append(row['Y5 GP']) # target
             else:
                 for index, row in instance_df.iterrows():
@@ -1459,6 +1467,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP']]) # features
                     y.append(row['Y5 GP']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row['Y3 GP'], row['Y4 GP']]) # features
+                    y.append(row['Y5 GP']) # target
             else:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y3 GP'], row['Y4 GP']]) # features
@@ -1467,6 +1479,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
             if model_type in ['RF', 'SVR']:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row['Y4 GP']]) # features
+                    y.append(row['Y5 GP']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row['Y4 GP']]) # features
                     y.append(row['Y5 GP']) # target
             else:
                 for index, row in instance_df.iterrows():
@@ -1482,6 +1498,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y1 {situation} ATOI'], row[f'Y2 {situation} ATOI'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
                     y.append(row[f'Y5 {situation} ATOI']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row[f'Y1 {situation} ATOI'], row[f'Y2 {situation} ATOI'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
+                    y.append(row[f'Y5 {situation} ATOI']) # target
             else:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y1 {situation} ATOI'], row[f'Y2 {situation} ATOI'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
@@ -1491,6 +1511,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
             if model_type in ['RF', 'SVR']:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y2 {situation} ATOI'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
+                    y.append(row[f'Y5 {situation} ATOI']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row[f'Y2 {situation} ATOI'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
                     y.append(row[f'Y5 {situation} ATOI']) # target
             else:
                 for index, row in instance_df.iterrows():
@@ -1502,6 +1526,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
                     y.append(row[f'Y5 {situation} ATOI']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
+                    y.append(row[f'Y5 {situation} ATOI']) # target
             else:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y3 {situation} ATOI'], row[f'Y4 {situation} ATOI']]) # features
@@ -1511,6 +1539,10 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
             if model_type in ['RF', 'SVR']:
                 for index, row in instance_df.iterrows():
                     X.append([row['Age'], row['Height'], row['Weight'], row[f'Y4 {situation} ATOI']]) # features
+                    y.append(row[f'Y5 {situation} ATOI']) # target
+            elif model_type == 'RR':
+                for index, row in instance_df.iterrows():
+                    X.append([row[f'Y4 {situation} ATOI']]) # features
                     y.append(row[f'Y5 {situation} ATOI']) # target
             else:
                 for index, row in instance_df.iterrows():
@@ -2393,27 +2425,3 @@ def make_projection_df(stat_df, year=2024):
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
     return projection_df
-
-# stat_df = scrape_player_statistics(True)
-# shooting_talent_df = calc_shooting_talent(stat_df, True)
-# stat_df = pd.merge(stat_df, shooting_talent_df[['Player', 'Shooting Talent']], on='Player', how='left')
-
-# ixg_columns = [col for col in stat_df.columns if 'ixG' in col and 'oi' not in col]
-# stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0), 4)
-
-# stat_df.set_index('Player', inplace=True)
-
-# print(stat_df)
-# print(shooting_talent_df)
-
-# filename = f'shooting_talent'
-# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-# shooting_talent_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
-
-# filename = f'historical_player_statistics'
-# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
-#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
-# stat_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
-# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
