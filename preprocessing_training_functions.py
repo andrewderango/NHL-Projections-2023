@@ -1573,6 +1573,11 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                        elif model_type == 'RR':
+                            X.append([row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                         else:
                             X.append([row['Age'], row['Height'], row['Weight'],
                                     row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
@@ -1598,6 +1603,11 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                        elif model_type == 'RR':
+                            X.append([row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                         else:
                             X.append([row['Age'], row['Height'], row['Weight'],
                                     row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
@@ -1623,6 +1633,12 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         for index, row in instance_df.iterrows():
                             X.append([row['Age'], row['Height'], row['Weight'],
@@ -1642,12 +1658,19 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                     f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
                     f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60'
                     ]].fillna(0)
-                    for index, row in instance_df.iterrows():
-                        X.append([row['Age'], row['Height'], row['Weight'],
-                                row[f'Y4 {situation} G/60'],
-                                row[f'Y4 {situation} ixG/60']
-                                ]) # features
-                        y.append(row[f'Y5 {situation} G/60']) # target
+                    if model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y4 {situation} G/60'],
+                                    row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
+                    else:
+                        for index, row in instance_df.iterrows():
+                            X.append([row['Age'], row['Height'], row['Weight'],
+                                    row[f'Y4 {situation} G/60'],
+                                    row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                 else:
                     print('Invalid prev_years parameter.')
 
@@ -1671,6 +1694,12 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         for index, row in instance_df.iterrows():
                             X.append([row['Age'], row['Height'], row['Weight'],
@@ -1697,6 +1726,12 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         for index, row in instance_df.iterrows():
                             X.append([row['Age'], row['Height'], row['Weight'],
@@ -1723,6 +1758,12 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                     row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
                                     ]) # features
                             y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                    row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         for index, row in instance_df.iterrows():
                             X.append([row['Age'], row['Height'], row['Weight'],
@@ -1747,6 +1788,12 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                             X.append([row['Age'], row['Height'], row['Weight'],
                                     row[f'Y4 {situation} G/60'],
                                     row[f'Y4 {situation} ixG/60'],
+                                    ]) # features
+                            y.append(row[f'Y5 {situation} G/60']) # target
+                    elif model_type == 'RR':
+                        for index, row in instance_df.iterrows():
+                            X.append([row[f'Y4 {situation} G/60'],
+                                    row[f'Y4 {situation} ixG/60']
                                     ]) # features
                             y.append(row[f'Y5 {situation} G/60']) # target
                     else:
@@ -1786,6 +1833,13 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                 row[f'Y1 EV ixG/60'], row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        X.append([row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
+                                row[f'Y1 EV G/60'], row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
+                                row[f'Y1 EV ixG/60'], row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         X.append([row['Age'], row['Height'], row['Weight'],
                                 row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
@@ -1819,6 +1873,13 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                 row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        X.append([row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
+                                row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
+                                row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         X.append([row['Age'], row['Height'], row['Weight'],
                                 row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
@@ -1852,6 +1913,13 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                 row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        X.append([row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
+                                row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
+                                row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
+                                row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         X.append([row['Age'], row['Height'], row['Weight'],
                                 row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
@@ -1885,6 +1953,13 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                                 row[f'Y4 EV ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 d{situation} G/60']) # target
+                    elif model_type == 'RR':
+                        X.append([row[f'Y4 {situation} G/60'],
+                                row[f'Y4 {situation} ixG/60'],
+                                row[f'Y4 EV G/60'],
+                                row[f'Y4 EV ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
                     else:
                         X.append([row['Age'], row['Height'], row['Weight'],
                                 row[f'Y4 {situation} G/60'],
@@ -2425,3 +2500,27 @@ def make_projection_df(stat_df, year=2024):
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
     return projection_df
+
+# stat_df = scrape_player_statistics(True)
+# shooting_talent_df = calc_shooting_talent(stat_df, True)
+# stat_df = pd.merge(stat_df, shooting_talent_df[['Player', 'Shooting Talent']], on='Player', how='left')
+
+# ixg_columns = [col for col in stat_df.columns if 'ixG' in col and 'oi' not in col]
+# stat_df[ixg_columns] = round(stat_df[ixg_columns].mul(stat_df['Shooting Talent'] + 1, axis=0), 4)
+
+# stat_df.set_index('Player', inplace=True)
+
+# print(stat_df)
+# print(shooting_talent_df)
+
+# filename = f'shooting_talent'
+# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+# shooting_talent_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+# filename = f'historical_player_statistics'
+# if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+#     os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+# stat_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+# print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
