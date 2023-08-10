@@ -1835,9 +1835,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                         y.append(row[f'Y5 d{situation} G/60']) # target
                     elif model_type == 'RR':
                         X.append([row[f'Y1 {situation} G/60'], row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                                row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                                row[f'Y1 EV G/60'], row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
-                                row[f'Y1 EV ixG/60'], row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 {situation} G/60']) # target
                     else:
@@ -1875,9 +1873,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                         y.append(row[f'Y5 d{situation} G/60']) # target
                     elif model_type == 'RR':
                         X.append([row[f'Y2 {situation} G/60'], row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                                row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                                row[f'Y2 EV G/60'], row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
-                                row[f'Y2 EV ixG/60'], row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 {situation} G/60']) # target
                     else:
@@ -1915,9 +1911,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                         y.append(row[f'Y5 d{situation} G/60']) # target
                     elif model_type == 'RR':
                         X.append([row[f'Y3 {situation} G/60'], row[f'Y4 {situation} G/60'],
-                                row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60'],
-                                row[f'Y3 EV G/60'], row[f'Y4 EV G/60'],
-                                row[f'Y3 EV ixG/60'], row[f'Y4 EV ixG/60']
+                                row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 {situation} G/60']) # target
                     else:
@@ -1955,9 +1949,7 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                         y.append(row[f'Y5 d{situation} G/60']) # target
                     elif model_type == 'RR':
                         X.append([row[f'Y4 {situation} G/60'],
-                                row[f'Y4 {situation} ixG/60'],
-                                row[f'Y4 EV G/60'],
-                                row[f'Y4 EV ixG/60']
+                                row[f'Y4 {situation} ixG/60']
                                 ]) # features
                         y.append(row[f'Y5 {situation} G/60']) # target
                     else:
@@ -1985,11 +1977,17 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y1 {situation} G/60', f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
                 f'Y1 {situation} ixG/60', f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
-                            ]) # features
-                    y.append(row[f'Y5 {situation} G/60']) # target
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y1 {situation} ixG/60'], row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 3:
                 instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -2002,11 +2000,17 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y2 {situation} G/60', f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
                 f'Y2 {situation} ixG/60', f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
-                            ]) # features
-                    y.append(row[f'Y5 {situation} G/60']) # target
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y2 {situation} ixG/60'], row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 2:
                 instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -2019,11 +2023,17 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y3 {situation} G/60', f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
                 f'Y3 {situation} ixG/60', f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
-                            ]) # features
-                    y.append(row[f'Y5 {situation} G/60']) # target
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y3 {situation} ixG/60'], row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
             elif prev_years == 1:
                 instance_df[[
                 'Y4 GP', 'Y5 GP', 
@@ -2036,11 +2046,17 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y4 {situation} G/60', f'Y5 {situation} G/60', f'Y5 d{situation} G/60',
                 f'Y4 {situation} ixG/60', f'Y5 {situation} ixG/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y4 {situation} ixG/60']
-                            ]) # features
-                    y.append(row[f'Y5 {situation} G/60']) # target
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y4 {situation} ixG/60']
+                                ]) # features
+                        y.append(row[f'Y5 {situation} G/60']) # target
             else:
                 print('Invalid prev_years parameter.')
 
