@@ -6414,7 +6414,7 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV G/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP G/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK G/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])).astype(int)
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -6469,7 +6469,7 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A1/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A1/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A1/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])).astype(int)
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -6524,7 +6524,7 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A2/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A2/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A2/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])).astype(int)
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -6578,7 +6578,7 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
     
     if existing_partial_projections == False:
-        projection_df = preprocessing_training_functions.make_projection_df(stat_df)
+        projection_df = preprocessing_training_functions.make_projection_df(stat_df, year)
 
         projection_df = make_forward_gp_projections(stat_df, projection_df, False, year)
         projection_df = make_defence_gp_projections(stat_df, projection_df, False, year)
@@ -6610,9 +6610,9 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/nn_partial_projections_{year}.csv")
         projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
-    projection_df = a1_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
-    projection_df = a2_era_adjustment(stat_df, projection_df, 2024, True, False).fillna(0)
+    projection_df = goal_era_adjustment(stat_df, projection_df, year, True, False).fillna(0)
+    projection_df = a1_era_adjustment(stat_df, projection_df, year, True, False).fillna(0)
+    projection_df = a2_era_adjustment(stat_df, projection_df, year, True, False).fillna(0)
     projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
 
     projection_df = projection_df.sort_values('POINTS', ascending=False)
