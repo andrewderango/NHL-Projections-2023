@@ -2080,31 +2080,42 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y1 {situation} Rush Attempts/60', f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y1 {situation} oixGF/60', f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y1 {situation} A1/60'], row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
-                            row[f'Y1 {situation} A2/60'], row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
-                            row[f'Y1 {situation} Rebounds Created/60'], row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
-                            row[f'Y1 {situation} Rush Attempts/60'], row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y1 {situation} oixGF/60'], row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
-                            ]) # features
-                    if model_type == 'BNN':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        # elif proj_stat == 'A2per60':
-                        #     y.append(row[f'Y5 d{situation} A2/60']) # target
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 {situation} A2/60']) # target
-                    elif model_type == 'SVR':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 {situation} A2/60']) # target
-                    else:
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([
+                                row[f'Y1 {situation} A1/60'], row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y1 {situation} A2/60'], row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60']
+                                ]) # features
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 {situation} A1/60']) # target 
                         elif proj_stat == 'A2per60':
                             y.append(row[f'Y5 {situation} A2/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y1 {situation} A1/60'], row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y1 {situation} A2/60'], row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
+                                row[f'Y1 {situation} Rebounds Created/60'], row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
+                                row[f'Y1 {situation} Rush Attempts/60'], row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
+                                row[f'Y1 {situation} oixGF/60'], row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
+                                ]) # features
+                        if model_type == 'BNN':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            # elif proj_stat == 'A2per60':
+                            #     y.append(row[f'Y5 d{situation} A2/60']) # target
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
+                        elif model_type == 'SVR':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
+                        else:
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 {situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 3:
                 instance_df[[
                 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -2123,29 +2134,40 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y2 {situation} Rush Attempts/60', f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y2 {situation} oixGF/60', f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
-                            row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
-                            row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
-                            row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
-                            ]) # features
-                    if model_type == 'BNN':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 d{situation} A2/60']) # target
-                    elif model_type == 'SVR':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 {situation} A2/60']) # target
-                    else:
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([
+                                row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60']
+                                ]) # features
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 {situation} A1/60']) # target 
                         elif proj_stat == 'A2per60':
                             y.append(row[f'Y5 {situation} A2/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y2 {situation} A1/60'], row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y2 {situation} A2/60'], row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
+                                row[f'Y2 {situation} Rebounds Created/60'], row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
+                                row[f'Y2 {situation} Rush Attempts/60'], row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
+                                row[f'Y2 {situation} oixGF/60'], row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
+                                ]) # features
+                        if model_type == 'BNN':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 d{situation} A2/60']) # target
+                        elif model_type == 'SVR':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
+                        else:
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 {situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 2:
                 instance_df[[
                 'Y3 GP', 'Y4 GP', 'Y5 GP', 
@@ -2164,29 +2186,40 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y3 {situation} Rush Attempts/60', f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y3 {situation} oixGF/60', f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
-                            row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
-                            row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
-                            row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
-                            row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
-                            ]) # features
-                    if model_type == 'BNN':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 d{situation} A2/60']) # target
-                    elif model_type == 'SVR':
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 d{situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 {situation} A2/60']) # target
-                    else:
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([
+                                row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60']
+                                ]) # features
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 {situation} A1/60']) # target 
                         elif proj_stat == 'A2per60':
                             y.append(row[f'Y5 {situation} A2/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y3 {situation} A1/60'], row[f'Y4 {situation} A1/60'],
+                                row[f'Y3 {situation} A2/60'], row[f'Y4 {situation} A2/60'],
+                                row[f'Y3 {situation} Rebounds Created/60'], row[f'Y4 {situation} Rebounds Created/60'],
+                                row[f'Y3 {situation} Rush Attempts/60'], row[f'Y4 {situation} Rush Attempts/60'],
+                                row[f'Y3 {situation} oixGF/60'], row[f'Y4 {situation} oixGF/60']
+                                ]) # features
+                        if model_type == 'BNN':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 d{situation} A2/60']) # target
+                        elif model_type == 'SVR':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 d{situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
+                        else:
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 {situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
             elif prev_years == 1:
                 instance_df[[
                 'Y4 GP', 'Y5 GP', 
@@ -2205,30 +2238,41 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y4 {situation} Rush Attempts/60', f'Y5 {situation} Rush Attempts/60',
                 f'Y4 {situation} oixGF/60', f'Y5 {situation} oixGF/60'
                 ]].fillna(0)
-                for index, row in instance_df.iterrows():
-                    if model_type == 'BNN':
-                        X.append([row['Age'],
+                if model_type == 'RR':
+                    for index, row in instance_df.iterrows():
+                        X.append([
                                 row[f'Y4 {situation} A1/60'],
                                 row[f'Y4 {situation} A2/60']
                                 ]) # features
-                    else:
-                        X.append([row['Age'], row['Height'], row['Weight'],
-                                row[f'Y4 {situation} A1/60'],
-                                row[f'Y4 {situation} A2/60'],
-                                row[f'Y4 {situation} Rebounds Created/60'],
-                                row[f'Y4 {situation} Rush Attempts/60'],
-                                row[f'Y4 {situation} oixGF/60']
-                                ]) # features 
-                    if model_type == 'BNN':
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 {situation} A1/60']) # target 
                         elif proj_stat == 'A2per60':
                             y.append(row[f'Y5 {situation} A2/60']) # target
-                    else:
-                        if proj_stat == 'A1per60':
-                            y.append(row[f'Y5 {situation} A1/60']) # target 
-                        elif proj_stat == 'A2per60':
-                            y.append(row[f'Y5 {situation} A2/60']) # target
+                else:
+                    for index, row in instance_df.iterrows():
+                        if model_type == 'BNN':
+                            X.append([row['Age'],
+                                    row[f'Y4 {situation} A1/60'],
+                                    row[f'Y4 {situation} A2/60']
+                                    ]) # features
+                        else:
+                            X.append([row['Age'], row['Height'], row['Weight'],
+                                    row[f'Y4 {situation} A1/60'],
+                                    row[f'Y4 {situation} A2/60'],
+                                    row[f'Y4 {situation} Rebounds Created/60'],
+                                    row[f'Y4 {situation} Rush Attempts/60'],
+                                    row[f'Y4 {situation} oixGF/60']
+                                    ]) # features 
+                        if model_type == 'BNN':
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 {situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
+                        else:
+                            if proj_stat == 'A1per60':
+                                y.append(row[f'Y5 {situation} A1/60']) # target 
+                            elif proj_stat == 'A2per60':
+                                y.append(row[f'Y5 {situation} A2/60']) # target
         elif situation == 'PP':
             if prev_years == 4:
                 instance_df[[
@@ -2251,14 +2295,20 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y1 PP oixGF/60', f'Y2 PP oixGF/60', f'Y3 PP oixGF/60', f'Y4 PP oixGF/60', f'Y5 PP oixGF/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y1 EV A1/60'], row[f'Y2 EV A1/60'], row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
-                            row[f'Y1 EV A2/60'], row[f'Y2 EV A2/60'], row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
-                            row[f'Y1 PP A1/60'], row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
-                            row[f'Y1 PP A2/60'], row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
-                            row[f'Y1 PP Rebounds Created/60'], row[f'Y2 PP Rebounds Created/60'], row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
-                            row[f'Y1 PP oixGF/60'], row[f'Y2 PP oixGF/60'], row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y1 PP A1/60'], row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y1 PP A2/60'], row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y1 EV A1/60'], row[f'Y2 EV A1/60'], row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
+                                row[f'Y1 EV A2/60'], row[f'Y2 EV A2/60'], row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
+                                row[f'Y1 PP A1/60'], row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y1 PP A2/60'], row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
+                                row[f'Y1 PP Rebounds Created/60'], row[f'Y2 PP Rebounds Created/60'], row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
+                                row[f'Y1 PP oixGF/60'], row[f'Y2 PP oixGF/60'], row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
+                                ]) # features
                     if model_type == 'SVR':
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 d{situation} A1/60']) # target 
@@ -2290,14 +2340,20 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y2 PP oixGF/60', f'Y3 PP oixGF/60', f'Y4 PP oixGF/60', f'Y5 PP oixGF/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y2 EV A1/60'], row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
-                            row[f'Y2 EV A2/60'], row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
-                            row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
-                            row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
-                            row[f'Y2 PP Rebounds Created/60'], row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
-                            row[f'Y2 PP oixGF/60'], row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y2 EV A1/60'], row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
+                                row[f'Y2 EV A2/60'], row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
+                                row[f'Y2 PP A1/60'], row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y2 PP A2/60'], row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
+                                row[f'Y2 PP Rebounds Created/60'], row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
+                                row[f'Y2 PP oixGF/60'], row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
+                                ]) # features
                     if model_type == 'SVR':
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 d{situation} A1/60']) # target 
@@ -2329,14 +2385,20 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y3 PP oixGF/60', f'Y4 PP oixGF/60', f'Y5 PP oixGF/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
-                            row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
-                            row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
-                            row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
-                            row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
-                            row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y3 EV A1/60'], row[f'Y4 EV A1/60'],
+                                row[f'Y3 EV A2/60'], row[f'Y4 EV A2/60'],
+                                row[f'Y3 PP A1/60'], row[f'Y4 PP A1/60'],
+                                row[f'Y3 PP A2/60'], row[f'Y4 PP A2/60'],
+                                row[f'Y3 PP Rebounds Created/60'], row[f'Y4 PP Rebounds Created/60'],
+                                row[f'Y3 PP oixGF/60'], row[f'Y4 PP oixGF/60']
+                                ]) # features
                     if model_type == 'SVR':
                         if proj_stat == 'A1per60':
                             y.append(row[f'Y5 d{situation} A1/60']) # target 
@@ -2368,14 +2430,20 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y4 PP oixGF/60', f'Y5 PP oixGF/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y4 EV A1/60'],
-                            row[f'Y4 EV A2/60'],
-                            row[f'Y4 PP A1/60'],
-                            row[f'Y4 PP A2/60'],
-                            row[f'Y4 PP Rebounds Created/60'],
-                            row[f'Y4 PP oixGF/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y4 PP A1/60'],
+                                row[f'Y4 PP A2/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y4 EV A1/60'],
+                                row[f'Y4 EV A2/60'],
+                                row[f'Y4 PP A1/60'],
+                                row[f'Y4 PP A2/60'],
+                                row[f'Y4 PP Rebounds Created/60'],
+                                row[f'Y4 PP oixGF/60']
+                                ]) # features
                     if proj_stat == 'A1per60':
                         y.append(row[f'Y5 {situation} A1/60']) # target 
                     elif proj_stat == 'A2per60':
@@ -2394,10 +2462,15 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y1 PK A2/60', f'Y2 PK A2/60', f'Y3 PK A2/60', f'Y4 PK A2/60', f'Y5 PK A2/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y1 PK A1/60'], row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
-                            # row[f'Y1 PK A2/60'], row[f'Y2 PK A2/60'], row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y1 PK A1/60'], row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y1 PK A1/60'], row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
+                                # row[f'Y1 PK A2/60'], row[f'Y2 PK A2/60'], row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
+                                ]) # features
                     if proj_stat == 'A1per60':
                         y.append(row[f'Y5 {situation} A1/60']) # target 
                     elif proj_stat == 'A2per60':
@@ -2415,10 +2488,15 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y2 PK A2/60', f'Y3 PK A2/60', f'Y4 PK A2/60', f'Y5 PK A2/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
-                            # row[f'Y2 PK A2/60'], row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y2 PK A1/60'], row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
+                                # row[f'Y2 PK A2/60'], row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
+                                ]) # features
                     if proj_stat == 'A1per60':
                         y.append(row[f'Y5 {situation} A1/60']) # target 
                     elif proj_stat == 'A2per60':
@@ -2436,10 +2514,15 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y3 PK A2/60', f'Y4 PK A2/60', f'Y5 PK A2/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
-                            # row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y3 PK A1/60'], row[f'Y4 PK A1/60'],
+                                # row[f'Y3 PK A2/60'], row[f'Y4 PK A2/60']
+                                ]) # features
                     if proj_stat == 'A1per60':
                         y.append(row[f'Y5 {situation} A1/60']) # target 
                     elif proj_stat == 'A2per60':
@@ -2457,10 +2540,15 @@ def extract_instance_data(instance_df, proj_stat, prev_years, situation, positio
                 f'Y4 PK A2/60', f'Y5 PK A2/60'
                 ]].fillna(0)
                 for index, row in instance_df.iterrows():
-                    X.append([row['Age'], row['Height'], row['Weight'],
-                            row[f'Y4 PK A1/60'],
-                            # row[f'Y4 PK A2/60'],
-                            ]) # features
+                    if model_type == 'RR':
+                        X.append([
+                                row[f'Y4 PK A1/60']
+                                ]) # features
+                    else:
+                        X.append([row['Age'], row['Height'], row['Weight'],
+                                row[f'Y4 PK A1/60'],
+                                # row[f'Y4 PK A2/60'],
+                                ]) # features
                     if proj_stat == 'A1per60':
                         y.append(row[f'Y5 {situation} A1/60']) # target 
                     elif proj_stat == 'A2per60':
