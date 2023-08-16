@@ -978,6 +978,11 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file=False
             int(stat_df.loc[stat_df['Player'] == player, 'Height (in)'].iloc[0]),
             int(stat_df.loc[stat_df['Player'] == player, 'Weight (lbs)'].iloc[0]),
             pseudo_prev_year_stat])
+
+    yr4_stat_list = np.where(np.isnan(yr4_stat_list), 0, yr4_stat_list) 
+    yr3_stat_list = np.where(np.isnan(yr3_stat_list), 0, yr3_stat_list)
+    yr2_stat_list = np.where(np.isnan(yr2_stat_list), 0, yr2_stat_list)
+    yr1_stat_list = np.where(np.isnan(yr1_stat_list), 0, yr1_stat_list)
         
     yr4_stat_list_scaled = X_4_scaler.transform(yr4_stat_list)
     yr4_predictions = np.clip(y4_svr_model.predict(yr4_stat_list_scaled), 0, None)
@@ -5594,7 +5599,7 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV G/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP G/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK G/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5649,7 +5654,7 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_a1_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A1/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A1/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A1/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5704,7 +5709,7 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_a2_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A2/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A2/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A2/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5758,44 +5763,45 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
 
     if existing_partial_projections == False:
-        projection_df = preprocessing_training_functions.make_projection_df(stat_df)
+        projection_df = preprocessing_training_functions.make_projection_df(stat_df, year)
     else:
         projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/svr_partial_projections_{year}.csv")
         projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    # projection_df = make_forward_gp_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_gp_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_gp_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_gp_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, True, year)
 
-    projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False)
-    projection_df = a1_era_adjustment(stat_df, projection_df, 2024, True, False)
-    projection_df = a2_era_adjustment(stat_df, projection_df, 2024, True, False)
+    projection_df = goal_era_adjustment(stat_df, projection_df, year, True, False)
+    projection_df = a1_era_adjustment(stat_df, projection_df, year, True, False)
+    projection_df = a2_era_adjustment(stat_df, projection_df, year, True, False)
     projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
 
     projection_df = projection_df.sort_values('POINTS', ascending=False)
+    # projection_df = projection_df.sort_values('EV ATOI', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
     print(projection_df.head(20))
@@ -5807,6 +5813,6 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-make_projections(True, True, 2024, False)
-
-### work on secondary assists
+# make_projections(True, True, 2023, True)
+# make_projections(True, False, 2023, True)
+# make_projections(True, True, 2024, False)
