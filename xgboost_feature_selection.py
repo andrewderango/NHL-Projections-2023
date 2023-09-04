@@ -1,19 +1,33 @@
 import os
+import numpy as np
 import pandas as pd
 import xgboost as xgb
+import matplotlib.pyplot as plt
 import preprocessing_training_functions
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+proj_stat = 'PK A1/60'
+features = ['PK A1/60', 'PK A2/60']
+n_estimators = 100
+learning_rate = 0.05
+max_depth = 5
+colsample_bytree = 0.7
+
+print(f'-- PERFORMENCE EVALUATOR FOR XGBOOST MODEL --')
+print(f'Projected stat: {proj_stat}')
+print(f'Features used: {features}')
+print(f'Quantity of estimators: {n_estimators}')
+print(f'Learning Rate: {learning_rate}')
+print(f'Maximum Tree Depth: {max_depth}')
+print(f'Feature Proportion per Tree: {colsample_bytree}')
 
 projection_year = 2024
 years = [2012, 2016, 2019, 2021, 2022, 2023]
 year_training_dfs = []
 model_types = ['RR', 'SVR', 'NN', 'Bayesian NN', 'RF']
-proj_stat = 'PP A2/60'
-features = ['PP TOI', 'PP A1/60', 'PP A2/60', 'PP Rebounds Created/60']
 
-print(f'Hyperparameter tuning for {proj_stat} projections')
 stat_df = preprocessing_training_functions.scrape_player_statistics(True)
 if '2021 GP' in stat_df:
     stat_df['2021 GP'] = stat_df['2021 GP'] * 82/56
@@ -73,33 +87,36 @@ X_train, X_test, y_train, y_test, weights_train, weights_test = train_test_split
 model = xgb.XGBRegressor(
     objective = 'reg:squarederror',
     subsample = 0.8,
-    colsample_bytree = 0.7,
+    n_estimators = n_estimators,
+    learning_rate = learning_rate,
+    max_depth = max_depth,
+    colsample_bytree = colsample_bytree,
     random_state = 42
 )
 
-param_grid = {
-    'n_estimators': [75, 100, 150, 200, 250],
-    'learning_rate': [0.05, 0.1, 0.15],
-    'max_depth': [5, 6, 7, 8, 9]
-}
-
-grid_search = GridSearchCV(
-    estimator=model,
-    param_grid=param_grid,
-    scoring='neg_mean_squared_error',
-    cv=5,
-    verbose=3
-)
-
-grid_search.fit(X_train, y_train, sample_weight=weights_train)
-results = grid_search.cv_results_
-for mean_score, params in zip(results['mean_test_score'], results['params']):
-    print(f'MSE for parameters {params}: {-mean_score:.2f}')
-
-best_model = grid_search.best_estimator_
-y_pred = best_model.predict(X_test)
+model.fit(X_train, y_train, sample_weight=weights_train)
+y_pred = model.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
 mae = mean_absolute_error(y_test, y_pred)
-print(f"\nOptimal Model Mean Squared Error: {mse:.2f}")
-print(f"Optimal Model Mean Absolute Error: {mae:.2f}")
-print(f'Optimal parameters, as determined by grid search: {grid_search.best_params_}')
+print(f"Mean Squared Error: {mse}")
+print(f"Mean Absolute Error: {mae}")
+
+# importance_scores = model.get_booster().get_score(importance_type='weight')
+# sorted_scores = sorted(importance_scores.items(), key=lambda x: x[1], reverse=False)
+# feature_names = [score[0] for score in sorted_scores]
+# scores = [score[1] for score in sorted_scores]
+# norm_scores = np.array(scores) / np.max(scores)
+# color_map = plt.get_cmap('viridis').reversed()
+# colors = [color_map(score) for score in norm_scores]
+# plt.figure(figsize=(10, 6))
+# bars = plt.barh(range(len(scores)), scores, color=colors, tick_label=feature_names)
+# plt.xlabel('Feature Importance Score')
+# plt.ylabel('Feature')
+# plt.title(f'Feature Importance for XGBoost {proj_stat} Projections')
+# sm = plt.cm.ScalarMappable(cmap=color_map, norm=plt.Normalize(vmin=0, vmax=1))
+# sm.set_array([])
+# cbar = plt.colorbar(sm, ax=plt.gca(), label='Normalized Importance')
+# cbar.ax.yaxis.set_ticks_position('left')
+# plt.tight_layout()
+# plt.show()
+# print(feature_list)
