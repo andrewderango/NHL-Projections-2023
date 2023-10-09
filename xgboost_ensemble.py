@@ -1,4 +1,5 @@
 import os
+import ast
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -164,7 +165,7 @@ def train_model(stat_df, projection_df, proj_stat, proj_bounds, features, model_
 
     return projection_df
 
-def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, download_file=False):
+def goal_era_adjustment(stat_df, projection_df, year=2024, temperature=1, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
@@ -201,13 +202,12 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    if apply_adjustment == True:
-        projection_df['Era Adjustment Factor'] = hist_goal_df['Smoothed Adjustment']/((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
-        projection_df['EV G/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PP G/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PK G/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['GOALS'] = (projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']
-        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+    projection_df['Era Adjustment Factor'] = (hist_goal_df['Smoothed Adjustment']/((projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']))*temperature + 1
+    projection_df['EV G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PP G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PK G/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['GOALS'] = (projection_df['EV G/60']/60*projection_df['EV ATOI'] + projection_df['PP G/60']/60*projection_df['PP ATOI'] + projection_df['PK G/60']/60*projection_df['PK ATOI']) * projection_df['GP']
+    projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
 
     # Download file
     if download_file == True:
@@ -219,7 +219,7 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
 
     return projection_df.fillna(0)
 
-def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, download_file=False):
+def a1_era_adjustment(stat_df, projection_df, year=2024, temperature=1, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_a1_df = pd.DataFrame()
@@ -256,13 +256,12 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    if apply_adjustment == True:
-        projection_df['Era Adjustment Factor'] = hist_a1_df['Smoothed Adjustment']/((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
-        projection_df['EV A1/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PP A1/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PK A1/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PRIMARY ASSISTS'] = (projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']
-        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+    projection_df['Era Adjustment Factor'] = (hist_a1_df['Smoothed Adjustment']/((projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']))*temperature + 1
+    projection_df['EV A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PP A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PK A1/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PRIMARY ASSISTS'] = (projection_df['EV A1/60']/60*projection_df['EV ATOI'] + projection_df['PP A1/60']/60*projection_df['PP ATOI'] + projection_df['PK A1/60']/60*projection_df['PK ATOI']) * projection_df['GP']
+    projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
 
     # Download file
     if download_file == True:
@@ -274,7 +273,7 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
 
     return projection_df.fillna(0)
 
-def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, download_file=False):
+def a2_era_adjustment(stat_df, projection_df, year=2024, temperature=1, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_a2_df = pd.DataFrame()
@@ -311,13 +310,12 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.reset_index(drop=True)
     projection_df.index = projection_df.index + 1
 
-    if apply_adjustment == True:
-        projection_df['Era Adjustment Factor'] = hist_a2_df['Smoothed Adjustment']/((projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']) + 1
-        projection_df['EV A2/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PP A2/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['PK A2/60'] *= projection_df['Era Adjustment Factor']
-        projection_df['SECONDARY ASSISTS'] = (projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']
-        projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
+    projection_df['Era Adjustment Factor'] = (hist_a2_df['Smoothed Adjustment']/((projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']))*temperature + 1
+    projection_df['EV A2/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PP A2/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['PK A2/60'] *= projection_df['Era Adjustment Factor']
+    projection_df['SECONDARY ASSISTS'] = (projection_df['EV A2/60']/60*projection_df['EV ATOI'] + projection_df['PP A2/60']/60*projection_df['PP ATOI'] + projection_df['PK A2/60']/60*projection_df['PK ATOI']) * projection_df['GP']
+    projection_df = projection_df.drop(columns=['Era Adjustment Factor'])
 
     # Download file
     if download_file == True:
@@ -328,6 +326,56 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
     return projection_df.fillna(0)
+
+def goal_distribution_aggregator(projection_df, year, download_csv):
+    gp_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_GP_train_{year}.csv")
+    gp_df = gp_df.drop(gp_df.columns[0], axis=1)
+    atoi_evper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_EV ATOI_train_{year}.csv")
+    atoi_evper60_df = atoi_evper60_df.drop(atoi_evper60_df.columns[0], axis=1)
+    atoi_ppper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_PP ATOI_train_{year}.csv")
+    atoi_ppper60_df = atoi_ppper60_df.drop(atoi_ppper60_df.columns[0], axis=1)
+    atoi_pkper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_PK ATOI_train_{year}.csv")
+    atoi_pkper60_df = atoi_pkper60_df.drop(atoi_pkper60_df.columns[0], axis=1)
+
+    evper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_EV Gper60_train_{year}.csv")
+    evper60_df = evper60_df.drop(evper60_df.columns[0], axis=1)
+    ppper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_PP Gper60_train_{year}.csv")
+    ppper60_df = ppper60_df.drop(ppper60_df.columns[0], axis=1)
+    pkper60_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/xgboost_PK Gper60_train_{year}.csv")
+    pkper60_df = pkper60_df.drop(pkper60_df.columns[0], axis=1)
+
+    distribution_df = projection_df[['Player', 'Position', 'Age', 'Height', 'Weight']]
+    distribution_df = distribution_df.merge(gp_df[['Player', f'GP Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(atoi_evper60_df[['Player', f'EV ATOI Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(atoi_ppper60_df[['Player', f'PP ATOI Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(atoi_pkper60_df[['Player', f'PK ATOI Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(evper60_df[['Player', f'EV G/60 Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(ppper60_df[['Player', f'PP G/60 Projection Sample']], on='Player', how='left')
+    distribution_df = distribution_df.merge(pkper60_df[['Player', f'PK G/60 Projection Sample']], on='Player', how='left')
+
+    distribution_df['GP Projection Sample'] = distribution_df['GP Projection Sample'].apply(ast.literal_eval)
+    distribution_df['EV G/60 Projection Sample'] = distribution_df['EV G/60 Projection Sample'].apply(ast.literal_eval)
+    distribution_df['EV ATOI Projection Sample'] = distribution_df['EV ATOI Projection Sample'].apply(ast.literal_eval)
+    distribution_df['PP G/60 Projection Sample'] = distribution_df['PP G/60 Projection Sample'].apply(ast.literal_eval)
+    distribution_df['PP ATOI Projection Sample'] = distribution_df['PP ATOI Projection Sample'].apply(ast.literal_eval)
+    distribution_df['PK G/60 Projection Sample'] = distribution_df['PK G/60 Projection Sample'].apply(ast.literal_eval)
+    distribution_df['PK ATOI Projection Sample'] = distribution_df['PK ATOI Projection Sample'].apply(ast.literal_eval)
+
+    distribution_df['GOAL Projection Sample'] = distribution_df.apply(lambda row: [(a*b/60 + c*d/60 + e*f/60) * g for a, b, c, d, e, f, g in zip(row['EV G/60 Projection Sample'], row['EV ATOI Projection Sample'], row['PP G/60 Projection Sample'], row['PP G/60 Projection Sample'], row['PK G/60 Projection Sample'], row['PK G/60 Projection Sample'], row['GP Projection Sample'])], axis=1)
+
+    distribution_df = distribution_df.drop(columns=['PP ATOI Projection Sample', 'PK ATOI Projection Sample', 'PP G/60 Projection Sample', 'PK G/60 Projection Sample'])
+    print(distribution_df)
+
+    if download_csv == True:
+        filename = f'xgboost_goal_distributions_{year}'
+        if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
+            os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
+        distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
+        print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
+
+    return distribution_df
+
+### Need to do era adjustments, recency temperature, etc.
 
 def make_projections(existing_stat_df, existing_partial_projections, projection_year, download_csv):
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
@@ -367,9 +415,10 @@ def make_projections(existing_stat_df, existing_partial_projections, projection_
     # projection_df = train_model(stat_df, projection_df, 'PK A1/60', [0, 60], ['PK TOI', 'PK A1/60', 'PK A2/60'], ['RR', 'SVR', 'NN', 'Bayesian NN', 'RF'], [2012, 2016, 2019, 2021, 2022, 2023], {'objective': 'reg:squarederror', 'subsample': 0.8, 'learning_rate': 0.05, 'max_depth': 5, 'n_estimators': 75, 'colsample_bytree': 0.7, 'random_state': 42}, 1000, 'PK TOI', 100, ['PK A1/60', 'PK A2/60'], True, True, True, projection_year)
     # projection_df = train_model(stat_df, projection_df, 'PK A2/60', [0, 60], ['PK TOI', 'PK A1/60', 'PK A2/60'], ['RR', 'SVR', 'NN', 'Bayesian NN', 'RF'], [2012, 2016, 2019, 2021, 2022, 2023], {'objective': 'reg:squarederror', 'subsample': 0.8, 'learning_rate': 0.05, 'max_depth': 5, 'n_estimators': 75, 'colsample_bytree': 0.7, 'random_state': 42}, 1000, 'PK TOI', 100, ['PK A1/60', 'PK A2/60'], True, True, True, projection_year)
 
-    projection_df = goal_era_adjustment(stat_df, projection_df, year, True, False)
-    projection_df = a1_era_adjustment(stat_df, projection_df, year, True, False)
-    projection_df = a2_era_adjustment(stat_df, projection_df, year, True, False)
+    projection_df = goal_era_adjustment(stat_df, projection_df, year, 0.51892023, False)
+    projection_df = a1_era_adjustment(stat_df, projection_df, year, 0.49829102, False)
+    projection_df = a2_era_adjustment(stat_df, projection_df, year, 0.65690025, False)
+    projection_df['ASSISTS'] = projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
     projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
 
     projection_df = projection_df.sort_values('POINTS', ascending=False)
@@ -377,6 +426,8 @@ def make_projections(existing_stat_df, existing_partial_projections, projection_
     projection_df.index = projection_df.index + 1
     print(projection_df.head(20))
     # print(projection_df.to_string())
+
+    stat_distribution_aggregator(projection_df, year+1, "G", True)
 
     if download_csv == True:
         filename = f'xgboost_final_projections_{year}'
