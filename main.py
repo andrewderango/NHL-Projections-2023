@@ -1,18 +1,18 @@
-import time
-import os
-import tensorflow as tf
-from tensorflow import keras
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.inspection import permutation_importance
-from sklearn.model_selection import train_test_split
-import preprocessing_training_functions
-import make_neural_network_projections
+import xgboost_ensemble
+import neural_network_projections
+import bayesian_neural_network_projections
+import rf_projections
+import svr_projections
+import rr_projections
 
 def main():
-    pass
+    neural_network_projections.make_projections(False, False, 2024, True)
+    bayesian_neural_network_projections.make_projections(True, False, 2024, True)
+    rf_projections.make_projections(True, False, 2024, True)
+    svr_projections.make_projections(True, False, 2024, True)
+    rr_projections.make_projections(True, False, 2024, True)
 
-if __name__ == '__init__':
+    xgboost_ensemble.make_projections(True, False, 2024, True)
+
+if __name__ == '__main__':
     main()
