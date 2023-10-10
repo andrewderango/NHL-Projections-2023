@@ -101,16 +101,16 @@ def make_forward_gp_projections(stat_df, projection_df, download_file=False, yea
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         yr1_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
 
     yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
     yr3_predictions = y3_ridge_model.predict(yr3_stat_list_scaled)
@@ -125,7 +125,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file=False, yea
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -134,7 +134,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file=False, yea
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -143,7 +143,7 @@ def make_forward_gp_projections(stat_df, projection_df, download_file=False, yea
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -245,16 +245,16 @@ def make_defence_gp_projections(stat_df, projection_df, download_file=False, yea
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} GP'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         yr1_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
 
     yr3_stat_list_scaled = X_3_scaler.transform(yr3_stat_list)
     yr3_predictions = y3_ridge_model.predict(yr3_stat_list_scaled)
@@ -269,7 +269,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file=False, yea
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -278,7 +278,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file=False, yea
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -287,7 +287,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file=False, yea
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, 82)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, 82)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -388,16 +388,16 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     # for player in yr1_group:
     #     yr1_stat_list.append([
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -440,7 +440,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -449,7 +449,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -458,7 +458,7 @@ def make_forward_ev_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -559,16 +559,16 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} EV ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} EV ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     # for player in yr1_group:
     #     yr1_stat_list.append([
-    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+    #         stat_df.loc[stat_df['Player'] == player, f'{year-1} EV ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -611,7 +611,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -620,7 +620,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -629,7 +629,7 @@ def make_defence_ev_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -730,13 +730,13 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -783,7 +783,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -792,7 +792,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -801,7 +801,7 @@ def make_forward_pp_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -902,13 +902,13 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PP ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PP ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PP ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -955,7 +955,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -964,7 +964,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -973,7 +973,7 @@ def make_defence_pp_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1074,13 +1074,13 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -1127,7 +1127,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1136,7 +1136,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1145,7 +1145,7 @@ def make_forward_pk_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1246,13 +1246,13 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file=False
 
     for player in yr3_group:
         yr3_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-3, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-3} PK ATOI'].iloc[0]*gp_adjustment_factor[year-3] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-3, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr2_group:
         yr2_stat_list.append([
-            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-2, coef4, coef3, coef2, coef1, coef0),
-            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], 2023)-1, coef4, coef3, coef2, coef1, coef0)])
+            stat_df.loc[stat_df['Player'] == player, f'{year-2} PK ATOI'].iloc[0]*gp_adjustment_factor[year-2] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-2, coef4, coef3, coef2, coef1, coef0),
+            stat_df.loc[stat_df['Player'] == player, f'{year-1} PK ATOI'].iloc[0]*gp_adjustment_factor[year-1] - fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player, f'Date of Birth'].iloc[0], year-1)-1, coef4, coef3, coef2, coef1, coef0)])
     for player in yr1_group:
         y1_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-1} GP'].fillna(0).iloc[0])
         y2_gp = int(stat_df.loc[stat_df['Player'] == player, f'{year-2} GP'].fillna(0).iloc[0])
@@ -1299,7 +1299,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file=False
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1308,7 +1308,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1317,7 +1317,7 @@ def make_defence_pk_atoi_projections(stat_df, projection_df, download_file=False
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4, coef3, coef2, coef1, coef0), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4, coef3, coef2, coef1, coef0), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1507,7 +1507,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1516,7 +1516,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1525,7 +1525,7 @@ def make_forward_ev_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1715,7 +1715,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1724,7 +1724,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1733,7 +1733,7 @@ def make_defence_ev_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1957,7 +1957,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1966,7 +1966,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -1975,7 +1975,7 @@ def make_forward_pp_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2199,7 +2199,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2208,7 +2208,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2217,7 +2217,7 @@ def make_defence_pp_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2384,7 +2384,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2393,7 +2393,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2402,7 +2402,7 @@ def make_forward_pk_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2569,7 +2569,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file=Fal
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2578,7 +2578,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2587,7 +2587,7 @@ def make_defence_pk_gper60_projections(stat_df, projection_df, download_file=Fal
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2777,7 +2777,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2786,7 +2786,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2795,7 +2795,7 @@ def make_forward_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2985,7 +2985,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -2994,7 +2994,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3003,7 +3003,7 @@ def make_defence_ev_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3199,7 +3199,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3208,7 +3208,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3217,7 +3217,7 @@ def make_forward_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3413,7 +3413,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3422,7 +3422,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3431,7 +3431,7 @@ def make_defence_pp_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3589,7 +3589,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3598,7 +3598,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3607,7 +3607,7 @@ def make_forward_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3765,7 +3765,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3774,7 +3774,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3783,7 +3783,7 @@ def make_defence_pk_a1per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3973,7 +3973,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3982,7 +3982,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -3991,7 +3991,7 @@ def make_forward_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4181,7 +4181,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4190,7 +4190,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4199,7 +4199,7 @@ def make_defence_ev_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4395,7 +4395,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4404,7 +4404,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4413,7 +4413,7 @@ def make_forward_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4609,7 +4609,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4618,7 +4618,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4627,7 +4627,7 @@ def make_defence_pp_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4785,7 +4785,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4794,7 +4794,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4803,7 +4803,7 @@ def make_forward_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4961,7 +4961,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
 
     for index, statline in enumerate(yr3_stat_list):
         player_name = yr3_group[index]
-        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr3_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4970,7 +4970,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr2_stat_list):
         player_name = yr2_group[index]
-        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr2_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -4979,7 +4979,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, download_file=Fa
             projection_df = pd.concat([projection_df, new_row], ignore_index=True)
     for index, statline in enumerate(yr1_stat_list):
         player_name = yr1_group[index]
-        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], 2023), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
+        projection = np.clip(yr1_predictions[index] + fourth_degree_polynomial(calc_age(stat_df.loc[stat_df['Player'] == player_name, f'Date of Birth'].iloc[0], year-1), coef4_1, coef3_1, coef2_1, coef1_1, coef0_1), 0, None)
 
         if player_name in projection_df['Player'].values:
             projection_df.loc[projection_df['Player'] == player_name, column_name] = projection
@@ -5002,7 +5002,7 @@ def goal_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV G/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP G/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK G/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5057,7 +5057,7 @@ def a1_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_a1_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A1/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A1/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A1/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5112,7 +5112,7 @@ def a2_era_adjustment(stat_df, projection_df, year=2024, apply_adjustment=True, 
     projection_df = projection_df.fillna(0)
     hist_a2_df = pd.DataFrame()
 
-    for season in range(2007, 2023):
+    for season in range(2007, year-1):
         col = round(((stat_df[f'{season+1} EV A2/60']/60*stat_df[f'{season+1} EV ATOI'] + stat_df[f'{season+1} PP A2/60']/60*stat_df[f'{season+1} PP ATOI'] + stat_df[f'{season+1} PK A2/60']/60*stat_df[f'{season+1} PK ATOI']) * stat_df[f'{season+1} GP'])) 
         col = col.sort_values(ascending=False)
         col = col.reset_index(drop=True)
@@ -5166,41 +5166,41 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
 
     if existing_partial_projections == False:
-        projection_df = preprocessing_training_functions.make_projection_df(stat_df)
+        projection_df = preprocessing_training_functions.make_projection_df(stat_df, year)
     else:
         projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/rr_partial_projections_{year}.csv")
         projection_df = projection_df.drop(projection_df.columns[0], axis=1)
 
-    # projection_df = make_forward_gp_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_gp_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, True, year)
-    # projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_gp_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_gp_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, True, year)
+    projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, True, year)
 
-    projection_df = goal_era_adjustment(stat_df, projection_df, 2024, True, False)
-    projection_df = a1_era_adjustment(stat_df, projection_df, 2024, True, False)
-    projection_df = a2_era_adjustment(stat_df, projection_df, 2024, True, False)
+    projection_df = goal_era_adjustment(stat_df, projection_df, year, True, False)
+    projection_df = a1_era_adjustment(stat_df, projection_df, year, True, False)
+    projection_df = a2_era_adjustment(stat_df, projection_df, year, True, False)
     projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
 
     projection_df = projection_df.sort_values('POINTS', ascending=False)
@@ -5216,4 +5216,4 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-make_projections(True, True, 2024, False)
+# make_projections(True, False, 2024, True)
