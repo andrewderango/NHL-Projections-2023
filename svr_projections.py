@@ -5813,6 +5813,4 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-# make_projections(True, True, 2023, True)
-# make_projections(True, False, 2023, True)
-# make_projections(True, True, 2024, False)
+# make_projections(True, False, 2024, True)
