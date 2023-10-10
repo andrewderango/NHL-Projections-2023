@@ -7935,7 +7935,7 @@ def make_defence_pk_a2per60_projections(stat_df, projection_df, distribution_df,
 
     return projection_df, distribution_df
 
-def goal_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_adjustment=True, download_file=False):
+def goal_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year=2024, apply_adjustment=True, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
@@ -7985,15 +7985,15 @@ def goal_era_adjustment(stat_df, projection_df, distribution_df, year=2024, appl
             try:
                 distribution_df.loc[index_1, 'EV G/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'EV G/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'EV G/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'EV G/60'] = str([0 for _ in range(sim_count)])
             try:
                 distribution_df.loc[index_1, 'PP G/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PP G/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PP G/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PP G/60'] = str([0 for _ in range(sim_count)])
             try:
                 distribution_df.loc[index_1, 'PK G/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PK G/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PK G/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PK G/60'] = str([0 for _ in range(sim_count)])
         distribution_df = distribution_df.drop(columns=['Era Adjustment Factor'])
 
     for index, simulation in enumerate(distribution_df['Player']):
@@ -8001,24 +8001,24 @@ def goal_era_adjustment(stat_df, projection_df, distribution_df, year=2024, appl
         try:
             pp_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PP G/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PP ATOI']))
         except ValueError:
-            pp_stat = [0 for _ in range(1000)]
+            pp_stat = [0 for _ in range(sim_count)]
         try:
             pk_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PK G/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PK ATOI']))
         except ValueError:
-            pk_stat = [0 for _ in range(1000)]
+            pk_stat = [0 for _ in range(sim_count)]
 
         stat_total = np.array([x + y + z for x, y, z in zip(ev_stat, pp_stat, pk_stat)]) * np.array(ast.literal_eval(distribution_df.loc[index, 'GP']))
         distribution_df.loc[index, 'GOALS'] = str(stat_total)
 
     # Download file
     if download_file == True:
-        filename = f'bayesian_nn_partial_projections_{year}'
+        filename = f'bayesian_nn_final_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-        filename = f'bayesian_nn_partial_distributions_{year}'
+        filename = f'bayesian_nn_final_distributions_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -8026,7 +8026,7 @@ def goal_era_adjustment(stat_df, projection_df, distribution_df, year=2024, appl
 
     return projection_df.fillna(0), distribution_df
 
-def a1_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_adjustment=True, download_file=False):
+def a1_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year=2024, apply_adjustment=True, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
@@ -8077,11 +8077,11 @@ def a1_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
             try:
                 distribution_df.loc[index_1, 'PP A1/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PP A1/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PP A1/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PP A1/60'] = str([0 for _ in range(sim_count)])
             try:
                 distribution_df.loc[index_1, 'PK A1/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PK A1/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PK A1/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PK A1/60'] = str([0 for _ in range(sim_count)])
         distribution_df = distribution_df.drop(columns=['Era Adjustment Factor'])
 
     for index, simulation in enumerate(distribution_df['Player']):
@@ -8089,24 +8089,24 @@ def a1_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
         try:
             pp_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PP A1/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PP ATOI']))
         except ValueError:
-            pp_stat = [0 for _ in range(1000)]
+            pp_stat = [0 for _ in range(sim_count)]
         try:
             pk_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PK A1/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PK ATOI']))
         except ValueError:
-            pk_stat = [0 for _ in range(1000)]
+            pk_stat = [0 for _ in range(sim_count)]
 
         stat_total = np.array([x + y + z for x, y, z in zip(ev_stat, pp_stat, pk_stat)]) * np.array(ast.literal_eval(distribution_df.loc[index, 'GP']))
         distribution_df.loc[index, 'PRIMARY ASSISTS'] = str(stat_total)
 
     # Download file
     if download_file == True:
-        filename = f'bayesian_nn_partial_projections_{year}'
+        filename = f'bayesian_nn_final_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-        filename = f'bayesian_nn_partial_distributions_{year}'
+        filename = f'bayesian_nn_final_distributions_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -8114,7 +8114,7 @@ def a1_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
 
     return projection_df.fillna(0), distribution_df
 
-def a2_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_adjustment=True, download_file=False):
+def a2_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year=2024, apply_adjustment=True, download_file=False):
     stat_df = stat_df.fillna(0)
     projection_df = projection_df.fillna(0)
     hist_goal_df = pd.DataFrame()
@@ -8165,11 +8165,11 @@ def a2_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
             try:
                 distribution_df.loc[index_1, 'PP A2/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PP A2/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PP A2/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PP A2/60'] = str([0 for _ in range(sim_count)])
             try:
                 distribution_df.loc[index_1, 'PK A2/60'] = str((np.array(ast.literal_eval(distribution_df.loc[index_1, 'PK A2/60'])) * distribution_df.loc[index_1, 'Era Adjustment Factor']).tolist())
             except ValueError:
-                distribution_df.loc[index_1, 'PK A2/60'] = str([0 for _ in range(1000)])
+                distribution_df.loc[index_1, 'PK A2/60'] = str([0 for _ in range(sim_count)])
         distribution_df = distribution_df.drop(columns=['Era Adjustment Factor'])
 
     for index, simulation in enumerate(distribution_df['Player']):
@@ -8177,24 +8177,24 @@ def a2_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
         try:
             pp_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PP A2/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PP ATOI']))
         except ValueError:
-            pp_stat = [0 for _ in range(1000)]
+            pp_stat = [0 for _ in range(sim_count)]
         try:
             pk_stat = np.array(ast.literal_eval(distribution_df.loc[index, 'PK A2/60']))/60*np.array(ast.literal_eval(distribution_df.loc[index, 'PK ATOI']))
         except ValueError:
-            pk_stat = [0 for _ in range(1000)]
+            pk_stat = [0 for _ in range(sim_count)]
 
         stat_total = np.array([x + y + z for x, y, z in zip(ev_stat, pp_stat, pk_stat)]) * np.array(ast.literal_eval(distribution_df.loc[index, 'GP']))
         distribution_df.loc[index, 'SECONDARY ASSISTS'] = str(stat_total)
 
     # Download file
     if download_file == True:
-        filename = f'bayesian_nn_partial_projections_{year}'
+        filename = f'bayesian_nn_final_projections_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-        filename = f'bayesian_nn_partial_distributions_{year}'
+        filename = f'bayesian_nn_final_distributions_{year}'
         if not os.path.exists(f'{os.path.dirname(__file__)}/CSV Data'):
             os.makedirs(f'{os.path.dirname(__file__)}/CSV Data')
         distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
@@ -8204,58 +8204,59 @@ def a2_era_adjustment(stat_df, projection_df, distribution_df, year=2024, apply_
 
 def make_projections(existing_stat_df=True, existing_partial_projections=True, year=2024, download_csv=False):
     stat_df = preprocessing_training_functions.scrape_player_statistics(existing_stat_df)
+    sim_count = 100
     
     if existing_partial_projections == False:
         projection_df = preprocessing_training_functions.make_projection_df(stat_df, year)
         distribution_df = preprocessing_training_functions.make_projection_df(stat_df, year)
-    else:
-        projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_projections_{year}.csv")
-        projection_df = projection_df.drop(projection_df.columns[0], axis=1)
-        distribution_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_distributions_{year}.csv")
-        distribution_df = distribution_df.drop(distribution_df.columns[0], axis=1)
 
-    # projection_df, distribution_df = make_forward_gp_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_gp_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_ev_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_ev_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pp_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pp_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pk_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pk_atoi_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pp_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pp_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pk_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pk_gper60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_ev_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_ev_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pp_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pp_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pk_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pk_a1per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_ev_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_ev_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pp_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pp_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_forward_pk_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
-    # projection_df, distribution_df = make_defence_pk_a2per60_projections(stat_df, projection_df, distribution_df, True, 1000, year)
+    projection_df, distribution_df = make_forward_gp_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_gp_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_ev_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_ev_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pp_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pp_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pk_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pk_atoi_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_ev_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_ev_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pp_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pp_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pk_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pk_gper60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_ev_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_ev_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pp_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pp_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pk_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pk_a1per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_ev_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_ev_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pp_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pp_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_forward_pk_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
+    projection_df, distribution_df = make_defence_pk_a2per60_projections(stat_df, projection_df, distribution_df, True, sim_count, year)
 
-    # projection_df, distribution_df = goal_era_adjustment(stat_df, projection_df, distribution_df, year, False, False)
-    # projection_df, distribution_df = a1_era_adjustment(stat_df, projection_df, distribution_df, year, False, False)
-    # projection_df, distribution_df = a2_era_adjustment(stat_df, projection_df, distribution_df, year, False, False)
-    # projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
-    # for index, player in enumerate(distribution_df['Player']):
-    #     points = []
-    #     goals = [float(x) for x in distribution_df.loc[index, 'GOALS'][1:-1].split()]
-    #     p_assists = [float(x) for x in distribution_df.loc[index, 'PRIMARY ASSISTS'][1:-1].split()]
-    #     s_assists = [float(x) for x in distribution_df.loc[index, 'SECONDARY ASSISTS'][1:-1].split()]
+    projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_projections_{year}.csv")
+    projection_df = projection_df.drop(projection_df.columns[0], axis=1)
+    distribution_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/bayesian_nn_partial_distributions_{year}.csv")
+    distribution_df = distribution_df.drop(distribution_df.columns[0], axis=1)
 
-    #     for simulation in range(1000):
-    #         points.append(goals[simulation] + p_assists[simulation] + s_assists[simulation])
+    projection_df, distribution_df = goal_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year, False, False)
+    projection_df, distribution_df = a1_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year, False, False)
+    projection_df, distribution_df = a2_era_adjustment(stat_df, projection_df, distribution_df, sim_count, year, False, False)
+    projection_df['POINTS'] = projection_df['GOALS'] + projection_df['PRIMARY ASSISTS'] + projection_df['SECONDARY ASSISTS']
+    for index, player in enumerate(distribution_df['Player']):
+        points = []
+        goals = [float(x) for x in distribution_df.loc[index, 'GOALS'][1:-1].split()]
+        p_assists = [float(x) for x in distribution_df.loc[index, 'PRIMARY ASSISTS'][1:-1].split()]
+        s_assists = [float(x) for x in distribution_df.loc[index, 'SECONDARY ASSISTS'][1:-1].split()]
 
-    #     distribution_df.loc[index, 'POINTS'] = str(points)
-    #     print(index, distribution_df.loc[index, 'Player'], points[:5])
+        for simulation in range(sim_count):
+            points.append(goals[simulation] + p_assists[simulation] + s_assists[simulation])
+
+        distribution_df.loc[index, 'POINTS'] = str(points)
+        print(index, distribution_df.loc[index, 'Player'], points[:5])
 
     projection_df = projection_df.sort_values('POINTS', ascending=False)
     projection_df = projection_df.reset_index(drop=True)
@@ -8276,4 +8277,4 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         distribution_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-make_projections(True, True, 2024, False)
+# make_projections(True, False, 2024, True)
