@@ -315,7 +315,7 @@ def make_defence_gp_projections(stat_df, projection_df, download_file, year=2024
     }
 
     for index, row in stat_df.iterrows():
-        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] != 'D':
+        if row['Player'] in list(stat_df.loc[(stat_df[f'{year-1} GP'] >= 1)]['Player']) and row['Position'] == 'D':
             if row[f'{year-4} GP']*gp_adjustment_factor[year-4] >= 50 and row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
                 yr4_group.append(row['Player'])
             elif row[f'{year-3} GP']*gp_adjustment_factor[year-3] >= 50 and row[f'{year-2} GP']*gp_adjustment_factor[year-2] >= 50 and row[f'{year-1} GP']*gp_adjustment_factor[year-1] >= 50:
@@ -6580,32 +6580,32 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
     if existing_partial_projections == False:
         projection_df = preprocessing_training_functions.make_projection_df(stat_df, year)
 
-        projection_df = make_forward_gp_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_gp_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, False, year)
-        projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, False, year)
+        projection_df = make_forward_gp_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_gp_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_ev_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_ev_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pp_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pp_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pk_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pk_atoi_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_ev_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_ev_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pp_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pp_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pk_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pk_gper60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_ev_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_ev_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pp_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pp_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pk_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pk_a1per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_ev_a2per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_ev_a2per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pp_a2per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pp_a2per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_forward_pk_a2per60_projections(stat_df, projection_df, True, year)
+        projection_df = make_defence_pk_a2per60_projections(stat_df, projection_df, True, year)
     else:
         projection_df = pd.read_csv(f"{os.path.dirname(__file__)}/CSV Data/nn_partial_projections_{year}.csv")
         projection_df = projection_df.drop(projection_df.columns[0], axis=1)
@@ -6628,4 +6628,4 @@ def make_projections(existing_stat_df=True, existing_partial_projections=True, y
         projection_df.to_csv(f'{os.path.dirname(__file__)}/CSV Data/{filename}.csv')
         print(f'{filename}.csv has been downloaded to the following directory: {os.path.dirname(__file__)}/CSV Data')
 
-make_projections(True, True, 2024, False)
+# make_projections(True, False, 2024, True)
