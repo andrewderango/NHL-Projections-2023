@@ -12,8 +12,7 @@ import preprocessing_training_functions
 import make_neural_network_projections
 
 def main():
-    start = time.time()
-    print(f'{time.time()-start:.3f} seconds')
+    pass
 
 if __name__ == '__init__':
     main()
