@@ -1,0 +1,37 @@
+def mean_decrease_in_impurity_analysis():
+    df = pd.read_csv(f'{os.path.dirname(__file__)}/CSV Data/forward_GP_ADV_instance_training_data.csv') # edit
+    df = df.dropna()
+    print(df)
+
+    X = df[['Age', 'Height', 'Weight', 'Y1 GP', 'Y2 GP', 'Y3 GP', 'Y4 GP', 'Y1 G/82', 'Y2 G/82', 'Y3 G/82', 'Y4 G/82', 'Y1 P/82', 'Y2 P/82', 'Y3 P/82', 'Y4 P/82']] # features
+    y = df['Y5 GP'] # target
+
+    # Split the data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+    # Train a random forest regressor
+    rf = RandomForestRegressor(random_state=42)
+    rf.fit(X_train, y_train)
+
+    # Get feature importances using MDI algorithm
+    importances = rf.feature_importances_
+
+    # Create a pandas Series object with feature importances
+    feat_importances = pd.Series(importances, index=X.columns)
+
+    # Sort the feature importances in descending order
+    feat_importances = feat_importances.sort_values(ascending=True)
+
+    # Create a bar chart of the feature importances
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors = plasma_r(feat_importances.values / max(feat_importances.values))
+    ax.barh(y=feat_importances.index, width=feat_importances.values, color=colors)
+    ax.set_title("Random Forest Feature Importances (MDI)", weight='bold', fontsize=15, pad=20)
+    ax.text(0.5, 1.02, 'Mean Decrease in Impurity', ha='center', va='center', transform=ax.transAxes, fontsize=9, fontstyle='italic')
+    ax.set_xlabel("Relative Importance", weight='bold')
+    ax.set_ylabel("Feature", weight='bold')
+    ax.tick_params(length=0)
+    plt.box(False)
+    ax.figure.tight_layout()
+    plt.show()
+"""
