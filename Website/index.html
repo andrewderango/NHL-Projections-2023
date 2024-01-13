@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>NHL Projections</title>
+		<style>
+				table {
+						border-collapse: collapse;
+						width: 100%;
+				}
+
+				th, td {
+						border: 1px solid black;
+						padding: 8px;
+						text-align: center;
+						background-color: transparent;
+				}
+
+				th {
+						background-color: #CCC;
+						font-weight: bold;
+				}
+		</style>
+</head>
+<body>
+		<h1>NHL Player Projections</h1>
+
+		<p>Welcome to my NHL Projections page! Here, you can find statistic projections for 950 NHL players for the 2023-24 season, as of the start of the season. These projections are the result of an ensemble of machine learning models.</p>
+	
+	<p>For more information, please visit my <a href="https://github.com/andrewderango/NHL-Projections-2023">GitHub repo</a>.</p>
+
+		<table id="csvTable"></table>
+
+		<script>
+				function loadCSV(file) {
+						const table = document.getElementById('csvTable');
+						table.innerHTML = '';
+
+						fetch(file)
+								.then(response => response.text())
+								.then(data => {
+										const rows = data.trim().split('\n');
+										const header = rows.shift().split(',');
+
+										const headerRow = table.insertRow();
+										header.forEach(column => {
+												const th = document.createElement('th');
+												th.textContent = column;
+												headerRow.appendChild(th);
+										});
+
+										rows.forEach(row => {
+												const columns = row.split(',');
+												const newRow = table.insertRow();
+												columns.forEach(column => {
+														const cell = newRow.insertCell();
+														cell.textContent = column;
+												});
+										});
+								})
+								.catch(error => console.error('Error:', error));
+				}
+
+				loadCSV('projections.csv');
+		</script>
+</body>
+</html>
