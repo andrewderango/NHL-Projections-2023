@@ -28,6 +28,8 @@ The base models mentioned previously were then used to make predictions for each
 ### Uncertainty Estimations and Probability Distributions
 To provide insight into the uncertainty associated with the projected statistics, the training dataframes for the XGBoost model are bootstrapped. This generates uncertainty estimations for predicted stats, which are then combined with kernel density estimation (KDE) to generate probability distributions for player goals, assists, and points.
 
+![McDavid Projection Stats](https://github.com/andrewderango/NHL-Projections-2023/blob/main/All%20Data/Model%20Analysis/mcdavid_proj_stats.png)
+
 ## Contributing
 Contributions to this project are welcome! If you have any ideas for improvements, feature requests, or bug fixes, please open an issue or submit a pull request.
 
