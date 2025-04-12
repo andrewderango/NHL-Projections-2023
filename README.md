@@ -1,5 +1,7 @@
 # NHL Projections 2023
 
+**Important Note**: This project is the previous iteration of [IceAnalytics](https://iceanalytics.ca/home). It has since been migrated to the [IceAnalytics GitHub Repo](https://github.com/andrewderango/IceAnalytics).
+
 ## Overview
 Welcome to the NHL Projections 2023 GitHub repository! This repository houses a comprehensive stacked ensemble machine learning pipeline focused on predicting player statistics and generating probability distributions of various stats for 950 NHL players. In this README, I'll provide a detailed overview of the repository, including how the model works, the data pipeline, the machine learning algorithms employed, and the results obtained.
 
